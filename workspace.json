@@ -13,6 +13,7 @@
                         "{options.outputPath}"
                     ],
                     "options": {
+                        "generatePackageJson": true,
                         "outputPath": "dist/apps/api",
                         "main": "apps/api/src/main.ts",
                         "tsConfig": "apps/api/tsconfig.app.json"
@@ -29,6 +30,15 @@
                     "executor": "@nrwl/node:execute",
                     "options": {
                         "buildTarget": "api:build"
+                    }
+                },
+                "serve-all": {
+                    "builder": "@nrwl/workspace:run-commands",
+                    "options": {
+                        "commands": [
+                            {"command": "nx serve api"}
+                        ],
+                        "parallel": true
                     }
                 },
                 "lint": {
