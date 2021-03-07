@@ -37,6 +37,7 @@ jobs:
               run: npm run nx build-image legacy -- --tag latest
 
             - name: Login to Docker Registry
+              if: github.event_name == 'push'
               uses: docker/login-action@v1
               with:
                   registry: docker.saturnserver.org
@@ -49,4 +50,4 @@ jobs:
 
             - name: Deploy
               if: github.event_name == 'push'
-              run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org RangersWebsite_Build ${{ secrets.API_TOKEN }}
+              run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org RangersWebsite_Build ${{ secrets.TEAMCITY_TOKEN }}
