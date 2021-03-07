@@ -3,9 +3,11 @@ import { format } from 'util';
 import { handleExceptions, handleSignals, NotFoundRoute } from '@ionaru/micro-web-service';
 import { config } from 'dotenv';
 
+import { LegacyProxyController } from './app/controllers/legacy-proxy.controller';
 import { ServerController } from './app/controllers/server.controller';
 import { GlobalRoute } from './app/routes/global.route';
 import { HandshakeRoute } from './app/routes/handshake.route';
+import { LegacyRoute } from './app/routes/legacy.route';
 import { debug } from './debug';
 
 let serverController: ServerController;
@@ -16,13 +18,12 @@ const start = async () => {
 
     config();
 
-    // const usersProxy = new UsersProxyController().init();
-
-    // const usersService = new UsersClientController().init();
+    const legacyProxy = new LegacyProxyController().init();
 
     serverController = new ServerController([
         ['*', new GlobalRoute()],
-        ['/', new HandshakeRoute()],
+        ['/api', new HandshakeRoute()],
+        ['*', new LegacyRoute(legacyProxy)],
         ['*', new NotFoundRoute()],
     ]);
     await serverController.init();

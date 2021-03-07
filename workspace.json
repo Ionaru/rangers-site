@@ -7,6 +7,16 @@
             "projectType": "application",
             "prefix": "api",
             "targets": {
+                "build-image": {
+                    "builder": "@nrwl/workspace:run-commands",
+                    "options": {
+                        "commands": [
+                            {"command": "nx build api --production", "forwardAllArgs": false},
+                            {"command": "docker build -f ./apps/api/Dockerfile -t docker.saturnserver.org/rangers/api:{args.tag} ."}
+                        ],
+                        "parallel": false
+                    }
+                },
                 "build": {
                     "executor": "@nrwl/node:build",
                     "outputs": [
@@ -79,12 +89,6 @@
                             {"command": "docker build -f ./apps/legacy/Dockerfile -t docker.saturnserver.org/rangers/legacy:{args.tag} ."}
                         ],
                         "parallel": false
-                    }
-                },
-                "push-image": {
-                    "builder": "@nrwl/workspace:run-commands",
-                    "options": {
-                        "command": "docker push docker.saturnserver.org/rangers/legacy:{args.tag}"
                     }
                 },
                 "prepare": {
