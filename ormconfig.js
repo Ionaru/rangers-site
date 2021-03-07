@@ -75,8 +75,8 @@ module.exports = [
         username: process.env.RANGERS_DB_USER,
         password: process.env.RANGERS_DB_PASS,
         sslCA: 'data/ca.pem',
-        sslCert: 'data/clientcert.pem',
-        sslKey: 'data/clientkey.pem',
+        sslCert: 'data/client-cert.pem',
+        sslKey: 'data/client-key.pem',
         sslReject: false,
         models: [
             'attendance.model',

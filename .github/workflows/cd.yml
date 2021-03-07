@@ -120,4 +120,4 @@ jobs:
 
             - name: Deploy
               if: github.event_name == 'push'
-              run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org RangersWebsite_Build ${{ secrets.TEAMCITY_TOKEN }}
+              run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org RangersWebsite_RangersSiteV2_Deploy ${{ secrets.TEAMCITY_TOKEN }}
