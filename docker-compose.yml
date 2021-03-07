@@ -12,6 +12,8 @@ services:
             - RANGERS_API_SESSION_SECRET
             - RANGERS_API_SESSION_SECURE
             - RANGERS_API_LEGACY_URL
+        ports:
+            - "${RANGERS_API_PORT:-2000}:${RANGERS_API_PORT:-2000}"
         restart: unless-stopped
 
     legacy:
