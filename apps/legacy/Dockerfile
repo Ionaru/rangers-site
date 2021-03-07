@@ -3,7 +3,6 @@ FROM node:14-alpine
 WORKDIR /app
 
 COPY ./ormconfig.js ./
-COPY ../../certs ./data
 
 # Install dependencies
 ENV NODE_ENV production
