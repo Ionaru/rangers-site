@@ -92,7 +92,6 @@ jobs:
               uses: actions/download-artifact@v2
               with:
                   name: ${{matrix.app}}-image
-                  path: ${{matrix.app}}-image.tar
 
             - name: Load image into docker
               run: docker load < ${{matrix.app}}-image.tar
