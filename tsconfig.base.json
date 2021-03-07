@@ -20,7 +20,10 @@
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
-        "paths": {}
+        "paths": {
+            "@rangers-site/entities": ["libs/entities/src/index.ts"],
+            "@rangers-site/interfaces": ["libs/interfaces/src/index.ts"]
+        }
     },
     "exclude": ["node_modules", "tmp"]
 }

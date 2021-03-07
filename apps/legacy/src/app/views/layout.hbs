@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> header }}
+</head>
+<body>
+<div class="content">
+    <div class="banner container-fluid">
+        <picture>
+            <source srcset="images/banner.webp" type="image/webp">
+            <img class="w-100" src="images/banner.png" alt="banner image">
+        </picture>
+    </div>
+
+    {{>navbar}}
+
+    {{#if success}}
+        <div class="container pt-3">
+            <div class="alert alert-success" role="alert">
+                {{success}}
+            </div>
+        </div>
+    {{/if}}
+
+    {{#if error}}
+        <div class="container pt-3">
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        </div>
+    {{/if}}
+
+    {{{body}}}
+</div>
+<hr>
+{{> footer }}
+</body>
+</html>

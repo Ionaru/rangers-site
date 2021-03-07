@@ -1,0 +1,11 @@
+<div class="container pt-3">
+    <h1>Delete user: {{user_.name}}</h1>
+
+    <p>Are you sure you want to delete the user: {{user_.name}}?</p>
+    <p>This action will prevent the user from logging into the website, and will revoke all ranks, roles and badges.</p>
+
+    <form method="post">
+        <a class="btn btn-secondary mb-2" href="/users">Cancel</a>
+        <button type="submit" class="btn btn-danger mb-2">Delete</button>
+    </form>
+</div>

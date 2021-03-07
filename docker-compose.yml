@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+    legacy:
+        # The old monolithic version of this app.
+        image: docker.saturnserver.org/rangers/legacy:latest
+        environment:
+            - DEBUG
+            - RANGERS_ADMINS
+            - RANGERS_COOKIE_NAME
+            - RANGERS_COOKIE_SECRET
+            - RANGERS_DATA_VOLUME
+            - RANGERS_DB_HOST
+            - RANGERS_DB_NAME
+            - RANGERS_DB_PASS
+            - RANGERS_DB_PORT
+            - RANGERS_DB_USER
+            - RANGERS_DISCORD_CLIENT_ID
+            - RANGERS_DISCORD_CLIENT_SECRET
+            - RANGERS_DISCORD_RETURN_URL
+            - RANGERS_DISCORD_TOKEN
+            - RANGERS_ENJIN_DOMAIN
+            - RANGERS_ENJIN_KEY
+            - RANGERS_PORT
+            - RANGERS_TS_HOST
+            - RANGERS_TS_NICKNAME
+            - RANGERS_TS_PASSWORD
+            - RANGERS_TS_PORT
+            - RANGERS_TS_QUERY_PORT
+            - RANGERS_TS_USERNAME

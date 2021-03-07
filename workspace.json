@@ -69,6 +69,30 @@
             "projectType": "application",
             "prefix": "legacy",
             "targets": {
+                "build-image": {
+                    "builder": "@nrwl/workspace:run-commands",
+                    "options": {
+                        "commands": [
+                            {"command": "npx tsc -p apps/legacy/tsconfig.app.json", "forwardAllArgs": false},
+                            {"command": "nx prepare legacy", "forwardAllArgs": false},
+                            {"command": "nx build legacy --production", "forwardAllArgs": false},
+                            {"command": "docker build -f ./apps/legacy/Dockerfile -t docker.saturnserver.org/rangers/legacy:{args.tag} ."}
+                        ],
+                        "parallel": false
+                    }
+                },
+                "push-image": {
+                    "builder": "@nrwl/workspace:run-commands",
+                    "options": {
+                        "command": "docker push docker.saturnserver.org/rangers/legacy:{args.tag}"
+                    }
+                },
+                "prepare": {
+                    "builder": "@nrwl/workspace:run-commands",
+                    "options": {
+                        "command": "npx node-sass --source-map true --output-style compressed --output apps/legacy/src/assets/stylesheets apps/legacy/src/app/styles"
+                    }
+                },
                 "build": {
                     "executor": "@nrwl/node:build",
                     "outputs": [
@@ -76,11 +100,13 @@
                     ],
                     "options": {
                         "generatePackageJson": true,
+                        "showCircularDependencies": false,
                         "outputPath": "dist/apps/legacy",
                         "main": "apps/legacy/src/main.ts",
                         "tsConfig": "apps/legacy/tsconfig.app.json",
                         "assets": [
-                            "apps/legacy/src/assets"
+                            "apps/legacy/src/assets",
+                            "apps/legacy/src/app/views"
                         ]
                     },
                     "configurations": {
@@ -112,6 +138,56 @@
                     ],
                     "options": {
                         "jestConfig": "apps/legacy/jest.config.js",
+                        "passWithNoTests": true
+                    }
+                }
+            }
+        },
+        "entities": {
+            "root": "libs/entities",
+            "sourceRoot": "libs/entities/src",
+            "projectType": "library",
+            "targets": {
+                "lint": {
+                    "executor": "@nrwl/linter:eslint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "libs/entities/**/*.ts"
+                        ]
+                    }
+                },
+                "test": {
+                    "executor": "@nrwl/jest:jest",
+                    "outputs": [
+                        "coverage/libs/entities"
+                    ],
+                    "options": {
+                        "jestConfig": "libs/entities/jest.config.js",
+                        "passWithNoTests": true
+                    }
+                }
+            }
+        },
+        "interfaces": {
+            "root": "libs/interfaces",
+            "sourceRoot": "libs/interfaces/src",
+            "projectType": "library",
+            "targets": {
+                "lint": {
+                    "executor": "@nrwl/linter:eslint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "libs/interfaces/**/*.ts"
+                        ]
+                    }
+                },
+                "test": {
+                    "executor": "@nrwl/jest:jest",
+                    "outputs": [
+                        "coverage/libs/interfaces"
+                    ],
+                    "options": {
+                        "jestConfig": "libs/interfaces/jest.config.js",
                         "passWithNoTests": true
                     }
                 }

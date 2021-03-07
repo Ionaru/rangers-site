@@ -1,0 +1,52 @@
+name: rangers-site CD
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    test:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
+
+            - name: Audit
+              run: npm audit
+
+            - name: Install packages
+              run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Run tests
+              run: npm test
+
+            - name: Build
+              run: npm run nx build-image legacy -- --tag latest
+
+            - name: Login to Docker Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: docker.saturnserver.org
+                  username: ${{ secrets.REGISRTY_USER }}
+                  password: ${{ secrets.REGISTRY_PASSWORD }}
+
+            - name: Push images
+              if: github.event_name == 'push'
+              run: npm run nx push-image legacy -- --tag latest
+
+            - name: Deploy
+              if: github.event_name == 'push'
+              run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org RangersWebsite_Build ${{ secrets.API_TOKEN }}

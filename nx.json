@@ -20,5 +20,10 @@
             }
         }
     },
-    "projects": {"api": {"tags": []}, "legacy": {"tags": []}}
+    "projects": {
+        "api": {"tags": []},
+        "legacy": {"tags": []},
+        "entities": {"tags": []},
+        "interfaces": {"tags": []}
+    }
 }

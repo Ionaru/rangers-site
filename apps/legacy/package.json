@@ -1,0 +1,11 @@
+{
+    "scripts": {
+        "styles": "npx node-sass --source-map true --output-style compressed --output src/assets/stylesheets src/app/styles",
+        "start": "typeorm migration:run -c legacy && node main.js"
+    },
+    "dependencies": {
+        "mysql2": "^2.2.5",
+        "supports-color": "^8.1.1",
+        "uuid": "^8.3.2"
+    }
+}

@@ -1,0 +1,63 @@
+<div class="container pt-3">
+    <h1>Roles</h1>
+    <p>Roles are sets of permissions given to a user, a user can have multiple roles at a time.</p>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col"><i class="fas fa-globe fa-fw"></i>Enjin tag</th>
+                <th scope="col"><i class="fab fa-teamspeak fa-fw"></i>Teamspeak group</th>
+                <th scope="col"><i class="fab fa-discord fa-fw"></i>Discord role</th>
+                {{#hasPermission user 'EDIT_ROLES'}}
+                    <th scope="col" class="text-right">Actions</th>
+                {{/hasPermission}}
+            </tr>
+            </thead>
+            <tbody>
+            {{#each roles}}
+                <tr>
+                    <th class="align-middle">{{this.name}}</th>
+                    <td class="align-middle">
+                        {{#if this.enjinTag}}
+                            {{this.enjinTag.name}} (#{{this.enjinTag.id}})
+                        {{else}}
+                            None
+                        {{/if}}
+                    </td>
+                    <td class="align-middle">
+                        {{#if this.teamspeakRank}}
+                            {{this.teamspeakRank.name}} ({{this.teamspeakRank.id}})
+                        {{else}}
+                            None
+                        {{/if}}
+                    </td>
+                    <td class="align-middle">
+                        {{#if this.discordRank}}
+                            ... (#)
+                        {{else}}
+                            None
+                        {{/if}}
+                    </td>
+                    {{#hasPermission ../user 'EDIT_ROLES'}}
+                        <td class="text-right align-middle">
+                            <a href="/roles/edit/{{../this.id}}" class="btn btn-warning">
+                                <i class="fas fa-pen fa-fw"></i>
+                            </a>
+                            <a href="/roles/delete/{{../this.id}}" class="btn btn-danger">
+                                <i class="fas fa-trash fa-fw"></i>
+                            </a>
+                        </td>
+                    {{/hasPermission}}
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    {{#hasPermission user 'EDIT_ROLES'}}
+        <a href="/roles/create" class="btn btn-primary">Create role</a>
+    {{/hasPermission}}
+
+</div>

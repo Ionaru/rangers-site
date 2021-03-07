@@ -1,0 +1,164 @@
+$primary: #087B08;
+
+$theme-colors: (
+    "primary": #087b08,
+    "teamspeak": #2980C3,
+    "discord": #7289DA,
+    "steam": #171A21,
+);
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+html {
+    body {
+
+        .banner {
+            background-image: url("/images/background.webp");
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+
+            picture, img {
+                max-width: 100%;
+                align-self: center;
+            }
+        }
+
+        .navbar {
+            z-index: 999;
+
+            .navbar-brand {
+                padding: 0;
+
+                picture, img {
+                    height: 40px;
+                }
+            }
+        }
+
+        .justify-content-evenly {
+            justify-content: space-evenly !important;
+        }
+
+        // Overrides for bootstrap-select
+        div.bootstrap-select {
+            background-color: $input-bg !important;
+            border: 1px solid $input-border-color !important;
+
+            .filter-option-inner-inner {
+                color: $input-color !important;
+            }
+
+            &.disabled {
+                background-color: $input-disabled-bg !important;
+                pointer-events: none;
+            }
+
+            &.show {
+                outline: 0 !important;
+                border-color: $input-focus-border-color !important;
+                box-shadow: $input-focus-box-shadow !important;
+            }
+
+            button.dropdown-toggle {
+                background-color: transparent !important;
+                border-color: transparent !important;
+
+                &:focus {
+                    outline: 0 !important;
+                    border-color: $input-focus-border-color !important;
+                    box-shadow: $input-focus-box-shadow !important;
+                }
+
+                &:active {
+                    background-color: inherit !important;
+                }
+            }
+
+            .dropdown-item {
+
+                &:active, &.active:hover {
+                    color: white !important;
+                }
+
+                &.selected {
+
+                    color: white !important;
+                    background-color: $primary !important;
+
+                    &:hover {
+                        color: white !important;
+                        background-color: darken($primary, 7.5%) !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+footer {
+    text-align: center;
+}
+
+$attendance-color: $primary;
+$loas-color: #f05b4f;
+
+.ct-series-a .ct-point, .ct-series-a .ct-line {
+    stroke: $attendance-color;
+}
+
+.ct-series-b .ct-point, .ct-series-b .ct-line {
+    stroke: $loas-color;
+}
+
+.ct-legend {
+    position: relative;
+    z-index: 10;
+    list-style: none;
+    text-align: center;
+    user-select: none;
+
+    li {
+        position: relative;
+        padding-left: 23px;
+        margin-right: 10px;
+        margin-bottom: 3px;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    li:before {
+        width: 15px;
+        height: 15px;
+        margin-top: 4px;
+        position: absolute;
+        left: 0;
+        content: '';
+        border: 3px solid transparent;
+        border-radius: 2px;
+    }
+
+    li.inactive:before {
+        background: transparent;
+    }
+
+    &.ct-legend-inside {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        li {
+            display: block;
+            margin: 0;
+        }
+    }
+
+    $ct-series-colors: $attendance-color, $loas-color;
+
+    @for $i from 0 to length($ct-series-colors) {
+        .ct-series-#{$i}:before {
+            background-color: nth($ct-series-colors, $i + 1);
+            border-color: nth($ct-series-colors, $i + 1);
+        }
+    }
+}

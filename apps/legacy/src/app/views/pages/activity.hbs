@@ -1,0 +1,29 @@
+<div class="container pt-3">
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">User</th>
+                <th scope="col">Last operation joined</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each activity}}
+                <tr>
+                    <th class="align-middle">
+                        {{#if this.name}}
+                            {{this.name}}
+                        {{else}}
+                            {{this.ts3Name}}
+                        {{/if}}
+                    </th>
+                    <td class="align-middle">
+                        <a href="operation/{{this.lastJoined}}">{{this.lastJoined}}</a>
+                    </td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

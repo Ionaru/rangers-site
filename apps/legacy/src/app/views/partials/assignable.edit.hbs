@@ -1,0 +1,110 @@
+<div class="container pt-3">
+    <h1>
+        {{#if assignable}}
+            Edit {{assignableName}}: {{assignable.name}}
+        {{else}}
+            Create a new {{assignableName}}
+        {{/if}}
+    </h1>
+
+    <form method="post" autocomplete="off" encType="multipart/form-data">
+
+        <div class="form-group">
+            <label for="role-input"><span class="text-capitalize">{{assignableName}}</span> name</label>
+            <input type="text" class="form-control" id="role-input" value="{{assignable.name}}" name="name">
+        </div>
+
+        {{#if enjinTags}}
+            <div class="form-group">
+                <label for="enjin-group-input">Enjin tag</label>
+                <div class="input-group flex-nowrap">
+                    <div class="input-group-prepend">
+                    <span class="input-group-text" id="addon-wrapping">
+                        <i class="fas fa-globe fa-fw"></i>
+                    </span>
+                    </div>
+                    <select class="form-control selectpicker" id="enjin-group-input" name="enjinTag">
+                        <option value="">None</option>
+                        {{#each enjinTags}}
+                            <option {{#ifCond ../assignable.enjinTag.id '===' this.tag_id}}selected{{/ifCond}}
+                                    value="{{this.tag_id}}">
+                                {{this.tagname}} ({{this.tag_id}})
+                            </option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+        {{/if}}
+
+        {{#if tsRanks}}
+            <div class="form-group">
+                <label for="ts-group-input">Teamspeak group</label>
+                <div class="input-group flex-nowrap">
+                    <div class="input-group-prepend">
+                    <span class="input-group-text" id="addon-wrapping">
+                        <i class="fab fa-teamspeak fa-fw"></i>
+                    </span>
+                    </div>
+                    <select class="form-control selectpicker" id="ts-group-input" name="tsRank">
+                        <option value="">None</option>
+                        {{#each tsRanks}}
+                            <option {{#ifCond ../assignable.teamspeakRank.id 'streq' this.sgid}}selected{{/ifCond}}
+                                    value="{{this.sgid}}">
+                                {{this.name}} ({{this.sgid}})
+                            </option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+        {{/if}}
+
+        {{#if discordRanks}}
+            <div class="form-group">
+                <label for="discord-role-input">Discord role</label>
+                <div class="input-group flex-nowrap">
+                    <div class="input-group-prepend">
+                <span class="input-group-text" id="addon-wrapping">
+                    <i class="fab fa-discord fa-fw"></i>
+                </span>
+                    </div>
+                    <select disabled class="form-control selectpicker" id="discord-role-input">
+                        <option>Coming soon™</option>
+                    </select>
+                </div>
+            </div>
+        {{/if}}
+
+        {{#if permissions}}
+            <div class="form-group">
+                <label for="permission-select">Permissions</label>
+                <div class="input-group flex-nowrap w-100">
+                    <select name="permissions" data-width="100%" id="permission-select" class="selectpicker" multiple
+                            data-live-search="true">
+                        {{#each permissions}}
+                            <option value="{{this.slug}}" {{#each ../assignable.permissions}}{{#ifCond this.slug '==='
+                                                                                                       ../this.slug}}selected{{/ifCond}}{{/each}}>{{this.name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+        {{/if}}
+
+            <!--        {{#if image}}-->
+        <!--            <div class="form-group">-->
+        <!--                <label for="image">Image (Max. 5MB)</label>-->
+        <!--                <div class="input-group flex-nowrap">-->
+        <!--                    <input type="file" id="image" name="image">-->
+        <!--                </div>-->
+        <!--            </div>-->
+            <!--        {{/if}}-->
+
+        <hr>
+
+        <a class="btn btn-secondary mb-2" href="{{returnUrl}}">Cancel</a>
+        {{#if assignable}}
+            <button type="submit" class="btn btn-warning mb-2">Edit</button>
+        {{else}}
+            <button type="submit" class="btn btn-primary mb-2">Create</button>
+        {{/if}}
+    </form>
+</div>

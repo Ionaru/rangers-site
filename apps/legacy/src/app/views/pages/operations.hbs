@@ -1,0 +1,39 @@
+<div class="container-fluid pt-3">
+    <div class="ct-chart"></div>
+    <script>
+        const opsLimit = 50;
+        const data = {
+            labels: [{{#each ops}}'{{this.date}}',{{/each}}].reverse().slice(-1 * opsLimit),
+            series: [
+                {
+                    name: 'Attendance',
+                    data: [{{#each ops}}{{this.playerCount}},{{/each}}].reverse().slice(-1 * opsLimit)
+                },
+                {name: 'LOAs', data: [{{#each ops}}{{this.loas}},{{/each}}].reverse().slice(-1 * opsLimit)}
+            ],
+        };
+
+        new Chartist.Line('.ct-chart', data, {
+            axisY: {onlyInteger: true, low: 0},
+            height: 400,
+            plugins: [
+                Chartist.plugins.legend()
+            ]
+        });
+    </script>
+</div>
+
+<div class="container pt-3">
+
+    <hr>
+
+    <div id="operation-list">
+        {{#each ops}}
+            <p>
+                <a href="/operation/{{this.date}}">
+                    Operation on {{this.date}}, {{this.playerCount}} players, {{this.loas}} LOAs.
+                </a>
+            </p>
+        {{/each}}
+    </div>
+</div>

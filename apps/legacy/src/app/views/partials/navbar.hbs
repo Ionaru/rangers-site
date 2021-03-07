@@ -1,0 +1,76 @@
+<nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <picture>
+                <source srcset="images/logo.webp" type="image/webp">
+                <img src="images/logo.png" alt="logo">
+            </picture>
+        </a>
+        {{#unless user}}
+            <a type="button" class="btn btn-primary d-lg-none" href="/auth">Join 7R</a>
+        {{/unless}}
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                {{#hasPermission user 'READ_OPERATIONS_ACTIVITY'}}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/operations">Operations</a>
+                    </li>
+                {{/hasPermission}}
+                {{#hasPermission user 'EDIT_RANKS'}}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/ranks">Ranks</a>
+                    </li>
+                {{/hasPermission}}
+                {{#hasPermission user 'EDIT_ROLES'}}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/roles">Roles</a>
+                    </li>
+                {{/hasPermission}}
+                {{#hasPermission user 'EDIT_USER_RANK'}}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/users">Users</a>
+                    </li>
+                {{/hasPermission}}
+            </ul>
+            <ul class="navbar-nav mr-3">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://discord.gg/vbFMQXe">
+                        <i class="fab fa-discord fa-lg fa-fw"></i>
+                        <span class="d-lg-none">Discord</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ts3server://ts3.7th-ranger.com?port=9375">
+                        <i class="fab fa-teamspeak fa-lg fa-fw"></i>
+                        <span class="d-lg-none">Teamspeak</span>
+                    </a>
+                </li>
+                {{#if user}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            My account
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <!--                            <a class="dropdown-item" href="/user">My profile</a>-->
+                            <!--                            <div class="dropdown-divider"></div>-->
+                            <a class="dropdown-item" href="/auth/logout">Logout</a>
+                        </div>
+                    </li>
+                {{else}}
+                    <li class="nav-ite ml-3">
+                        <a type="button" class="d-none d-lg-block btn btn-primary" href="/auth">Join 7R</a>
+                    </li>
+                {{/if}}
+            </ul>
+        </div>
+    </div>
+</nav>

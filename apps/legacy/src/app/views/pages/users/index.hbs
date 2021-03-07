@@ -1,0 +1,61 @@
+<div class="container pt-3">
+    <div class="d-flex justify-content-between">
+        <h1>Users</h1>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">
+                    <i class="fab fa-discord"></i>
+                    Name
+                </th>
+                <th scope="col">
+                    <i class="fab fa-teamspeak"></i>
+                    Name
+                </th>
+                <th scope="col">Rank</th>
+                <th scope="col">Roles</th>
+                <th scope="col">Badges</th>
+                {{#hasPermission user 'EDIT_USER_RANK'}}
+                    <th scope="col" class="text-right">Actions</th>
+                {{/hasPermission}}
+            </tr>
+            </thead>
+            <tbody>
+            {{#each users}}
+                {{#if this.discordUser}}
+                    <tr>
+                        <th class="align-middle">{{this.name}}</th>
+                        <th class="align-middle">{{this.ts3User.nickname}}</th>
+                        <td class="align-middle">
+                            {{this.rank.name}}
+                        </td>
+                        <td class="align-middle">
+                            {{#each this.roles}}
+                                <p>{{this.name}}</p>
+                            {{/each}}
+                        </td>
+                        <td class="align-middle">
+                            {{#each this.badges}}
+                                <p>{{this.name}}</p>
+                            {{/each}}
+                        </td>
+                        {{#hasPermission ../user 'EDIT_USER_RANK'}}
+                            <td class="text-right align-middle">
+                                <a href="/users/edit/{{../this.id}}" class="btn btn-warning">
+                                    <i class="fas fa-pen fa-fw"></i>
+                                </a>
+                                <a href="/users/delete/{{../this.id}}" class="btn btn-danger">
+                                    <i class="fas fa-user-slash fa-fw"></i>
+                                </a>
+                            </td>
+                        {{/hasPermission}}
+                    </tr>
+                {{/if}}
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

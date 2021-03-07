@@ -1,0 +1,133 @@
+<div class="container pt-3">
+    <h1 class="lead">Operation of {{opDate}}</h1>
+    <!--    <div class="text-center">-->
+    <!--        <img src="images/graph5.png">-->
+    <!--    </div>-->
+</div>
+
+<div class="container pt-3">
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                            aria-expanded="false" aria-controls="collapseOne">
+                        {{attendees.length}} players
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {{#each attendees}}
+                            <li class="list-group-item">
+                                {{#if this.user}}
+                                    {{this.user.name}}
+                                {{else}}
+                                    {{this.nickname}}
+                                {{/if}}
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pt-3">
+    <div class="accordion" id="accordionLOA">
+        <div class="card">
+            <div class="card-header" id="headingLOA">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseLOA"
+                            aria-expanded="false" aria-controls="collapseLOA">
+                        {{LOAs.length}} LOAs
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseLOA" class="collapse" aria-labelledby="headingLOA" data-parent="#accordionLOA">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {{#each LOAs}}
+                            <li class="list-group-item">
+                                {{#each ../users}}
+                                    {{#ifCond this.discordUser '===' ../this.user}}
+                                        {{../this.name}}
+                                    {{/ifCond}}
+                                {{/each}}
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pt-3">
+    <div class="accordion" id="accordionExample2">
+        <div class="card">
+            <div class="card-header" id="headingOne2">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne2"
+                            aria-expanded="false" aria-controls="collapseOne2">
+                        Events
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne2" class="collapse" aria-labelledby="headingOne2" data-parent="#accordionExample2">
+
+                <div class="card-body">
+                    {{#each events}}
+                        <div class="card">
+                            <div class="card-header">
+                                <strong>{{@key}}</strong>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {{#if @first}}
+                                    <li class="list-group-item">
+                                        <i class="fas fa-fw fa-play"></i>
+                                        Operation started
+                                    </li>
+                                {{/if}}
+
+                                {{#each this.joined}}
+                                    <li class="list-group-item">
+                                        <i class="fas fa-fw fa-sign-in-alt text-primary"></i>
+                                        {{#if this.user}}
+                                            {{this.user.name}}
+                                        {{else}}
+                                            {{this.nickname}}
+                                        {{/if}} joined
+                                    </li>
+                                {{/each}}
+
+                                {{#each this.left}}
+                                    <li class="list-group-item">
+                                        <i class="fas fa-fw fa-sign-out-alt text-danger"></i>
+                                        {{#if this.user}}
+                                            {{this.user.name}}
+                                        {{else}}
+                                            {{this.nickname}}
+                                        {{/if}} left
+                                    </li>
+                                {{/each}}
+
+                                {{#if @last}}
+                                    <li class="list-group-item">
+                                        <i class="fas fa-fw fa-stop"></i>
+                                        End of tracking
+                                    </li>
+                                {{/if}}
+                            </ul>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
