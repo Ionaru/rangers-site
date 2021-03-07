@@ -1,8 +1,4 @@
 import { QueryLogger } from '@ionaru/typeorm-utils';
-import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
-
-import { debug } from '../../debug';
-import { DatabaseService } from '../services/database.service';
 import {
     ApplicationModel,
     AttendanceModel,
@@ -19,6 +15,10 @@ import {
     TeamspeakUserModel,
     UserModel,
 } from '@rangers-site/entities';
+import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
+
+import { debug } from '../../debug';
+import { DatabaseService } from '../services/database.service';
 
 export class DatabaseController {
 

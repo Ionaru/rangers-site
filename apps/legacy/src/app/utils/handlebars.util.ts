@@ -1,6 +1,7 @@
 import { Permission, UserModel } from '@rangers-site/entities';
 
 import { BaseRoute } from '../routes/base.route';
+
 import HelperOptions = Handlebars.HelperOptions;
 
 export const json = (context: Record<string, unknown>): string => JSON.stringify(context);

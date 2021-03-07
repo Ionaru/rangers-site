@@ -111,7 +111,6 @@ export class ServerController {
         ServerController.debug('Server constructed');
         await this.serviceController.listen();
         ServerController.debug(`Server listening on port ${port}`);
-        console.log(`Server listening on port ${port}`);
     }
 
     public async stop(): Promise<void> {

@@ -1,3 +1,1 @@
-export function interfaces(): string {
-    return 'interfaces';
-}
+export const interfaces = (): string => 'interfaces';

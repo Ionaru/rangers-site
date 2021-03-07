@@ -20,17 +20,3 @@ COPY ./dist/apps/legacy/assets ./assets
 COPY ./dist/apps/legacy/app ./app
 
 CMD ["npm", "start"]
-
-# Copy database files
-#COPY ./ormconfig.js ./
-#COPY ./certs ./data
-#COPY ./dist/out-tsc/apps/users/migrations ./migrations
-#
-## Install dependencies
-#COPY ./dist/apps/users/package.json ./
-#RUN npm install --production
-#
-## Copy main file
-#COPY ./dist/apps/users/main.js ./
-#
-#CMD ["npm", "start"]

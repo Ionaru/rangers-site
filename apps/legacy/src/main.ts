@@ -1,8 +1,10 @@
 import { format } from 'util';
 
 import { handleExceptions, handleSignals } from '@ionaru/micro-web-service';
+import { PermissionModel } from '@rangers-site/entities';
 import { config } from 'dotenv';
 import * as moment from 'moment-timezone';
+
 import 'reflect-metadata'; // Required for TypeORM
 import { DatabaseController } from './app/controllers/database.controller';
 import { DiscordBotController } from './app/controllers/discord-bot.controller';
@@ -19,7 +21,6 @@ import { RolesRoute } from './app/routes/roles.route';
 import { RootRoute } from './app/routes/root.route';
 import { UsersRoute } from './app/routes/users.route';
 import { RecordOperationAttendeesTask } from './app/tasks/record-operation-attendees.task';
-import { PermissionModel } from '@rangers-site/entities';
 import { debug } from './debug';
 
 let serverController: ServerController;

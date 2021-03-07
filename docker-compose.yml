@@ -10,7 +10,6 @@ services:
             - RANGERS_ADMINS
             - RANGERS_COOKIE_NAME
             - RANGERS_COOKIE_SECRET
-            - RANGERS_DATA_VOLUME
             - RANGERS_DB_HOST
             - RANGERS_DB_NAME
             - RANGERS_DB_PASS
@@ -29,3 +28,6 @@ services:
             - RANGERS_TS_PORT
             - RANGERS_TS_QUERY_PORT
             - RANGERS_TS_USERNAME
+        restart: unless-stopped
+        volumes:
+            - ${RANGERS_CERTS_VOLUME}:/app/data
