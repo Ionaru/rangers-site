@@ -12,7 +12,7 @@
                     "options": {
                         "commands": [
                             {"command": "nx build api --production", "forwardAllArgs": false},
-                            {"command": "docker build -f ./apps/api/Dockerfile -t docker.saturnserver.org/rangers/api:{args.tag} ."}
+                            {"command": "docker build -f ./apps/api/Dockerfile -t api:{args.tag} ."}
                         ],
                         "parallel": false
                     }
@@ -86,7 +86,7 @@
                             {"command": "npx tsc -p apps/legacy/tsconfig.app.json", "forwardAllArgs": false},
                             {"command": "nx prepare legacy", "forwardAllArgs": false},
                             {"command": "nx build legacy --production", "forwardAllArgs": false},
-                            {"command": "docker build -f ./apps/legacy/Dockerfile -t docker.saturnserver.org/rangers/legacy:{args.tag} ."}
+                            {"command": "docker build -f ./apps/legacy/Dockerfile -t legacy:{args.tag} ."}
                         ],
                         "parallel": false
                     }
