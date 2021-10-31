@@ -24,7 +24,7 @@ export class TeamspeakService {
     public async getClientsInChannel(cid: number): Promise<TeamSpeakClient[]> {
         await this.connect();
         TeamspeakService.debug(`clientlist -> ${cid}`);
-        return this.client.clientList({clientType: ClientType.Regular, cid: cid.toString()});
+        return this.client.clientList({cid: cid.toString(), clientType: ClientType.Regular});
     }
 
     public async getRanks(): Promise<TeamSpeakServerGroup[]> {

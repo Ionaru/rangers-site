@@ -24,11 +24,12 @@
         {
             "files": ["*.ts", "*.tsx"],
             "extends": ["plugin:@nrwl/nx/typescript", "@ionaru"],
-            "parserOptions": {"project": "./tsconfig.*?.json"},
             "rules": {
                 "no-null/no-null": "off",
+                "import/extensions": "off",
                 "import/no-unresolved": [
-                    2, {
+                    2,
+                    {
                         "ignore": ["rangers-site"]
                     }
                 ]

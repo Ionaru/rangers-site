@@ -96,7 +96,7 @@ export class RanksRoute extends BaseRoute {
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/ranks/edit.hbs', {rank, tsRanks, permissions, enjinTags});
+        return response.render('pages/ranks/edit.hbs', {enjinTags, permissions, rank, tsRanks});
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
@@ -136,7 +136,7 @@ export class RanksRoute extends BaseRoute {
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/ranks/create.hbs', {tsRanks, permissions, enjinTags});
+        return response.render('pages/ranks/create.hbs', {enjinTags, permissions, tsRanks});
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkLogin)

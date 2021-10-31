@@ -89,7 +89,7 @@ export class RolesRoute extends BaseRoute {
             slug: permissionEntry[0],
         }));
 
-        return response.render('pages/roles/edit.hbs', {role, tsRanks, permissions, enjinTags});
+        return response.render('pages/roles/edit.hbs', {enjinTags, permissions, role, tsRanks});
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
@@ -129,7 +129,7 @@ export class RolesRoute extends BaseRoute {
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/roles/create.hbs', {tsRanks, permissions, enjinTags});
+        return response.render('pages/roles/create.hbs', {enjinTags, permissions, tsRanks});
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkLogin)

@@ -2,7 +2,7 @@ import { generateRandomString } from '@ionaru/random-string';
 import * as axios from 'axios';
 
 import { debug } from '../../debug';
-import { IEnjinRequest, IEnjinRequestParams, IResponse, ITagType, ITagTypes } from '../typings/enjin';
+import { IEnjinRequest, IEnjinRequestParams, IResponse, ITagType, ITagTypes } from '../typings/enjin.d';
 
 export class EnjinService {
     private static readonly debug = debug.extend('EnjinService');

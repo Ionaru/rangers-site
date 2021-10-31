@@ -72,7 +72,7 @@ export class UsersRoute extends BaseRoute {
 
         const ranks = await RankModel.find();
         const ts3Users = await TeamspeakUserModel.find({order: {nickname: 'ASC'}});
-        return response.render('pages/users/edit.hbs', {ranks, user_: user, ts3Users});
+        return response.render('pages/users/edit.hbs', {ranks, ts3Users, user_: user});
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
