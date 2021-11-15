@@ -8,11 +8,16 @@
             "prefix": "api",
             "targets": {
                 "build-image": {
-                    "builder": "@nrwl/workspace:run-commands",
+                    "executor": "@nrwl/workspace:run-commands",
                     "options": {
                         "commands": [
-                            {"command": "nx build api --production", "forwardAllArgs": false},
-                            {"command": "docker build -f ./apps/api/Dockerfile -t api:{args.tag} ."}
+                            {
+                                "command": "nx build api --production",
+                                "forwardAllArgs": false
+                            },
+                            {
+                                "command": "docker build -f ./apps/api/Dockerfile -t api:{args.tag} ."
+                            }
                         ],
                         "parallel": false
                     }
@@ -59,7 +64,10 @@
                         "lintFilePatterns": [
                             "apps/api/**/*.ts"
                         ]
-                    }
+                    },
+                    "outputs": [
+                        "{options.outputFile}"
+                    ]
                 },
                 "test": {
                     "executor": "@nrwl/jest:jest",
@@ -71,7 +79,66 @@
                         "passWithNoTests": true
                     }
                 }
-            }
+            },
+            "tags": []
+        },
+        "entities": {
+            "root": "libs/entities",
+            "sourceRoot": "libs/entities/src",
+            "projectType": "library",
+            "targets": {
+                "lint": {
+                    "executor": "@nrwl/linter:eslint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "libs/entities/**/*.ts"
+                        ]
+                    },
+                    "outputs": [
+                        "{options.outputFile}"
+                    ]
+                },
+                "test": {
+                    "executor": "@nrwl/jest:jest",
+                    "outputs": [
+                        "coverage/libs/entities"
+                    ],
+                    "options": {
+                        "jestConfig": "libs/entities/jest.config.js",
+                        "passWithNoTests": true
+                    }
+                }
+            },
+            "tags": []
+        },
+        "interfaces": {
+            "root": "libs/interfaces",
+            "sourceRoot": "libs/interfaces/src",
+            "projectType": "library",
+            "targets": {
+                "lint": {
+                    "executor": "@nrwl/linter:eslint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "libs/interfaces/**/*.ts"
+                        ]
+                    },
+                    "outputs": [
+                        "{options.outputFile}"
+                    ]
+                },
+                "test": {
+                    "executor": "@nrwl/jest:jest",
+                    "outputs": [
+                        "coverage/libs/interfaces"
+                    ],
+                    "options": {
+                        "jestConfig": "libs/interfaces/jest.config.js",
+                        "passWithNoTests": true
+                    }
+                }
+            },
+            "tags": []
         },
         "legacy": {
             "root": "apps/legacy",
@@ -80,19 +147,30 @@
             "prefix": "legacy",
             "targets": {
                 "build-image": {
-                    "builder": "@nrwl/workspace:run-commands",
+                    "executor": "@nrwl/workspace:run-commands",
                     "options": {
                         "commands": [
-                            {"command": "npx tsc -p apps/legacy/tsconfig.app.json", "forwardAllArgs": false},
-                            {"command": "nx prepare legacy", "forwardAllArgs": false},
-                            {"command": "nx build legacy --production", "forwardAllArgs": false},
-                            {"command": "docker build -f ./apps/legacy/Dockerfile -t legacy:{args.tag} ."}
+                            {
+                                "command": "npx tsc -p apps/legacy/tsconfig.app.json",
+                                "forwardAllArgs": false
+                            },
+                            {
+                                "command": "nx prepare legacy",
+                                "forwardAllArgs": false
+                            },
+                            {
+                                "command": "nx build legacy --production",
+                                "forwardAllArgs": false
+                            },
+                            {
+                                "command": "docker build -f ./apps/legacy/Dockerfile -t legacy:{args.tag} ."
+                            }
                         ],
                         "parallel": false
                     }
                 },
                 "prepare": {
-                    "builder": "@nrwl/workspace:run-commands",
+                    "executor": "@nrwl/workspace:run-commands",
                     "options": {
                         "command": "npx node-sass --source-map true --output-style compressed --output apps/legacy/src/assets/stylesheets apps/legacy/src/app/styles"
                     }
@@ -133,7 +211,10 @@
                         "lintFilePatterns": [
                             "apps/legacy/**/*.ts"
                         ]
-                    }
+                    },
+                    "outputs": [
+                        "{options.outputFile}"
+                    ]
                 },
                 "test": {
                     "executor": "@nrwl/jest:jest",
@@ -145,61 +226,8 @@
                         "passWithNoTests": true
                     }
                 }
-            }
-        },
-        "entities": {
-            "root": "libs/entities",
-            "sourceRoot": "libs/entities/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/entities/**/*.ts"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/entities"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/entities/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
-        },
-        "interfaces": {
-            "root": "libs/interfaces",
-            "sourceRoot": "libs/interfaces/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/interfaces/**/*.ts"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/interfaces"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/interfaces/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+            },
+            "tags": []
         }
-    },
-    "cli": {
-        "defaultCollection": "@nrwl/express"
-    },
-    "defaultProject": "api"
+    }
 }

@@ -11,6 +11,14 @@ import {
 
 import { BaseRoute } from './base.route';
 
+interface IActivity {
+    attendeeId: number;
+    lastJoined: string;
+    ts3Name: string;
+    uuid: string;
+    name?: string;
+}
+
 export class OperationsRoute extends BaseRoute {
 
     public constructor() {
@@ -34,16 +42,16 @@ export class OperationsRoute extends BaseRoute {
             .leftJoin(`${TeamspeakUserModel.alias}.user`, UserModel.alias)
             .groupBy(`${AttendanceModel.alias}.attendeeId`)
             .getRawMany())
-            .map((a) => ({
+            .map((a: IActivity) => ({
                 ...a,
                 name: a.name || '',
             }));
 
-        sortArrayByObjectProperty(activity, 'name');
-        sortArrayByObjectProperty(activity, 'ts3Name');
-        sortArrayByObjectProperty(activity, 'lastJoined', true);
+        sortArrayByObjectProperty(activity, (a) => a.name);
+        sortArrayByObjectProperty(activity, (a) => a.ts3Name);
+        sortArrayByObjectProperty(activity, (a) => a.lastJoined, true);
 
-        return response.render('pages/activity.hbs', {activity});
+        return response.render('pages/activity.hbs', { activity });
     }
 
     @OperationsRoute.requestDecorator(OperationsRoute.checkPermission, Permission.READ_OPERATIONS_ACTIVITY)
@@ -60,6 +68,6 @@ export class OperationsRoute extends BaseRoute {
             .orderBy('date', 'DESC')
             .getRawMany();
 
-        return response.render('pages/operations.hbs', {ops});
+        return response.render('pages/operations.hbs', { ops });
     }
 }

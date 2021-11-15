@@ -1,9 +1,14 @@
 {
     "npmScope": "rangers-site",
-    "affected": {"defaultBase": "main"},
+    "affected": {
+        "defaultBase": "main"
+    },
     "implicitDependencies": {
         "workspace.json": "*",
-        "package.json": {"dependencies": "*", "devDependencies": "*"},
+        "package.json": {
+            "dependencies": "*",
+            "devDependencies": "*"
+        },
         "tsconfig.base.json": "*",
         "tslint.json": "*",
         ".eslintrc.json": "*",
@@ -13,17 +18,28 @@
         "default": {
             "runner": "@nrwl/nx-cloud",
             "options": {
-                "cacheableOperations": ["build", "lint", "test", "e2e"],
+                "cacheableOperations": [
+                    "build",
+                    "lint",
+                    "test",
+                    "e2e"
+                ],
                 "accessToken": "NWYyMzI0NDYtM2MyZi00MDA1LWEzNzctMmEwMzk4M2JkMWFlfHJlYWQtd3JpdGU=",
                 "canTrackAnalytics": false,
                 "showUsageWarnings": true
             }
         }
     },
-    "projects": {
-        "api": {"tags": []},
-        "legacy": {"tags": []},
-        "entities": {"tags": []},
-        "interfaces": {"tags": []}
-    }
+    "targetDependencies": {
+        "build": [
+            {
+                "target": "build",
+                "projects": "dependencies"
+            }
+        ]
+    },
+    "cli": {
+        "defaultCollection": "@nrwl/express"
+    },
+    "defaultProject": "api"
 }
