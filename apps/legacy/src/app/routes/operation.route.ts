@@ -27,7 +27,7 @@ export class OperationRoute extends BaseRoute {
             .leftJoinAndSelect(`${OperationModel.alias}.attendance`, AttendanceModel.alias)
             .leftJoinAndSelect(`${AttendanceModel.alias}.attendee`, TeamspeakUserModel.alias)
             .leftJoinAndSelect(`${TeamspeakUserModel.alias}.user`, UserModel.alias)
-            .where(`DATE_FORMAT(${OperationModel.alias}.createdOn, "%Y-%m-%d") = :date`, {date: request.params.date})
+            .where(`DATE_FORMAT(${OperationModel.alias}.createdOn, "%Y-%m-%d") = :date`, { date: request.params.date })
             .getOne();
 
         if (!op) {
@@ -36,7 +36,7 @@ export class OperationRoute extends BaseRoute {
 
         const attendanceChecks = groupArrayByObjectProperty(
             op.attendance,
-            (attendance) => moment(attendance.time).tz('Europe/Berlin').format('HH:mm') as any,
+            (attendance) => moment(attendance.time).tz('Europe/Berlin').format('HH:mm'),
         );
 
         const events: IEvents = {};
@@ -69,7 +69,7 @@ export class OperationRoute extends BaseRoute {
         }
 
         const LOAs = await LOAModel.doQuery()
-            .where(`loa.date = DATE_FORMAT(:opDate, "%Y-%m-%d")`, {opDate: op.createdOn})
+            .where(`loa.date = DATE_FORMAT(:opDate, "%Y-%m-%d")`, { opDate: op.createdOn })
             .getMany();
 
         const totalAttendance = op.attendance.map((attendance) => attendance.attendee);

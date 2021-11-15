@@ -55,7 +55,7 @@ export class AuthRoute extends BaseRoute {
             .leftJoinAndSelect(`${UserModel.alias}.roles`, RoleModel.alias)
             .leftJoinAndSelect(`role.permissions`, 'role_permissions')
             .leftJoinAndSelect(`${UserModel.alias}.badges`, BadgeModel.alias)
-            .where(`${UserModel.alias}.id = :id`, {id})
+            .where(`${UserModel.alias}.id = :id`, { id })
             .getOne();
         done(undefined, user);
     }
@@ -76,7 +76,7 @@ export class AuthRoute extends BaseRoute {
     public async processAuth(
         _accessToken: string, _refreshToken: string, profile: Profile, done: oauth2.VerifyCallback,
     ): Promise<void> {
-        let user = await UserModel.doQuery().where({discordUser: profile.id}).getOne();
+        let user = await UserModel.doQuery().where({ discordUser: profile.id }).getOne();
 
         if (!user) {
             user = new UserModel(profile.id, profile.username);

@@ -95,8 +95,8 @@ export class DiscordService {
         }
 
         const existingLoa = await LOAModel.doQuery()
-            .where(`date = DATE_FORMAT(:date, "%Y-%m-%d")`, {date})
-            .andWhere('user = :user', {user})
+            .where(`date = DATE_FORMAT(:date, "%Y-%m-%d")`, { date })
+            .andWhere('user = :user', { user })
             .getOne();
 
         if (existingLoa && !cancel) {
@@ -110,7 +110,7 @@ export class DiscordService {
             await new LOAModel(date, user).save();
 
             const siteUser = await UserModel.doQuery()
-                .where(`${UserModel.alias}.discordUser = :user`, {user})
+                .where(`${UserModel.alias}.discordUser = :user`, { user })
                 .getOne();
 
             if (!siteUser) {

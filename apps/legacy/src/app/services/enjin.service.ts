@@ -14,7 +14,7 @@ export class EnjinService {
     }
 
     public async getTags(): Promise<ITagTypes | undefined> {
-        return this.doRequest('Tags.getTagTypes', {api_key: this.apiKey});
+        return this.doRequest('Tags.getTagTypes', { api_key: this.apiKey });
     }
 
     public async getTag(id: string): Promise<ITagType | undefined> {

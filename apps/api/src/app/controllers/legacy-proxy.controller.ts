@@ -20,7 +20,7 @@ export class LegacyProxyController {
 
         LegacyProxyController.debug('Configuration OK');
 
-        this.proxy = createProxyMiddleware({target});
+        this.proxy = createProxyMiddleware({ target });
 
         LegacyProxyController.debug('Ready');
     }

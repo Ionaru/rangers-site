@@ -24,13 +24,13 @@ export class TeamspeakService {
     public async getClientsInChannel(cid: number): Promise<TeamSpeakClient[]> {
         await this.connect();
         TeamspeakService.debug(`clientlist -> ${cid}`);
-        return this.client.clientList({cid: cid.toString(), clientType: ClientType.Regular});
+        return this.client.clientList({ cid: cid.toString(), clientType: ClientType.Regular });
     }
 
     public async getRanks(): Promise<TeamSpeakServerGroup[]> {
         await this.connect();
         TeamspeakService.debug(`servergrouplist`);
-        return this.client.serverGroupList({type: 1});
+        return this.client.serverGroupList({ type: 1 });
     }
 
     public async getRank(sgid: number): Promise<TeamSpeakServerGroup | undefined> {
