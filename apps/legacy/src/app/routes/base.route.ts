@@ -88,7 +88,7 @@ export class BaseRoute extends BaseRouter {
         }
 
         permissionable.permissions = await PermissionModel.doQuery()
-            .where(`${PermissionModel.alias}.slug IN (:slugs)`, {slugs: requestedPermissions})
+            .where(`${PermissionModel.alias}.slug IN (:slugs)`, { slugs: requestedPermissions })
             .getMany();
     }
 
@@ -143,7 +143,7 @@ export class BaseRoute extends BaseRouter {
     }
 
     protected static async validateAssignableInput(
-        requestBody: { [key: string]: unknown },
+        requestBody: Record<string, unknown>,
         query: SelectQueryBuilder<IAssignableModel>,
         roleId?: string,
     ): Promise<string | void> {
@@ -157,10 +157,10 @@ export class BaseRoute extends BaseRouter {
         }
 
         const existingRoleQuery = query
-            .where('name = :name', {name: requestBody.name});
+            .where('name = :name', { name: requestBody.name });
 
         if (roleId) {
-            existingRoleQuery.andWhere('id != :id', {id: roleId});
+            existingRoleQuery.andWhere('id != :id', { id: roleId });
         }
 
         const existingRole = await existingRoleQuery.getOne();

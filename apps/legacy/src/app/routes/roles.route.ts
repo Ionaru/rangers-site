@@ -76,7 +76,7 @@ export class RolesRoute extends BaseRoute {
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
     private static async roleEditPage(request: Request, response: Response) {
-        const role = await RoleModel.findOne(request.params.id, {relations: ['teamspeakRank', 'enjinTag']});
+        const role = await RoleModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
 
         if (!role) {
             return RolesRoute.sendNotFound(response, request.originalUrl);
@@ -89,7 +89,7 @@ export class RolesRoute extends BaseRoute {
             slug: permissionEntry[0],
         }));
 
-        return response.render('pages/roles/edit.hbs', {role, tsRanks, permissions, enjinTags});
+        return response.render('pages/roles/edit.hbs', { enjinTags, permissions, role, tsRanks });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
@@ -100,12 +100,12 @@ export class RolesRoute extends BaseRoute {
             return RolesRoute.sendNotFound(response, request.originalUrl);
         }
 
-        return response.render('pages/roles/delete.hbs', {role});
+        return response.render('pages/roles/delete.hbs', { role });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
     private static async deleteRole(request: Request, response: Response) {
-        const role = await RoleModel.findOne(request.params.id, {relations: ['users']});
+        const role = await RoleModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!role) {
             return RolesRoute.sendNotFound(response, request.originalUrl);
@@ -129,7 +129,7 @@ export class RolesRoute extends BaseRoute {
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/roles/create.hbs', {tsRanks, permissions, enjinTags});
+        return response.render('pages/roles/create.hbs', { enjinTags, permissions, tsRanks });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkLogin)
@@ -139,7 +139,7 @@ export class RolesRoute extends BaseRoute {
             .leftJoinAndSelect(`${RoleModel.alias}.enjinTag`, EnjinTagModel.alias)
             .orderBy(`${RoleModel.alias}.id`, 'ASC')
             .getMany();
-        return response.render('pages/roles/index.hbs', {roles});
+        return response.render('pages/roles/index.hbs', { roles });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)

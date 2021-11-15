@@ -77,9 +77,9 @@ export class OperationRoute extends BaseRoute {
         const users = await UserModel.find();
 
         return response.render('pages/operation.hbs', {
-            LOAs,
             attendees,
             events,
+            LOAs,
             opDate: moment(op.createdOn).format('dddd, LL'),
             users,
         });

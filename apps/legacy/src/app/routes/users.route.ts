@@ -64,24 +64,24 @@ export class UsersRoute extends BaseRoute {
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
     private static async editUserPage(request: Request, response: Response) {
-        const user = await UserModel.findOne(request.params.id, {relations: ['rank', 'ts3User']});
+        const user = await UserModel.findOne(request.params.id, { relations: ['rank', 'ts3User'] });
 
         if (!user) {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
 
         const ranks = await RankModel.find();
-        const ts3Users = await TeamspeakUserModel.find({order: {nickname: 'ASC'}});
-        return response.render('pages/users/edit.hbs', {ranks, user_: user, ts3Users});
+        const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
+        return response.render('pages/users/edit.hbs', { ranks, ts3Users, user_: user });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
     private static async usersPage(_request: Request, response: Response) {
         const users = await UserModel.find({
-            order: {name: 'ASC'},
+            order: { name: 'ASC' },
             relations: ['rank', 'ts3User'],
         });
-        return response.render('pages/users/index.hbs', {users});
+        return response.render('pages/users/index.hbs', { users });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
@@ -92,7 +92,7 @@ export class UsersRoute extends BaseRoute {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
 
-        return response.render('pages/users/delete.hbs', {user_: user});
+        return response.render('pages/users/delete.hbs', { user_: user });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)

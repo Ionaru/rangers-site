@@ -62,7 +62,7 @@ export class RecordOperationAttendeesTask {
         const attendees: AttendanceModel[] = [];
 
         for (const client of clients) {
-            let tsClient = await TeamspeakUserModel.doQuery().where({uid: client.uniqueIdentifier}).getOne();
+            let tsClient = await TeamspeakUserModel.doQuery().where({ uid: client.uniqueIdentifier }).getOne();
             if (!tsClient) {
                 tsClient = new TeamspeakUserModel(client.uniqueIdentifier, client.nickname);
                 await tsClient.save();

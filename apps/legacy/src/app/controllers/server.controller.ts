@@ -31,7 +31,7 @@ export class ServerController {
 
     private serviceController?: ServiceController;
 
-    public constructor(private readonly db: DatabaseService, private readonly routes: IRoute[]) {}
+    public constructor(private readonly db: DatabaseService, private readonly routes: IRoute[]) { }
 
     public async start(): Promise<void> {
         ServerController.debug('Creating server...');
@@ -61,12 +61,12 @@ export class ServerController {
                 rolling: true,
                 saveUninitialized: false,
                 secret: cookieSecret,
-                store: new TypeormStore({cleanupLimit: 10, limitSubquery: false}).connect(repository),
+                store: new TypeormStore({ cleanupLimit: 10, limitSubquery: false }).connect(repository),
             }),
             RequestLogger.logRequest(),
-            bodyParser.urlencoded({extended: true}),
+            bodyParser.urlencoded({ extended: true }),
             compression(),
-            fileUpload({limits: {fileSize: 5242880}}), // 5MB
+            fileUpload({ limits: { fileSize: 5242880 } }), // 5MB
             passport.initialize(),
             passport.session(),
             helmet(),

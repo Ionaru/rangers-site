@@ -46,7 +46,7 @@ export class ServerController {
             middleware: [
                 RequestLogger.logRequest(),
                 bodyParser.json(),
-                bodyParser.urlencoded({extended: true}),
+                bodyParser.urlencoded({ extended: true }),
                 compression(),
                 cors(),
                 sessionParser,

@@ -84,7 +84,7 @@ export class RanksRoute extends BaseRoute {
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
     private static async rankEditPage(request: Request, response: Response) {
-        const rank = await RankModel.findOne(request.params.id, {relations: ['teamspeakRank', 'enjinTag', 'permissions']});
+        const rank = await RankModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag', 'permissions'] });
 
         if (!rank) {
             return RanksRoute.sendNotFound(response, request.originalUrl);
@@ -96,7 +96,7 @@ export class RanksRoute extends BaseRoute {
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/ranks/edit.hbs', {rank, tsRanks, permissions, enjinTags});
+        return response.render('pages/ranks/edit.hbs', { enjinTags, permissions, rank, tsRanks });
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
@@ -107,12 +107,12 @@ export class RanksRoute extends BaseRoute {
             return RanksRoute.sendNotFound(response, request.originalUrl);
         }
 
-        return response.render('pages/ranks/delete.hbs', {rank});
+        return response.render('pages/ranks/delete.hbs', { rank });
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
     private static async deleteRank(request: Request, response: Response) {
-        const rank = await RankModel.findOne(request.params.id, {relations: ['users']});
+        const rank = await RankModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!rank) {
             return RanksRoute.sendNotFound(response, request.originalUrl);
@@ -136,7 +136,7 @@ export class RanksRoute extends BaseRoute {
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/ranks/create.hbs', {tsRanks, permissions, enjinTags});
+        return response.render('pages/ranks/create.hbs', { enjinTags, permissions, tsRanks });
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkLogin)
@@ -146,7 +146,7 @@ export class RanksRoute extends BaseRoute {
             .leftJoinAndSelect(`${RankModel.alias}.enjinTag`, EnjinTagModel.alias)
             .orderBy(`${RankModel.alias}.id`, 'ASC')
             .getMany();
-        return response.render('pages/ranks/index.hbs', {ranks});
+        return response.render('pages/ranks/index.hbs', { ranks });
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
