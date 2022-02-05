@@ -72,6 +72,7 @@ export class UsersRoute extends BaseRoute {
 
         const ranks = await RankModel.find();
         const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         return response.render('pages/users/edit.hbs', { ranks, ts3Users, user_: user });
     }
 
@@ -92,6 +93,7 @@ export class UsersRoute extends BaseRoute {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
 
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         return response.render('pages/users/delete.hbs', { user_: user });
     }
 

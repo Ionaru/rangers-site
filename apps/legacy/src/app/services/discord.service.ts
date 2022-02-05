@@ -7,8 +7,11 @@ import { debug } from '../../debug';
 
 export class DiscordService {
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     public static readonly LOAChannel = '323442871829004300';
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     public static readonly RangersGuild = '305471712546390017';
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     public static readonly LoAFormat = 'dddd, MMMM Do YYYY';
     private static readonly debug = debug.extend('DiscordService');
 

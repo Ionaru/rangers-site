@@ -14,6 +14,7 @@ export class EnjinService {
     }
 
     public async getTags(): Promise<ITagTypes | undefined> {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         return this.doRequest('Tags.getTagTypes', { api_key: this.apiKey });
     }
 

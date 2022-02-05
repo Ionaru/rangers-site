@@ -68,6 +68,7 @@ export class OperationRoute extends BaseRoute {
             previous = data;
         }
 
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const LOAs = await LOAModel.doQuery()
             .where(`loa.date = DATE_FORMAT(:opDate, "%Y-%m-%d")`, { opDate: op.createdOn })
             .getMany();
@@ -79,6 +80,7 @@ export class OperationRoute extends BaseRoute {
         return response.render('pages/operation.hbs', {
             attendees,
             events,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             LOAs,
             opDate: moment(op.createdOn).format('dddd, LL'),
             users,

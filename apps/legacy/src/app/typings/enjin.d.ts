@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface IEnjinRequestParams {
     [key: string]: string;
 }

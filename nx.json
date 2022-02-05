@@ -26,7 +26,8 @@
                 ],
                 "accessToken": "NWYyMzI0NDYtM2MyZi00MDA1LWEzNzctMmEwMzk4M2JkMWFlfHJlYWQtd3JpdGU=",
                 "canTrackAnalytics": false,
-                "showUsageWarnings": true
+                "showUsageWarnings": true,
+                "parallel": 1
             }
         }
     },
