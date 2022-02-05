@@ -7,7 +7,7 @@ $theme-colors: (
     "steam": #171A21,
 );
 
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
 
 html {
     body {
