@@ -14,7 +14,7 @@ import { TypeormStore } from 'connect-typeorm';
 import * as fileUpload from 'express-fileupload';
 import * as es from 'express-session';
 import * as Handlebars from 'hbs';
-import * as helmet from 'helmet';
+import helmet, { contentSecurityPolicy } from 'helmet';
 import * as passport from 'passport';
 
 import { debug } from '../../debug';
@@ -47,6 +47,8 @@ export class ServerController {
             throw new Error('Both the cookie name and cookie secret must be provided!');
         }
 
+        const logger = new RequestLogger(ServerController.debug);
+
         const middleware: RequestHandler[] = [
             es({
                 cookie: {
@@ -63,18 +65,16 @@ export class ServerController {
                 secret: cookieSecret,
                 store: new TypeormStore({ cleanupLimit: 10, limitSubquery: false }).connect(repository),
             }),
-            RequestLogger.logRequest(),
+            logger.getLogger(),
             bodyParser.urlencoded({ extended: true }),
             compression(),
             fileUpload({ limits: { fileSize: 5242880 } }), // 5MB
             passport.initialize(),
             passport.session(),
-            helmet(),
-            // eslint-disable-next-line import/namespace
-            helmet.contentSecurityPolicy({
+            helmet({ crossOriginEmbedderPolicy: false }),
+            contentSecurityPolicy({
                 directives: {
-                    // eslint-disable-next-line import/namespace
-                    ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                    ...contentSecurityPolicy.getDefaultDirectives(),
                     'frame-src': ['\'self\'', 'https://youtube.com/embed/', 'https://www.youtube.com/embed/'],
                     'script-src': ['\'self\'', '\'unsafe-inline\''],
                 },
