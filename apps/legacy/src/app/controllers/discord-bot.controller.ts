@@ -38,9 +38,9 @@ export class DiscordBotController {
         return new DiscordService(this.client);
     }
 
-    public async disconnect(): Promise<void> {
+    public disconnect(): void {
         DiscordBotController.debug('Logging out');
-        await this.client.destroy();
+        this.client.destroy();
         DiscordBotController.debug('Connection terminated');
     }
 }

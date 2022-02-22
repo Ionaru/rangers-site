@@ -73,7 +73,7 @@ const start = async () => {
 
 const stop = async () => {
     await serverController.stop();
-    await discordBotController.disconnect();
+    discordBotController.disconnect();
     await databaseController.disconnect();
 };
 
