@@ -2,6 +2,7 @@ import { interfaces } from './interfaces';
 
 describe('interfaces', () => {
     it('should work', () => {
-        expect(interfaces()).toEqual('interfaces');
+        expect.assertions(1);
+        expect(interfaces()).toBe('interfaces');
     });
 });
