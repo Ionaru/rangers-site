@@ -42,9 +42,11 @@ export class ServerController {
             store: undefined, // TODO: Session store.
         });
 
+        const logger = new RequestLogger(ServerController.debug);
+
         this.serviceController = new ServiceController({
             middleware: [
-                RequestLogger.logRequest(),
+                logger.getLogger(),
                 bodyParser.json(),
                 bodyParser.urlencoded({ extended: true }),
                 compression(),
