@@ -1,3 +1,4 @@
+import { filterArray } from '@ionaru/array-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
@@ -38,12 +39,15 @@ export class RankModel extends BaseModel implements IPermissionableModel, IImage
     public users!: UserModel[];
 
     @ManyToOne(() => TeamspeakRankModel, {
+        eager: true,
         nullable: true,
     })
     public teamspeakRank?: TeamspeakRankModel | null;
 
     @ManyToOne(() => EnjinTagModel, {
+        eager: true,
         nullable: true,
+        onDelete: 'SET NULL',
     })
     public enjinTag?: EnjinTagModel | null;
 
@@ -56,5 +60,15 @@ export class RankModel extends BaseModel implements IPermissionableModel, IImage
 
     public static doQuery(): SelectQueryBuilder<RankModel> {
         return RankModel.createQueryBuilder(RankModel.alias);
+    }
+
+    public static async getEnjinTags(): Promise<string[]> {
+        const entities = await this.find({ relations: ['enjinTag'] });
+        return filterArray(entities.map((e) => e.enjinTag?.id));
+    }
+
+    public static async getTeamspeakGroups(): Promise<string[]> {
+        const entities = await this.find({ relations: ['teamspeakRank'] });
+        return filterArray(entities.map((e) => e.teamspeakRank?.id.toString()));
     }
 }

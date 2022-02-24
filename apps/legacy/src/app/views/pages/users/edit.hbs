@@ -3,12 +3,12 @@
 
     <form method="post">
         <div class="form-group">
-            <label for="rank-input">Rank</label>
-            <select class="form-control" id="rank-input" name="rank">
+            <label for="enjinUser-input"><i class="fas fa-globe"></i> Enjin user</label>
+            <select class="form-control" id="enjinUser-input" name="enjinUser">
                 <option value="">None</option>
-                {{#each ranks}}
-                    <option {{#ifCond ../user_.rank.id '===' this.id}}selected{{/ifCond}} value="{{this.id}}">
-                        {{this.name}}
+                {{#each enjinUsers}}
+                    <option {{#ifCond ../user_.enjinUser '===' this.key}}selected{{/ifCond}} value="{{this.key}}">
+                        {{this.username}} ({{this.key}})
                     </option>
                 {{/each}}
             </select>
@@ -19,10 +19,43 @@
                 <option value="">None</option>
                 {{#each ts3Users}}
                     <option {{#ifCond ../user_.ts3User.id '===' this.id}}selected{{/ifCond}} value="{{this.id}}">
-                        {{this.nickname}}
+                        {{this.nickname}} ({{this.id}})
                     </option>
                 {{/each}}
             </select>
+        </div>
+        <div class="form-group">
+            <label for="rank-input">Rank (synced using Enjin)</label>
+            <select class="form-control" id="rank-input" name="rank" disabled>
+                <option value="">None</option>
+                {{#each ranks}}
+                    <option {{#ifCond ../user_.rank.id '===' this.id}}selected{{/ifCond}} value="{{this.id}}">
+                        {{this.name}}
+                    </option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="roles-select">Roles (synced using Enjin)</label>
+            <div class="input-group flex-nowrap w-100">
+                <select name="roles" data-width="100%" id="roles-select" class="selectpicker" multiple
+                        data-live-search="true" disabled>
+                    {{#each roles}}
+                        <option value="{{this.id}}"{{#each ../user_.roles}}{{#ifCond this.id '===' ../this.id}}selected{{/ifCond}}{{/each}}>{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="badges-select">Badges (synced using Enjin)</label>
+            <div class="input-group flex-nowrap w-100">
+                <select name="badges" data-width="100%" id="badges-select" class="selectpicker" multiple
+                        data-live-search="true" disabled>
+                    {{#each badges}}
+                        <option value="{{this.id}}"{{#each ../user_.badges}}{{#ifCond this.id '===' ../this.id}}selected{{/ifCond}}{{/each}}>{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
         </div>
         <a class="btn btn-secondary mb-2" href="/users">Cancel</a>
         <button type="submit" class="btn btn-warning mb-2">Edit</button>

@@ -4,7 +4,7 @@ import { BaseRoute } from '../routes/base.route';
 
 import HelperOptions = Handlebars.HelperOptions;
 
-export const json = (context: Record<string, unknown>): string => JSON.stringify(context);
+export const json = (context: Record<string, unknown>): string => JSON.stringify(context, undefined, 4);
 
 export const keys = (context: Record<string, unknown>): string[] => Object.keys(context);
 
@@ -14,7 +14,7 @@ export const values = (context: Record<string, unknown>): unknown[] => Object.va
 export const ifCond = (left: any, operator: string, right: any, o: HelperOptions): string => {
     switch (operator) {
         case 'streq':
-            return left.toString() === right.toString() ? o.fn(undefined) : o.inverse(undefined);
+            return left?.toString() === right?.toString() ? o.fn(undefined) : o.inverse(undefined);
         case '===':
             return left === right ? o.fn(undefined) : o.inverse(undefined);
         case '<':

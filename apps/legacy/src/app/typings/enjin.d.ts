@@ -43,6 +43,10 @@ export interface IUsers {
     [id: string]: IUser;
 }
 
+export interface IUserTagInfo {
+    [id: string]: IUserTags;
+}
+
 export interface IUser {
     username: string;
     forum_post_count: string;

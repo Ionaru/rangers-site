@@ -37,10 +37,21 @@ export class TeamSpeakBotController {
             username,
         });
 
+        this.client.on('debug', TeamSpeakBotController.debug);
+
         TeamSpeakBotController.debug('TS3 bot created.');
     }
 
     public async connect(): Promise<TeamspeakService> {
         return new TeamspeakService(this.client);
+    }
+
+    public async disconnect(): Promise<void> {
+        try {
+            await this.client.logout();
+            await this.client.quit();
+        } catch {
+            process.emitWarning('logout() or quit() failed, assuming logged out.');
+        }
     }
 }

@@ -1,4 +1,4 @@
-<div class="container pt-3">
+<div class="container-fluid pt-3">
     <div class="d-flex justify-content-between">
         <h1>Users</h1>
     </div>
@@ -9,6 +9,10 @@
             <tr>
                 <th scope="col">
                     <i class="fab fa-discord"></i>
+                    Name
+                </th>
+                <th scope="col">
+                    <i class="fas fa-globe"></i>
                     Name
                 </th>
                 <th scope="col">
@@ -28,22 +32,30 @@
                 {{#if this.discordUser}}
                     <tr>
                         <th class="align-middle">{{this.name}}</th>
+                        <th class="align-middle">
+                            {{#with (lookup ../enjinUsers this.enjinUser)}}
+                                {{this.username}}
+                            {{/with}}
+                        </th>
                         <th class="align-middle">{{this.ts3User.nickname}}</th>
                         <td class="align-middle">
                             {{this.rank.name}}
                         </td>
                         <td class="align-middle">
                             {{#each this.roles}}
-                                <p>{{this.name}}</p>
+                                {{this.name}}{{#unless @last}},{{/unless}}
                             {{/each}}
                         </td>
                         <td class="align-middle">
                             {{#each this.badges}}
-                                <p>{{this.name}}</p>
+                                {{this.name}}{{#unless @last}},{{/unless}}
                             {{/each}}
                         </td>
                         {{#hasPermission ../user 'EDIT_USER_RANK'}}
                             <td class="text-right align-middle">
+                                <a href="/users/sync/{{../this.id}}" class="btn btn-info">
+                                    <i class="fas fa-sync fa-fw"></i>
+                                </a>
                                 <a href="/users/edit/{{../this.id}}" class="btn btn-warning">
                                     <i class="fas fa-pen fa-fw"></i>
                                 </a>

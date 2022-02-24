@@ -44,7 +44,8 @@
                 "serve": {
                     "executor": "@nrwl/node:execute",
                     "options": {
-                        "buildTarget": "api:build"
+                        "buildTarget": "api:build",
+                        "inspect": true
                     }
                 },
                 "serve-all": {
@@ -202,7 +203,8 @@
                 "serve": {
                     "executor": "@nrwl/node:execute",
                     "options": {
-                        "buildTarget": "legacy:build"
+                        "buildTarget": "legacy:build",
+                        "inspect": true
                     }
                 },
                 "lint": {

@@ -137,7 +137,7 @@ export class RolesRoute extends BaseRoute {
         const roles = await RoleModel.doQuery()
             .leftJoinAndSelect(`${RoleModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
             .leftJoinAndSelect(`${RoleModel.alias}.enjinTag`, EnjinTagModel.alias)
-            .orderBy(`${RoleModel.alias}.id`, 'ASC')
+            .orderBy(`${RoleModel.alias}.name`, 'ASC')
             .getMany();
         return response.render('pages/roles/index.hbs', { roles });
     }

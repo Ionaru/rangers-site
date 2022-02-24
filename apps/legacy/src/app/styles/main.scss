@@ -36,6 +36,10 @@ html {
             }
         }
 
+        .form-control:disabled {
+            color: #81878c;
+        }
+
         .justify-content-evenly {
             justify-content: space-evenly !important;
         }

@@ -12,6 +12,7 @@ import { EnjinController } from './app/controllers/enjin.controller';
 import { ServerController } from './app/controllers/server.controller';
 import { TeamSpeakBotController } from './app/controllers/teamspeak-bot.controller';
 import { AuthRoute } from './app/routes/auth.route';
+import { BadgesRoute } from './app/routes/badges.route';
 import { GlobalRoute } from './app/routes/global.route';
 import { NotFoundRoute } from './app/routes/not-found.route';
 import { OperationRoute } from './app/routes/operation.route';
@@ -21,13 +22,20 @@ import { RolesRoute } from './app/routes/roles.route';
 import { RootRoute } from './app/routes/root.route';
 import { UsersRoute } from './app/routes/users.route';
 import { RecordOperationAttendeesTask } from './app/tasks/record-operation-attendees.task';
+import { SyncBadgesTask } from './app/tasks/sync-badges.task';
+import { SyncEnjinTagsTask } from './app/tasks/sync-enjin-tags.task';
+import { SyncRanksTask } from './app/tasks/sync-ranks.task';
+import { SyncRolesTask } from './app/tasks/sync-roles.task';
 import { debug } from './debug';
 
 let serverController: ServerController;
 let databaseController: DatabaseController;
 let discordBotController: DiscordBotController;
+let teamSpeakBotController: TeamSpeakBotController;
 
 const start = async () => {
+
+    Error.stackTraceLimit = Infinity;
 
     config();
 
@@ -42,7 +50,7 @@ const start = async () => {
 
     await PermissionModel.syncPermissions();
 
-    const teamSpeakBotController = new TeamSpeakBotController();
+    teamSpeakBotController = new TeamSpeakBotController();
     const teamspeakService = await teamSpeakBotController.connect();
 
     discordBotController = new DiscordBotController();
@@ -54,15 +62,28 @@ const start = async () => {
     const enjinController = new EnjinController();
     const enjinService = enjinController.connect();
 
+    const syncEnjinTagsTask = new SyncEnjinTagsTask(enjinService);
+    syncEnjinTagsTask.start();
+
+    const syncRanksTask = new SyncRanksTask(teamspeakService, enjinService);
+    syncRanksTask.start();
+
+    const syncRolesTask = new SyncRolesTask(teamspeakService, enjinService);
+    syncRolesTask.start();
+
+    const syncBadgesTask = new SyncBadgesTask(teamspeakService, enjinService);
+    syncBadgesTask.start();
+
     serverController = new ServerController(databaseService, [
         ['*', new GlobalRoute()],
         ['/', new RootRoute()],
         ['/auth', new AuthRoute(discordService)],
         ['/ranks', new RanksRoute(teamspeakService, enjinService)],
         ['/roles', new RolesRoute(teamspeakService, enjinService)],
+        ['/badges', new BadgesRoute(teamspeakService, enjinService)],
         ['/op(eration)?', new OperationRoute()],
         ['/op(eration)?s', new OperationsRoute()],
-        ['/users', new UsersRoute()],
+        ['/users', new UsersRoute(teamspeakService, enjinService)],
         ['*', new NotFoundRoute()],
     ]);
     await serverController.start();
@@ -74,6 +95,7 @@ const start = async () => {
 const stop = async () => {
     await serverController.stop();
     discordBotController.disconnect();
+    await teamSpeakBotController.disconnect();
     await databaseController.disconnect();
 };
 

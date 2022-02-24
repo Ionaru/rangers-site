@@ -34,6 +34,11 @@
                         <a class="nav-link" href="/roles">Roles</a>
                     </li>
                 {{/hasPermission}}
+                {{#hasPermission user 'EDIT_BADGES'}}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/badges">Badges</a>
+                    </li>
+                {{/hasPermission}}
                 {{#hasPermission user 'EDIT_USER_RANK'}}
                     <li class="nav-item active">
                         <a class="nav-link" href="/users">Users</a>

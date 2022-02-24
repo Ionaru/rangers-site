@@ -42,6 +42,10 @@ services:
             - RANGERS_TS_PORT
             - RANGERS_TS_QUERY_PORT
             - RANGERS_TS_USERNAME
+            - RANGERS_TASK_SYNC_RANKS
+            - RANGERS_TASK_SYNC_ROLES
+            - RANGERS_TASK_SYNC_BADGES
+            - RANGERS_TASK_SYNC_ENJIN_TAGS
         restart: unless-stopped
         volumes:
             - ${RANGERS_CERTS_VOLUME}:/app/data

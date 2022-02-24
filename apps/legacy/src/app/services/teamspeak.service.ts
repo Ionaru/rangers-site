@@ -1,3 +1,5 @@
+import { filterArray } from '@ionaru/array-utils';
+import { BadgeModel, RankModel, RoleModel, UserModel } from '@rangers-site/entities';
 import {
     ClientType,
     TeamSpeak,
@@ -15,11 +17,18 @@ export class TeamspeakService {
     private static readonly debug = debug.extend('TeamspeakService');
 
     private clientId?: number;
-    private disconnectTimer?: NodeJS.Timeout;
 
     public constructor(
         private readonly client: TeamSpeak,
-    ) { }
+    ) {
+        this.connect();
+    }
+
+    public async getClients(): Promise<TeamSpeakClient[]> {
+        await this.connect();
+        TeamspeakService.debug(`clientlist`);
+        return this.client.clientList({ clientType: ClientType.Regular });
+    }
 
     public async getClientsInChannel(cid: number): Promise<TeamSpeakClient[]> {
         await this.connect();
@@ -49,49 +58,182 @@ export class TeamspeakService {
         return this.sendMessageToChannel(TeamspeakService.workingChannel, msg);
     }
 
-    // public async applyRankToUsers(rank: RankModel | RoleModel | BadgeModel, users: UserModel[]) {
-    //
-    // }
+    public async applyBadgesToUser(user: UserModel) {
+        await this.connect();
 
-    private async connect() {
-        if (this.clientId && this.disconnectTimer) {
-            this.disconnectTimer.refresh();
+        const userId = user.ts3User?.uid;
+
+        if (!userId) {
+            throw new Error(`User (${user.id}, ${userId}) has no TS ID!`);
+        }
+
+        const client = await this.getClient(userId);
+        if (!client) {
             return;
         }
 
-        TeamspeakService.debug('Connecting to TS3...');
+        const allTsBadges = await BadgeModel.getTeamspeakGroups();
+        const badgesToAssign = filterArray(user.badges.map((badge) => badge.teamspeakRank?.id.toString()));
+        const badgesToRemove = client.servergroups
+            .filter((sgid) => !badgesToAssign.includes(sgid))
+            .filter((sgid) => allTsBadges.includes(sgid));
 
-        await this.client.connect();
-        const me = await this.client.whoami();
+        for (const badgeToRemove of badgesToRemove) {
+            TeamspeakService.debug(`serverGroupDelClient -> ${userId} (${badgeToRemove})`);
+            await this.client.serverGroupDelClient(client.databaseId, badgeToRemove);
+        }
+
+        for (const badgeToAssign of badgesToAssign) {
+            if (!client.servergroups.includes(badgeToAssign)) {
+                TeamspeakService.debug(`serverGroupAddClient -> ${userId} (${badgeToAssign})`);
+                this.client.serverGroupAddClient(client.databaseId, badgeToAssign);
+            }
+        }
+    }
+
+    public async applyRolesToUser(user: UserModel) {
+        await this.connect();
+
+        const userId = user.ts3User?.uid;
+
+        if (!userId) {
+            throw new Error(`User (${user.id}, ${userId}) has no TS ID!`);
+        }
+
+        const client = await this.getClient(userId);
+        if (!client) {
+            return;
+        }
+
+        const allTsRoles = await RoleModel.getTeamspeakGroups();
+        const rolesToAssign = filterArray(user.roles.map((role) => role.teamspeakRank?.id.toString()));
+        const rolesToRemove = client.servergroups
+            .filter((sgid) => !rolesToAssign.includes(sgid))
+            .filter((sgid) => allTsRoles.includes(sgid));
+
+        for (const roleToRemove of rolesToRemove) {
+            TeamspeakService.debug(`serverGroupDelClient -> ${userId} (${roleToRemove})`);
+            await this.client.serverGroupDelClient(client.databaseId, roleToRemove);
+        }
+
+        for (const roleToAssign of rolesToAssign) {
+            if (!client.servergroups.includes(roleToAssign)) {
+                TeamspeakService.debug(`serverGroupAddClient -> ${userId} (${roleToAssign})`);
+                this.client.serverGroupAddClient(client.databaseId, roleToAssign);
+            }
+        }
+    }
+
+    public async applyRankToUser(user: UserModel): Promise<void> {
+        await this.connect();
+
+        const rankId = user.rank?.teamspeakRank?.id;
+        const userId = user.ts3User?.uid;
+
+        if ((user.rank && !rankId) || !userId) {
+            throw new Error(`Rank (${user.rank?.id}, ${rankId}) or user (${user.id}, ${userId}) has no TS ID!`);
+        }
+
+        const client = await this.getClient(userId);
+        if (!client) {
+            return;
+        }
+
+        if (rankId) {
+            if (client.servergroups.includes(rankId.toString())) {
+                return;
+            }
+
+            await this.removeRanksFromUser(user);
+            TeamspeakService.debug(`serverGroupAddClient -> ${userId} (${rankId})`);
+            await this.client.serverGroupAddClient(client.databaseId, rankId.toString());
+        } else {
+            await this.removeRanksFromUser(user);
+        }
+    }
+
+    public async removeRanksFromUser(user: UserModel): Promise<void> {
+        await this.connect();
+
+        const userId = user.ts3User?.uid;
+        if (!userId) {
+            throw new Error('User has no TS ID!');
+        }
+
+        const client = await this.getClient(userId);
+        if (!client) {
+            return;
+        }
+
+        const tsRanks = await RankModel.getTeamspeakGroups();
+        const clientRanks = client.servergroups.filter((sgid) => tsRanks.includes(sgid));
+
+        if (!clientRanks.length) {
+            return;
+        }
+
+        for (const clientRank of clientRanks) {
+            TeamspeakService.debug(`serverGroupDelClient -> ${userId} (${clientRank})`);
+            await this.client.serverGroupDelClient(client.databaseId, clientRank);
+        }
+    }
+
+    public async syncUser(user: UserModel): Promise<void> {
+        await this.applyBadgesToUser(user);
+        await this.applyRolesToUser(user);
+        await this.applyRankToUser(user);
+    }
+
+    public async syncClient(client: TeamSpeakClient) {
+        const user = await UserModel.findOne({
+            relations: ['ts3User', 'rank', 'roles', 'badges'],
+            where: { ts3User: { uid: client.uniqueIdentifier } },
+        });
+
+        if (!user) {
+            // Unknown user, ignore
+            return;
+        }
+
+        this.syncUser(user);
+    }
+
+    public async getClient(uid: string): Promise<TeamSpeakClient | undefined> {
+        await this.connect();
+
+        TeamspeakService.debug(`getClientByUid -> ${uid}`);
+        const client = await this.client.getClientByUid(uid);
+        if (!client) {
+            process.emitWarning(`User ${uid} has no DB entry in Teamspeak (should log in at least once)!`);
+            return;
+        }
+
+        return client;
+    }
+
+    private async connect() {
+        if (this.clientId) {
+            return;
+        }
 
         this.client.once('close', (e?: string) => {
             process.emitWarning(`Connection closed, reason: ${e}`);
         });
 
+        this.client.on('clientconnect', (client) => {
+            TeamspeakService.debug(`clientconnect -> ${client.client.uniqueIdentifier}`);
+            this.syncClient(client.client);
+        });
+
+        TeamspeakService.debug('Connecting to TS3...');
+
+        await this.client.connect();
+        TeamspeakService.debug('Asking the real questions... (whoami)');
+        const me = await this.client.whoami();
+
         TeamspeakService.debug(`Logged in as ${me.clientNickname} (${me.clientId})`);
 
         this.clientId = Number(me.clientId);
-        this.disconnectTimer = setTimeout(() => this.disconnect(), 30000);
-    }
-
-    private async disconnect() {
-        if (!this.clientId) {
-            return;
-        }
-
-        TeamspeakService.debug('Logging out');
-
-        try {
-            await this.client.logout();
-            await this.client.quit();
-        } catch {
-            process.emitWarning('logout() or quit() failed, assuming logged out.');
-        }
-
-        TeamspeakService.debug('Connection terminated');
-
-        this.clientId = undefined;
-        this.disconnectTimer = undefined;
     }
 
     private async sendMessageToChannel(cid: number, msg: string) {

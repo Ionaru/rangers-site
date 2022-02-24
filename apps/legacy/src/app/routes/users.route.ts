@@ -1,19 +1,31 @@
+import { objectToObjectsArray, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { Request, Response } from '@ionaru/micro-web-service';
 import {
+    BadgeModel,
     ISessionData,
     Permission,
     RankModel,
+    RoleModel,
     SessionModel,
     TeamspeakUserModel,
     UserModel,
 } from '@rangers-site/entities';
+import { In } from 'typeorm';
+
+import { EnjinService } from '../services/enjin.service';
+import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute } from './base.route';
 
 export class UsersRoute extends BaseRoute {
 
-    public constructor() {
+    private static teamspeak: TeamspeakService;
+    private static enjin: EnjinService;
+
+    public constructor(teamSpeak: TeamspeakService, enjin: EnjinService) {
         super();
+        UsersRoute.teamspeak = teamSpeak;
+        UsersRoute.enjin = enjin;
         this.createRoute('get', '/', UsersRoute.usersPage);
 
         this.createRoute('get', '/edit/:id', UsersRoute.editUserPage);
@@ -21,31 +33,62 @@ export class UsersRoute extends BaseRoute {
 
         this.createRoute('get', '/delete/:id', UsersRoute.userDeletePage);
         this.createRoute('post', '/delete/:id', UsersRoute.deleteUser);
+
+        this.createRoute('get', '/sync/:id', UsersRoute.syncUser);
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
     private static async editUser(request: Request, response: Response) {
 
-        if (request.params.id === response.locals.user.id.toString()) {
+        const admins = process.env.RANGERS_ADMINS?.split(',');
+        if (!admins?.includes(response.locals.user.discordUser) && request.params.id === response.locals.user.id.toString()) {
             response.locals.error = 'You cannot edit yourself!';
             return UsersRoute.editUserPage(request, response);
         }
 
-        const user = await UserModel.findOne(request.params.id);
+        const user = await UserModel.findOne(request.params.id,
+            { relations: ['rank', 'roles', 'badges'] },
+        );
         if (!user) {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
 
-        let rank: RankModel | undefined | null = null;
-        if (request.body.rank) {
-            rank = await RankModel.findOne(request.body.rank);
-            if (!rank) {
-                response.locals.error = 'Rank not found.';
-                return UsersRoute.editUserPage(request, response);
-            }
-        }
+        // NOTE: Ranks, roles and badges are synced with Enjin currently.
 
-        user.rank = rank;
+        /*
+        // let rank: RankModel | undefined | null = null;
+        // if (request.body.rank) {
+        //     rank = await RankModel.findOne(request.body.rank);
+        //     if (!rank) {
+        //         response.locals.error = 'Rank not found.';
+        //         return UsersRoute.editUserPage(request, response);
+        //     }
+        // }
+
+        // user.rank = rank;
+
+        // let roles: RoleModel[] | undefined | null = [];
+        // if (request.body.roles) {
+        //     roles = await RoleModel.findByIds(request.body.roles);
+        //     if (!roles.length) {
+        //         response.locals.error = 'Roles not found.';
+        //         return UsersRoute.editUserPage(request, response);
+        //     }
+        // }
+
+        // user.roles = roles;
+
+        // let badges: BadgeModel[] | undefined | null = [];
+        // if (request.body.badges) {
+        //     badges = await BadgeModel.findByIds(request.body.badges);
+        //     if (!badges.length) {
+        //         response.locals.error = 'Badges not found.';
+        //         return UsersRoute.editUserPage(request, response);
+        //     }
+        // }
+
+        // user.badges = badges;
+        */
 
         let ts3User: TeamspeakUserModel | undefined | null = null;
         if (request.body.ts3User) {
@@ -59,30 +102,47 @@ export class UsersRoute extends BaseRoute {
         user.ts3User = ts3User;
 
         await user.save();
+
+        await UsersRoute.teamspeak.syncUser(user);
+
         return response.redirect('/users');
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
     private static async editUserPage(request: Request, response: Response) {
-        const user = await UserModel.findOne(request.params.id, { relations: ['rank', 'ts3User'] });
+        const user = await UserModel.findOne(request.params.id,
+            { relations: ['rank', 'roles', 'badges', 'ts3User'] },
+        );
 
         if (!user) {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
 
         const ranks = await RankModel.find();
+        const roles = await RoleModel.find();
         const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
+        const rankEnjinTags = await RankModel.getEnjinTags();
+        const enjinResponse = await UsersRoute.enjin.getUsersWithTags(...rankEnjinTags);
+
+        const enjinUsers = sortArrayByObjectProperty(objectToObjectsArray(enjinResponse), (x) => x.username);
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        return response.render('pages/users/edit.hbs', { ranks, ts3Users, user_: user });
+        return response.render('pages/users/edit.hbs', { enjinUsers, ranks, roles, ts3Users, user_: user });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
     private static async usersPage(_request: Request, response: Response) {
-        const users = await UserModel.find({
-            order: { name: 'ASC' },
-            relations: ['rank', 'ts3User'],
-        });
-        return response.render('pages/users/index.hbs', { users });
+        const users = await UserModel.doQuery()
+            .leftJoinAndSelect(`${UserModel.alias}.rank`, RankModel.alias)
+            .leftJoinAndSelect(`${UserModel.alias}.roles`, RoleModel.alias)
+            .leftJoinAndSelect(`${UserModel.alias}.badges`, BadgeModel.alias)
+            .leftJoinAndSelect(`${UserModel.alias}.ts3User`, TeamspeakUserModel.alias)
+            .orderBy(`${UserModel.alias}.name`, 'ASC')
+            .getMany();
+
+        const rankEnjinTags = await RankModel.getEnjinTags();
+        const enjinUsers = await UsersRoute.enjin.getUsersWithTags(...rankEnjinTags);
+
+        return response.render('pages/users/index.hbs', { enjinUsers, users });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
@@ -132,6 +192,52 @@ export class UsersRoute extends BaseRoute {
 
         user.disabled = true;
         await user.save();
+
+        return response.redirect('/users');
+    }
+
+    @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
+    private static async syncUser(request: Request, response: Response) {
+
+        const user = await UserModel.findOne(request.params.id);
+
+        if (!user) {
+            return UsersRoute.sendNotFound(response, request.originalUrl);
+        }
+
+        if (!user.enjinUser) {
+            response.locals.error = `User ${user.name} has no linked Enjin account, cannot sync.`;
+            return UsersRoute.usersPage(request, response);
+        }
+
+        if (!user.ts3User) {
+            response.locals.error = `User ${user.name} has no linked TS3 account, cannot sync.`;
+            return UsersRoute.usersPage(request, response);
+        }
+
+        const userTags = await UsersRoute.enjin.getUserTags(user.enjinUser);
+
+        const rank = await RankModel.findOne({
+            relations: ['enjinTag', 'teamspeakRank'],
+            where: { enjinTag: { id: In([...userTags.map((t) => t.tag_id)]) } },
+        }) || null;
+
+        const roles = await RoleModel.find({
+            relations: ['enjinTag', 'teamspeakRank'],
+            where: { enjinTag: { id: In([...userTags.map((t) => t.tag_id)]) } },
+        });
+
+        const badges = await BadgeModel.find({
+            relations: ['enjinTag', 'teamspeakRank'],
+            where: { enjinTag: { id: In([...userTags.map((t) => t.tag_id)]) } },
+        });
+
+        user.rank = rank;
+        user.roles = roles;
+        user.badges = badges;
+        await user.save();
+
+        await UsersRoute.teamspeak.syncUser(user);
 
         return response.redirect('/users');
     }

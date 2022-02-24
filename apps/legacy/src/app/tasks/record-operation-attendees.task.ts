@@ -51,6 +51,7 @@ export class RecordOperationAttendeesTask {
                 await this.checkAttendance(operation);
             }, 900_000 * i);
         }
+        RecordOperationAttendeesTask.debug('Done!');
     }
 
     private async checkAttendance(operation: OperationModel): Promise<void> {
