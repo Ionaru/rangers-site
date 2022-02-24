@@ -37,7 +37,9 @@ export class TeamSpeakBotController {
             username,
         });
 
-        this.client.on('debug', TeamSpeakBotController.debug);
+        if (process.env.NODE_ENV !== 'production') {
+            this.client.on('debug', TeamSpeakBotController.debug);
+        }
 
         TeamSpeakBotController.debug('TS3 bot created.');
     }

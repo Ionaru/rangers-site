@@ -47,7 +47,7 @@ export class DatabaseController {
                 PermissionModel,
                 EnjinTagModel,
             ],
-            logger: new QueryLogger(debug),
+            logger: process.env.NODE_ENV === 'production' ? new QueryLogger(debug) : undefined,
             logging: ['query', 'error'],
             name: 'default',
         });
