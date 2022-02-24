@@ -9,7 +9,7 @@ ENV NODE_ENV production
 COPY ./dist/apps/legacy/package.json ./
 RUN npm install --production
 
-COPY ./dist/out-tsc/apps/legacy/migrations ./migrations
+COPY ./dist/out-tsc/apps/legacy/migrations ./apps/legacy/migrations
 
 # Copy main file
 COPY ./dist/apps/legacy/main.js ./
