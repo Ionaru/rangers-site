@@ -16,7 +16,7 @@ export class DiscordBotController {
             throw new Error('Discord configuration error! Token missing.');
         }
 
-        this.client = new Client();
+        this.client = new Client({intents: []});
         this.client.token = token;
 
         DiscordBotController.debug('Discord bot created.');
