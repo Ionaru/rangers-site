@@ -6,10 +6,13 @@ import { config } from 'dotenv';
 import * as moment from 'moment-timezone';
 
 import 'reflect-metadata'; // Required for TypeORM
+import { LOACancelCommand } from './app/commands/loa-cancel.command';
+import { LOACommand } from './app/commands/loa.command';
 import { DatabaseController } from './app/controllers/database.controller';
 import { DiscordBotController } from './app/controllers/discord-bot.controller';
 import { EnjinController } from './app/controllers/enjin.controller';
 import { ServerController } from './app/controllers/server.controller';
+import { SlashCreatorController } from './app/controllers/slash-creator.controller';
 import { TeamSpeakBotController } from './app/controllers/teamspeak-bot.controller';
 import { AuthRoute } from './app/routes/auth.route';
 import { BadgesRoute } from './app/routes/badges.route';
@@ -55,6 +58,11 @@ const start = async () => {
 
     discordBotController = new DiscordBotController();
     const discordService = await discordBotController.connect();
+
+    const slashCreatorService = new SlashCreatorController().init(discordService);
+    slashCreatorService.registerCommand((creator) => new LOACommand(creator, discordService));
+    slashCreatorService.registerCommand((creator) => new LOACancelCommand(creator));
+    await slashCreatorService.syncCommands();
 
     const operationAttendeesService = new RecordOperationAttendeesTask(teamspeakService, databaseService);
     operationAttendeesService.start();
