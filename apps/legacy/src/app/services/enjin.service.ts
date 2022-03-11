@@ -20,15 +20,6 @@ export class EnjinService {
         return this.doRequest('Tags.getTagTypes');
     }
 
-    public async getUsers(): Promise<IUsers> {
-        const ranks = await RankModel.getEnjinTags();
-        const result = await Promise.all(ranks.map(
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            (tag_id) => this.doRequest<IUsers>('UserAdmin.get', { tag_id }),
-        ));
-        return result.reduce((acc, cur) => ({ ...acc, ...cur }), {});
-    }
-
     public async getUsersWithTags(...tags: string[]): Promise<IUsers> {
         const result = await Promise.all(tags.map(
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -43,7 +34,9 @@ export class EnjinService {
     }
 
     public async getUsersTags(): Promise<IUserTagInfo> {
-        const users = await this.getUsers();
+        const ranks = await RankModel.getEnjinTags();
+
+        const users = await this.getUsersWithTags(...ranks);
         const userIds = Object.keys(users);
 
         let userTagInfoChunks: IUserTagInfo = {};
@@ -73,7 +66,6 @@ export class EnjinService {
             id,
             jsonrpc: '2.0',
             method,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             params: {api_key: this.apiKey, ...params},
         };
 
