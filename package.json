@@ -33,9 +33,11 @@
     "private": true,
     "dependencies": {
         "@ionaru/array-utils": "^6.3.0",
-        "@ionaru/micro-web-service": "^3.0.2",
+        "@ionaru/micro-web-service": "^4.2.0",
         "@ionaru/random-string": "4.0.0",
         "@ionaru/typeorm-utils": "^2.0.0",
+        "ajv": "^8.10.0",
+        "ajv-errors": "^3.0.0",
         "axios": "^0.26.0",
         "bootstrap": "4.6.0",
         "chalk": "^5.0.0",

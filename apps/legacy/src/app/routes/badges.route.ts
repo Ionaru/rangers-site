@@ -1,10 +1,11 @@
 import { Request, Response } from '@ionaru/micro-web-service';
 import { BadgeModel, EnjinTagModel, Permission, TeamspeakRankModel } from '@rangers-site/entities';
+import { DefinedError } from 'ajv';
 
 import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
-import { BaseRoute } from './base.route';
+import { BaseRoute, IAssignableInput } from './base.route';
 
 export class BadgesRoute extends BaseRoute {
 
@@ -18,17 +19,23 @@ export class BadgesRoute extends BaseRoute {
         this.createRoute('get', '/', BadgesRoute.badgesPage);
 
         this.createRoute('get', '/create', BadgesRoute.badgeCreatePage);
-        this.createRoute('post', '/create', BadgesRoute.createBadge);
+        this.createRoute('post', '/create', this.createBadge.bind(this));
 
         this.createRoute('get', '/edit/:id', BadgesRoute.badgeEditPage);
-        this.createRoute('post', '/edit/:id', BadgesRoute.editBadge);
+        this.createRoute('post', '/edit/:id', this.editBadge.bind(this));
 
         this.createRoute('get', '/delete/:id', BadgesRoute.badgeDeletePage);
         this.createRoute('post', '/delete/:id', BadgesRoute.deleteBadge);
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async editBadge(request: Request, response: Response) {
+    private async editBadge(request: Request<any, IAssignableInput>, response: Response) {
+
+        if (!this.assignableValidator(request.body)) {
+            response.locals.error = (this.assignableValidator.errors as DefinedError[]).join(', ');
+            return BadgesRoute.badgeEditPage(request, response);
+        }
+
         const badgeError = await BadgesRoute.validateAssignableInput(request.body, BadgeModel.doQuery(), request.params.id);
         if (badgeError) {
             response.locals.error = badgeError;
@@ -69,7 +76,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async badgeEditPage(request: Request, response: Response) {
+    private static async badgeEditPage(request: Request<{id: number}>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
 
         if (!badge) {
@@ -83,7 +90,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async badgeDeletePage(request: Request, response: Response) {
+    private static async badgeDeletePage(request: Request<{id: number}>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id);
 
         if (!badge) {
@@ -94,7 +101,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async deleteBadge(request: Request, response: Response) {
+    private static async deleteBadge(request: Request<{id: number}>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!badge) {
@@ -130,7 +137,13 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async createBadge(request: Request, response: Response) {
+    private async createBadge(request: Request<any, IAssignableInput>, response: Response) {
+
+        if (!this.assignableValidator(request.body)) {
+            response.locals.error = this.assignableValidator.errors as DefinedError[];
+            return BadgesRoute.badgeCreatePage(request, response);
+        }
+
         const badgeError = await BadgesRoute.validateAssignableInput(request.body, BadgeModel.doQuery());
         if (badgeError) {
             response.locals.error = badgeError;

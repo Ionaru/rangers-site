@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import {
-    BaseRouter,
+    AjvValidationRoute,
     NextFunction,
     Request,
     RequestHandler,
@@ -18,6 +18,7 @@ import {
     TeamspeakRankModel,
     UserModel,
 } from '@rangers-site/entities';
+import { ValidateFunction } from 'ajv';
 import { FileArray } from 'express-fileupload';
 import { SelectQueryBuilder } from 'typeorm';
 
@@ -29,9 +30,77 @@ interface IRenderData {
     [key: string]: any;
 }
 
-export class BaseRoute extends BaseRouter {
+export interface IAssignableInput {
+    name: string;
+    tsRank?: number;
+    enjinTag?: string;
+}
+
+export interface IPermissionableInput extends IAssignableInput {
+    permissions: string | string[];
+}
+
+export class BaseRoute extends AjvValidationRoute {
 
     protected static readonly debug = debug.extend('BaseRoute');
+
+    public readonly assignableValidator: ValidateFunction<IAssignableInput>;
+    public readonly permissionableValidator: ValidateFunction<IPermissionableInput>;
+
+    protected constructor() {
+        super(BaseRoute.debug);
+
+        this.assignableValidator = this.createValidateFunction({
+            properties: {
+                enjinTag: {
+                    nullable: true,
+                    type: 'string',
+                },
+                name: {
+                    // errorMessage: 'Name must be between 3 and 32 characters.',
+                    maxLength: 32,
+                    minLength: 3,
+                    type: 'string',
+                },
+                tsRank: {
+                    nullable: true,
+                    type: 'number',
+                },
+            },
+            required: ['name'],
+            type: 'object',
+        });
+
+        this.permissionableValidator = this.createValidateFunction({
+            properties: {
+                enjinTag: {
+                    nullable: true,
+                    type: 'string',
+                },
+                name: {
+                    // errorMessage: 'Name must be between 3 and 32 characters.',
+                    maxLength: 32,
+                    message: {
+                        maxLength: 'Name must be between 3 and 32 characters.',
+                    },
+                    minLength: 3,
+                    type: 'string',
+                },
+                permissions: {
+                    anyOf: [
+                        { type: 'string' },
+                        { items: { type: 'string' }, type: 'array' },
+                    ],
+                },
+                tsRank: {
+                    nullable: true,
+                    type: 'number',
+                },
+            },
+            required: ['name'],
+            type: 'object',
+        });
+    }
 
     public static checkHasPermission(user: UserModel, requiredPermission: Permission): boolean {
         const userPermissions: Permission[] = [];
@@ -143,7 +212,7 @@ export class BaseRoute extends BaseRouter {
     }
 
     protected static async validateAssignableInput(
-        requestBody: Record<string, unknown>,
+        requestBody: IAssignableInput,
         query: SelectQueryBuilder<IAssignableModel>,
         roleId?: string,
     ): Promise<string | void> {

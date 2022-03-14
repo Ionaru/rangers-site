@@ -1,10 +1,11 @@
 import { Request, Response } from '@ionaru/micro-web-service';
 import { EnjinTagModel, Permission, RoleModel, TeamspeakRankModel } from '@rangers-site/entities';
+import { DefinedError } from 'ajv';
 
 import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
-import { BaseRoute } from './base.route';
+import { BaseRoute, IPermissionableInput } from './base.route';
 
 export class RolesRoute extends BaseRoute {
 
@@ -18,17 +19,23 @@ export class RolesRoute extends BaseRoute {
         this.createRoute('get', '/', RolesRoute.rolesPage);
 
         this.createRoute('get', '/create', RolesRoute.roleCreatePage);
-        this.createRoute('post', '/create', RolesRoute.createRole);
+        this.createRoute('post', '/create', this.createRole.bind(this));
 
         this.createRoute('get', '/edit/:id', RolesRoute.roleEditPage);
-        this.createRoute('post', '/edit/:id', RolesRoute.editRole);
+        this.createRoute('post', '/edit/:id', this.editRole.bind(this));
 
         this.createRoute('get', '/delete/:id', RolesRoute.roleDeletePage);
         this.createRoute('post', '/delete/:id', RolesRoute.deleteRole);
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private static async editRole(request: Request, response: Response) {
+    private async editRole(request: Request<any, IPermissionableInput>, response: Response) {
+
+        if (!this.permissionableValidator(request.body)) {
+            response.locals.error = this.permissionableValidator.errors as DefinedError[];
+            return RolesRoute.roleCreatePage(request, response);
+        }
+
         const roleError = await RolesRoute.validateAssignableInput(request.body, RoleModel.doQuery(), request.params.id);
         if (roleError) {
             response.locals.error = roleError;
@@ -75,7 +82,7 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private static async roleEditPage(request: Request, response: Response) {
+    private static async roleEditPage(request: Request<{id: number}>, response: Response) {
         const role = await RoleModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
 
         if (!role) {
@@ -93,7 +100,7 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private static async roleDeletePage(request: Request, response: Response) {
+    private static async roleDeletePage(request: Request<{id: number}>, response: Response) {
         const role = await RoleModel.findOne(request.params.id);
 
         if (!role) {
@@ -104,7 +111,7 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private static async deleteRole(request: Request, response: Response) {
+    private static async deleteRole(request: Request<{id: number}>, response: Response) {
         const role = await RoleModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!role) {
@@ -143,7 +150,13 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private static async createRole(request: Request, response: Response) {
+    private async createRole(request: Request<any, IPermissionableInput>, response: Response) {
+
+        if (!this.permissionableValidator(request.body)) {
+            response.locals.error = this.permissionableValidator.errors as DefinedError[];
+            return RolesRoute.roleCreatePage(request, response);
+        }
+
         const roleError = await RolesRoute.validateAssignableInput(request.body, RoleModel.doQuery());
         if (roleError) {
             response.locals.error = roleError;

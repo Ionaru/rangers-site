@@ -20,7 +20,7 @@ export class OperationRoute extends BaseRoute {
     }
 
     @OperationRoute.requestDecorator(OperationRoute.checkLogin)
-    private static async operationPage(request: Request, response: Response) {
+    private static async operationPage(request: Request<{date: string}>, response: Response) {
 
         const op = await OperationModel.doQuery()
             .select(`${OperationModel.alias}.createdOn`)

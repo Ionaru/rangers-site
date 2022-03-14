@@ -10,6 +10,7 @@ import {
     TeamspeakUserModel,
     UserModel,
 } from '@rangers-site/entities';
+import { DefinedError, ValidateFunction } from 'ajv';
 import { In } from 'typeorm';
 
 import { EnjinService } from '../services/enjin.service';
@@ -17,10 +18,16 @@ import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute } from './base.route';
 
+interface IUserInput {
+    ts3User?: number;
+}
+
 export class UsersRoute extends BaseRoute {
 
     private static teamspeak: TeamspeakService;
     private static enjin: EnjinService;
+
+    private readonly userValidator: ValidateFunction<IUserInput>;
 
     public constructor(teamSpeak: TeamspeakService, enjin: EnjinService) {
         super();
@@ -29,20 +36,35 @@ export class UsersRoute extends BaseRoute {
         this.createRoute('get', '/', UsersRoute.usersPage);
 
         this.createRoute('get', '/edit/:id', UsersRoute.editUserPage);
-        this.createRoute('post', '/edit/:id', UsersRoute.editUser);
+        this.createRoute('post', '/edit/:id', this.editUser.bind(this));
 
         this.createRoute('get', '/delete/:id', UsersRoute.userDeletePage);
         this.createRoute('post', '/delete/:id', UsersRoute.deleteUser);
 
         this.createRoute('get', '/sync/:id', UsersRoute.syncUser);
+
+        this.userValidator = this.createValidateFunction({
+            properties: {
+                ts3User: {
+                    nullable: true,
+                    type: 'number',
+                },
+            },
+            type: 'object',
+        });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async editUser(request: Request, response: Response) {
+    private async editUser(request: Request<{id: number}>, response: Response) {
 
         const admins = process.env.RANGERS_ADMINS?.split(',');
         if (!admins?.includes(response.locals.user.discordUser) && request.params.id === response.locals.user.id.toString()) {
             response.locals.error = 'You cannot edit yourself!';
+            return UsersRoute.editUserPage(request, response);
+        }
+
+        if (!this.userValidator(request.body)) {
+            response.locals.error = this.userValidator.errors as DefinedError[];
             return UsersRoute.editUserPage(request, response);
         }
 
@@ -109,7 +131,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async editUserPage(request: Request, response: Response) {
+    private static async editUserPage(request: Request<{id: number}>, response: Response) {
         const user = await UserModel.findOne(request.params.id,
             { relations: ['rank', 'roles', 'badges', 'ts3User'] },
         );
@@ -146,7 +168,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async userDeletePage(request: Request, response: Response) {
+    private static async userDeletePage(request: Request<{id: number}>, response: Response) {
         const user = await UserModel.findOne(request.params.id);
 
         if (!user) {
@@ -158,7 +180,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async deleteUser(request: Request, response: Response) {
+    private static async deleteUser(request: Request<{id: number}>, response: Response) {
 
         if (request.params.id === response.locals.user.id.toString()) {
             response.locals.error = 'You cannot delete yourself!';
@@ -197,7 +219,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async syncUser(request: Request, response: Response) {
+    private static async syncUser(request: Request<{id: number}>, response: Response) {
 
         const user = await UserModel.findOne(request.params.id);
 

@@ -1,10 +1,11 @@
 import { Request, Response } from '@ionaru/micro-web-service';
 import { EnjinTagModel, Permission, RankModel, TeamspeakRankModel } from '@rangers-site/entities';
+import { DefinedError } from 'ajv';
 
 import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
-import { BaseRoute } from './base.route';
+import { BaseRoute, IPermissionableInput } from './base.route';
 
 export class RanksRoute extends BaseRoute {
 
@@ -18,17 +19,23 @@ export class RanksRoute extends BaseRoute {
         this.createRoute('get', '/', RanksRoute.ranksPage);
 
         this.createRoute('get', '/create', RanksRoute.rankCreatePage);
-        this.createRoute('post', '/create', RanksRoute.createRank);
+        this.createRoute('post', '/create', this.createRank.bind(this));
 
         this.createRoute('get', '/edit/:id', RanksRoute.rankEditPage);
-        this.createRoute('post', '/edit/:id', RanksRoute.editRank);
+        this.createRoute('post', '/edit/:id', this.editRank.bind(this));
 
         this.createRoute('get', '/delete/:id', RanksRoute.rankDeletePage);
         this.createRoute('post', '/delete/:id', RanksRoute.deleteRank);
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private static async editRank(request: Request, response: Response) {
+    private async editRank(request: Request<any, IPermissionableInput>, response: Response) {
+
+        if (!this.permissionableValidator(request.body)) {
+            response.locals.error = this.permissionableValidator.errors as DefinedError[];
+            return RanksRoute.rankEditPage(request, response);
+        }
+
         const rankError = await RanksRoute.validateAssignableInput(request.body, RankModel.doQuery(), request.params.id);
         if (rankError) {
             response.locals.error = rankError;
@@ -83,7 +90,7 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private static async rankEditPage(request: Request, response: Response) {
+    private static async rankEditPage(request: Request<{id: number}>, response: Response) {
         const rank = await RankModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag', 'permissions'] });
 
         if (!rank) {
@@ -100,7 +107,7 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private static async rankDeletePage(request: Request, response: Response) {
+    private static async rankDeletePage(request: Request<{id: number}>, response: Response) {
         const rank = await RankModel.findOne(request.params.id);
 
         if (!rank) {
@@ -111,7 +118,7 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private static async deleteRank(request: Request, response: Response) {
+    private static async deleteRank(request: Request<{id: number}>, response: Response) {
         const rank = await RankModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!rank) {
@@ -150,7 +157,13 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private static async createRank(request: Request, response: Response) {
+    private async createRank(request: Request<any, IPermissionableInput>, response: Response) {
+
+        if (!this.permissionableValidator(request.body)) {
+            response.locals.error = this.permissionableValidator.errors as DefinedError[];
+            return RanksRoute.rankCreatePage(request, response);
+        }
+
         const rankError = await RanksRoute.validateAssignableInput(request.body, RankModel.doQuery());
         if (rankError) {
             response.locals.error = rankError;
