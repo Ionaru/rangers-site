@@ -23,7 +23,7 @@
                     }
                 },
                 "build": {
-                    "executor": "@nrwl/node:build",
+                    "executor": "@nrwl/node:webpack",
                     "outputs": [
                         "{options.outputPath}"
                     ],
@@ -42,7 +42,7 @@
                     }
                 },
                 "serve": {
-                    "executor": "@nrwl/node:execute",
+                    "executor": "@nrwl/node:node",
                     "options": {
                         "buildTarget": "api:build",
                         "inspect": true
@@ -177,7 +177,7 @@
                     }
                 },
                 "build": {
-                    "executor": "@nrwl/node:build",
+                    "executor": "@nrwl/node:webpack",
                     "outputs": [
                         "{options.outputPath}"
                     ],
@@ -201,7 +201,7 @@
                     }
                 },
                 "serve": {
-                    "executor": "@nrwl/node:execute",
+                    "executor": "@nrwl/node:node",
                     "options": {
                         "buildTarget": "legacy:build",
                         "inspect": true
