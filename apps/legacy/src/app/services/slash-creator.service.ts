@@ -1,8 +1,9 @@
+import { IService } from '@rangers-site/interfaces';
 import { SlashCommand, SlashCreator } from 'slash-create';
 
 import { debug } from '../../debug';
 
-export class SlashCreatorService {
+export class SlashCreatorService implements IService {
 
     private static readonly debug = debug.extend('SlashCreatorService');
 

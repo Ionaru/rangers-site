@@ -80,9 +80,9 @@ export class BaseRoute extends AjvValidationRoute {
                 name: {
                     // errorMessage: 'Name must be between 3 and 32 characters.',
                     maxLength: 32,
-                    message: {
-                        maxLength: 'Name must be between 3 and 32 characters.',
-                    },
+                    // message: {
+                    //     maxLength: 'Name must be between 3 and 32 characters.',
+                    // },
                     minLength: 3,
                     type: 'string',
                 },

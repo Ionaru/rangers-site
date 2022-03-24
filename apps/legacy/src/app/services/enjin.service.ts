@@ -1,12 +1,13 @@
 import { splitArrayIntoChunks } from '@ionaru/array-utils';
 import { generateRandomString } from '@ionaru/random-string';
 import { RankModel } from '@rangers-site/entities';
+import { IService } from '@rangers-site/interfaces';
 import * as axios from 'axios';
 
 import { debug } from '../../debug';
 import { IEnjinRequest, IEnjinRequestParams, IResponse, ITagType, ITagTypes, IUsers, IUserTagInfo, IUserTags } from '../typings/enjin.d';
 
-export class EnjinService {
+export class EnjinService implements IService {
     private static readonly debug = debug.extend('EnjinService');
 
     public constructor(

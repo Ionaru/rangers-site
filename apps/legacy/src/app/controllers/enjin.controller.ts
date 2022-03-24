@@ -1,6 +1,8 @@
+import { IController } from '@rangers-site/interfaces';
+
 import { EnjinService } from '../services/enjin.service';
 
-export class EnjinController {
+export class EnjinController implements IController<EnjinService> {
 
     private readonly domain: string;
     private readonly apiKey: string;
@@ -17,7 +19,11 @@ export class EnjinController {
         this.apiKey = apiKey;
     }
 
-    public connect(): EnjinService {
+    public async start(): Promise<EnjinService> {
         return new EnjinService(this.domain, this.apiKey);
+    }
+
+    public async stop(): Promise<void> {
+        // Nothing to do here.
     }
 }

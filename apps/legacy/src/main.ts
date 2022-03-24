@@ -1,7 +1,6 @@
 import { format } from 'util';
 
 import { handleExceptions, handleSignals } from '@ionaru/micro-web-service';
-import { PermissionModel } from '@rangers-site/entities';
 import { config } from 'dotenv';
 import * as moment from 'moment-timezone';
 
@@ -31,11 +30,6 @@ import { SyncRanksTask } from './app/tasks/sync-ranks.task';
 import { SyncRolesTask } from './app/tasks/sync-roles.task';
 import { debug } from './debug';
 
-let serverController: ServerController;
-let databaseController: DatabaseController;
-let discordBotController: DiscordBotController;
-let teamSpeakBotController: TeamSpeakBotController;
-
 const start = async () => {
 
     Error.stackTraceLimit = Infinity;
@@ -48,27 +42,32 @@ const start = async () => {
     // Lock locale to English.
     moment.locale('en');
 
-    databaseController = new DatabaseController();
-    const databaseService = await databaseController.connect();
+    // Controllers
 
-    await PermissionModel.syncPermissions();
+    const databaseController = new DatabaseController();
+    const databaseService = await databaseController.start();
 
-    teamSpeakBotController = new TeamSpeakBotController();
-    const teamspeakService = await teamSpeakBotController.connect();
+    await databaseService.syncPermissions();
 
-    discordBotController = new DiscordBotController();
-    const discordService = await discordBotController.connect();
+    const teamSpeakBotController = new TeamSpeakBotController();
+    const teamspeakService = await teamSpeakBotController.start();
 
-    const slashCreatorService = new SlashCreatorController().init(discordService);
+    const discordBotController = new DiscordBotController();
+    const discordService = await discordBotController.start();
+
+    const slashCreatorController = new SlashCreatorController();
+    const slashCreatorService = await slashCreatorController.start(discordService);
     slashCreatorService.registerCommand((creator) => new LOACommand(creator, discordService));
     slashCreatorService.registerCommand((creator) => new LOACancelCommand(creator));
     await slashCreatorService.syncCommands();
 
+    const enjinController = new EnjinController();
+    const enjinService = await enjinController.start();
+
+    // Tasks
+
     const operationAttendeesService = new RecordOperationAttendeesTask(teamspeakService, databaseService);
     operationAttendeesService.start();
-
-    const enjinController = new EnjinController();
-    const enjinService = enjinController.connect();
 
     const syncEnjinTagsTask = new SyncEnjinTagsTask(enjinService);
     syncEnjinTagsTask.start();
@@ -82,7 +81,9 @@ const start = async () => {
     const syncBadgesTask = new SyncBadgesTask(teamspeakService, enjinService);
     syncBadgesTask.start();
 
-    serverController = new ServerController(databaseService, [
+    // Start server
+
+    const serverController = new ServerController(databaseService, [
         ['*', new GlobalRoute()],
         ['/', new RootRoute()],
         ['/auth', new AuthRoute(discordService)],
@@ -96,20 +97,22 @@ const start = async () => {
     ]);
     await serverController.start();
 
+    // Handlers
+
+    const stop = async () => {
+        await serverController.stop();
+        await discordBotController.stop();
+        await teamSpeakBotController.stop();
+        await databaseController.stop();
+    };
+
+    const exit = () => {
+        debug('Auf Wiedersehen');
+        process.exit(0);
+    };
+
     handleExceptions(stop, exit);
     handleSignals(stop, exit, debug);
-};
-
-const stop = async () => {
-    await serverController.stop();
-    discordBotController.disconnect();
-    await teamSpeakBotController.disconnect();
-    await databaseController.disconnect();
-};
-
-const exit = () => {
-    debug('Auf Wiedersehen');
-    process.exit(0);
 };
 
 start().then().catch((error) => {

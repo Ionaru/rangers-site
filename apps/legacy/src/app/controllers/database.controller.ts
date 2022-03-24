@@ -15,16 +15,17 @@ import {
     TeamspeakUserModel,
     UserModel,
 } from '@rangers-site/entities';
+import { IController } from '@rangers-site/interfaces';
 import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
 
 import { debug } from '../../debug';
 import { DatabaseService } from '../services/database.service';
 
-export class DatabaseController {
+export class DatabaseController implements IController<DatabaseService> {
 
     private static readonly debug = debug.extend('DatabaseController');
 
-    public async connect(): Promise<DatabaseService> {
+    public async start(): Promise<DatabaseService> {
 
         DatabaseController.debug('Creating connection...');
 
@@ -60,7 +61,7 @@ export class DatabaseController {
         return new DatabaseService(connection);
     }
 
-    public async disconnect(): Promise<void> {
+    public async stop(): Promise<void> {
         DatabaseController.debug('Disconnecting...');
         const connection = getConnection();
         if (connection.isConnected) {

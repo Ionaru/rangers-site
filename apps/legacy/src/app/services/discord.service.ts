@@ -1,3 +1,4 @@
+import { IService } from '@rangers-site/interfaces';
 import { Client, GuildMember, User, WebSocketManager } from 'discord.js';
 import * as guessDate from 'guessdate-en';
 import * as moment from 'moment-timezone';
@@ -5,7 +6,7 @@ import { InteractionHandler } from 'slash-create';
 
 import { debug } from '../../debug';
 
-export class DiscordService {
+export class DiscordService implements IService {
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     public static readonly LOAChannel = '323442871829004300';

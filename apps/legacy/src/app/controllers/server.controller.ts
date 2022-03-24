@@ -10,6 +10,7 @@ import {
     RequestLogger,
     ServiceController,
 } from '@ionaru/micro-web-service';
+import { IController } from '@rangers-site/interfaces';
 import { TypeormStore } from 'connect-typeorm';
 import * as fileUpload from 'express-fileupload';
 import * as es from 'express-session';
@@ -21,7 +22,7 @@ import { debug } from '../../debug';
 import { DatabaseService } from '../services/database.service';
 import { hasPermission, ifCond, json, keys, values } from '../utils/handlebars.util';
 
-export class ServerController {
+export class ServerController implements IController<void> {
 
     private static readonly debug = debug.extend('ServerController');
 

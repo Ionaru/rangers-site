@@ -1,16 +1,19 @@
 // tslint:disable-next-line:no-submodule-imports
+import { IController } from '@rangers-site/interfaces';
 import { TeamSpeak } from 'ts3-nodejs-library/lib';
 
 import { debug } from '../../debug';
 import { TeamspeakService } from '../services/teamspeak.service';
 
-export class TeamSpeakBotController {
+export class TeamSpeakBotController implements IController<TeamspeakService> {
 
     private static readonly debug = debug.extend('TeamSpeakBotController');
 
     private readonly client: TeamSpeak;
 
     public constructor() {
+        TeamSpeakBotController.debug('Construct');
+
         const host = process.env.RANGERS_TS_HOST;
         const nickname = process.env.RANGERS_TS_NICKNAME;
         const username = process.env.RANGERS_TS_USERNAME;
@@ -44,11 +47,13 @@ export class TeamSpeakBotController {
         TeamSpeakBotController.debug('TS3 bot created.');
     }
 
-    public async connect(): Promise<TeamspeakService> {
+    public async start(): Promise<TeamspeakService> {
+        TeamSpeakBotController.debug('Start');
         return new TeamspeakService(this.client);
     }
 
-    public async disconnect(): Promise<void> {
+    public async stop(): Promise<void> {
+        TeamSpeakBotController.debug('Stop');
         try {
             await this.client.logout();
             await this.client.quit();

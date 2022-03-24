@@ -1,5 +1,6 @@
 import { filterArray } from '@ionaru/array-utils';
 import { BadgeModel, RankModel, RoleModel, UserModel } from '@rangers-site/entities';
+import { IService } from '@rangers-site/interfaces';
 import {
     ClientType,
     TeamSpeak,
@@ -10,7 +11,7 @@ import {
 
 import { debug } from '../../debug';
 
-export class TeamspeakService {
+export class TeamspeakService implements IService {
 
     public static readonly operationsChannel = 67256;
     public static readonly workingChannel = 35522;

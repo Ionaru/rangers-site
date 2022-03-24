@@ -1,10 +1,11 @@
+import { IController } from '@rangers-site/interfaces';
 import { GatewayServer, SlashCreator } from 'slash-create';
 
 import { debug } from '../../debug';
 import { DiscordService } from '../services/discord.service';
 import { SlashCreatorService } from '../services/slash-creator.service';
 
-export class SlashCreatorController {
+export class SlashCreatorController implements IController<SlashCreatorService, [DiscordService]> {
 
     private static readonly debug = debug.extend('SlashCreatorController');
 
@@ -46,10 +47,13 @@ export class SlashCreatorController {
             .map((id) => id.trim());
     }
 
-    public init(discordService: DiscordService): SlashCreatorService {
-        SlashCreatorController.debug('Init');
+    public async start(...[discordService]: [DiscordService]): Promise<SlashCreatorService> {
+        SlashCreatorController.debug('Start');
         this.creator.withServer(new GatewayServer(discordService.getCommandHandler()));
         return new SlashCreatorService(this.creator);
     }
 
+    public async stop(): Promise<void> {
+        SlashCreatorController.debug('Stop');
+    }
 }

@@ -9,7 +9,7 @@ export enum Permission {
     EDIT_USER_BADGE = 'Edit user badges',
     EDIT_RANKS = 'Edit ranks',
     EDIT_ROLES = 'Edit roles',
-    EDIT_BADGES = 'Edit badges',
+    EDIT_BADGES = 'Edit badge',
 }
 
 @Entity({
@@ -36,26 +36,5 @@ export class PermissionModel extends BaseModel {
 
     public static doQuery(): SelectQueryBuilder<PermissionModel> {
         return PermissionModel.createQueryBuilder(PermissionModel.alias);
-    }
-
-    public static async syncPermissions(): Promise<void> {
-        for (const key of Object.keys(Permission)) {
-            const slug = key as keyof typeof Permission;
-
-            let existingPermission = await PermissionModel.findOne({slug});
-
-            if (existingPermission) {
-                existingPermission.name = Permission[slug];
-            } else {
-                existingPermission = new PermissionModel(slug, Permission[slug]);
-            }
-
-            await existingPermission.save();
-        }
-
-        const permissions = await PermissionModel.find();
-        const deletedPermissions = permissions.filter((permission) => !(permission.slug in Permission));
-
-        await Promise.all(deletedPermissions.map((permission) => permission.remove()));
     }
 }

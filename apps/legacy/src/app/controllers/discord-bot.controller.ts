@@ -1,9 +1,10 @@
+import { IController } from '@rangers-site/interfaces';
 import { Client } from 'discord.js';
 
 import { debug } from '../../debug';
 import { DiscordService } from '../services/discord.service';
 
-export class DiscordBotController {
+export class DiscordBotController implements IController<DiscordService> {
 
     private static readonly debug = debug.extend('DiscordBotController');
 
@@ -22,7 +23,7 @@ export class DiscordBotController {
         DiscordBotController.debug('Discord bot created.');
     }
 
-    public async connect(): Promise<DiscordService> {
+    public async start(): Promise<DiscordService> {
 
         DiscordBotController.debug('Connecting to Discord...');
 
@@ -32,13 +33,13 @@ export class DiscordBotController {
 
         this.client.once('error', (e) => {
             process.emitWarning(`Connection closed, reason: ${e}`);
-            this.connect().then();
+            this.start().then();
         });
 
         return new DiscordService(this.client);
     }
 
-    public disconnect(): void {
+    public async stop(): Promise<void> {
         DiscordBotController.debug('Logging out');
         this.client.destroy();
         DiscordBotController.debug('Connection terminated');
