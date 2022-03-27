@@ -13,8 +13,6 @@ import { debug } from '../../debug';
 
 export class TeamspeakService implements IService {
 
-    public static readonly operationsChannel = 67256;
-    public static readonly workingChannel = 35522;
     private static readonly debug = debug.extend('TeamspeakService');
 
     private clientId?: number;
@@ -51,12 +49,7 @@ export class TeamspeakService implements IService {
 
     public async sendMessageToOperationsChannel(msg: string): Promise<void> {
         await this.connect();
-        return this.sendMessageToChannel(TeamspeakService.operationsChannel, msg);
-    }
-
-    public async sendMessageToWorkingChannel(msg: string): Promise<void> {
-        await this.connect();
-        return this.sendMessageToChannel(TeamspeakService.workingChannel, msg);
+        return this.sendMessageToChannel(Number(process.env.RANGERS_TS_OPERATIONS_CHANNEL), msg);
     }
 
     public async applyBadgesToUser(user: UserModel) {
