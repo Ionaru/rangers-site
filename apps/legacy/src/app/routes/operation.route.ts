@@ -16,11 +16,11 @@ export class OperationRoute extends BaseRoute {
 
     public constructor() {
         super();
-        this.createRoute('get', '/:date(\\d{4}-\\d{2}-\\d{2})', OperationRoute.operationPage);
+        this.createRoute('get', '/:date(\\d{4}-\\d{2}-\\d{2})', this.operationPage.bind(this));
     }
 
     @OperationRoute.requestDecorator(OperationRoute.checkLogin)
-    private static async operationPage(request: Request<{date: string}>, response: Response) {
+    private async operationPage(request: Request<{date: string}>, response: Response) {
 
         const op = await OperationModel.doQuery()
             .select(`${OperationModel.alias}.createdOn`)

@@ -16,6 +16,7 @@ import * as fileUpload from 'express-fileupload';
 import * as es from 'express-session';
 import * as Handlebars from 'hbs';
 import helmet, { contentSecurityPolicy } from 'helmet';
+import { StatusCodes } from 'http-status-codes';
 import * as passport from 'passport';
 
 import { debug } from '../../debug';
@@ -104,6 +105,11 @@ export class ServerController implements IController<void> {
         }
 
         this.serviceController = new ServiceController({
+            errorRouter: (err: any, _req: any, res: any, _next: any): any => {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('empty.hbs', {
+                    error: err,
+                });
+            },
             middleware,
             options,
             port,

@@ -32,7 +32,7 @@ interface IRenderData {
 
 export interface IAssignableInput {
     name: string;
-    tsRank?: number;
+    tsRank?: string;
     enjinTag?: string;
 }
 
@@ -64,7 +64,7 @@ export class BaseRoute extends AjvValidationRoute {
                 },
                 tsRank: {
                     nullable: true,
-                    type: 'number',
+                    type: 'string',
                 },
             },
             required: ['name'],
@@ -78,11 +78,7 @@ export class BaseRoute extends AjvValidationRoute {
                     type: 'string',
                 },
                 name: {
-                    // errorMessage: 'Name must be between 3 and 32 characters.',
                     maxLength: 32,
-                    // message: {
-                    //     maxLength: 'Name must be between 3 and 32 characters.',
-                    // },
                     minLength: 3,
                     type: 'string',
                 },
@@ -94,7 +90,7 @@ export class BaseRoute extends AjvValidationRoute {
                 },
                 tsRank: {
                     nullable: true,
-                    type: 'number',
+                    type: 'string',
                 },
             },
             required: ['name'],
@@ -141,6 +137,17 @@ export class BaseRoute extends AjvValidationRoute {
             return response.redirect('/auth');
         }
         return nextFunction;
+    }
+
+    protected static checkAdmin(request: Request, response: Response, nextFunction: NextFunction): NextFunction | Response {
+        if (request.user && request.user.discordUser && process.env.RANGERS_ADMINS) {
+            const admins = process.env.RANGERS_ADMINS.split(',');
+            if (admins.includes(request.user.discordUser)) {
+                BaseRoute.debug(`${request.user} used admin override for route: '${request.path}'`);
+                return nextFunction;
+            }
+        }
+        return BaseRoute.sendNotFound(response, request.originalUrl);
     }
 
     protected static async setPermissions(
@@ -216,14 +223,6 @@ export class BaseRoute extends AjvValidationRoute {
         query: SelectQueryBuilder<IAssignableModel>,
         roleId?: string,
     ): Promise<string | void> {
-
-        if (!requestBody.name || typeof requestBody.name !== 'string') {
-            return `A ${query.alias} name must be provided.`;
-        }
-
-        if (requestBody.name.length > 32) {
-            return `A ${query.alias} name must be 32 characters or shorter.`;
-        }
 
         const existingRoleQuery = query
             .where('name = :name', { name: requestBody.name });

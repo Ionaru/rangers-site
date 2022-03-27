@@ -23,12 +23,12 @@ export class OperationsRoute extends BaseRoute {
 
     public constructor() {
         super();
-        this.createRoute('get', '', OperationsRoute.operationPage);
-        this.createRoute('get', '/activity', OperationsRoute.activityPage);
+        this.createRoute('get', '/', this.operationPage.bind(this));
+        this.createRoute('get', '/activity', this.activityPage.bind(this));
     }
 
     @OperationsRoute.requestDecorator(OperationsRoute.checkPermission, Permission.READ_OPERATIONS_ACTIVITY)
-    private static async activityPage(_request: Request, response: Response) {
+    private async activityPage(_request: Request, response: Response) {
 
         const activity = (await AttendanceModel.doQuery()
             .select([
@@ -55,7 +55,7 @@ export class OperationsRoute extends BaseRoute {
     }
 
     @OperationsRoute.requestDecorator(OperationsRoute.checkPermission, Permission.READ_OPERATIONS_ACTIVITY)
-    private static async operationPage(_request: Request, response: Response) {
+    private async operationPage(_request: Request, response: Response) {
         const ops = await OperationModel.doQuery()
             .select([
                 `COUNT(DISTINCT(${AttendanceModel.alias}.attendeeId)) as playerCount`,

@@ -1,6 +1,5 @@
-import { Request, Response } from '@ionaru/micro-web-service';
+import { NextFunction, Request, Response } from '@ionaru/micro-web-service';
 import { BadgeModel, EnjinTagModel, Permission, TeamspeakRankModel } from '@rangers-site/entities';
-import { DefinedError } from 'ajv';
 
 import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
@@ -9,37 +8,34 @@ import { BaseRoute, IAssignableInput } from './base.route';
 
 export class BadgesRoute extends BaseRoute {
 
-    private static teamspeak: TeamspeakService;
-    private static enjin: EnjinService;
-
-    public constructor(teamSpeak: TeamspeakService, enjin: EnjinService) {
+    public constructor(
+        private readonly teamspeak: TeamspeakService,
+        private readonly enjin: EnjinService,
+    ) {
         super();
-        BadgesRoute.teamspeak = teamSpeak;
-        BadgesRoute.enjin = enjin;
-        this.createRoute('get', '/', BadgesRoute.badgesPage);
+        this.createRoute('get', '/', this.badgesPage.bind(this));
 
-        this.createRoute('get', '/create', BadgesRoute.badgeCreatePage);
+        this.createRoute('get', '/create', this.badgeCreatePage.bind(this));
         this.createRoute('post', '/create', this.createBadge.bind(this));
 
-        this.createRoute('get', '/edit/:id', BadgesRoute.badgeEditPage);
+        this.createRoute('get', '/edit/:id', this.badgeEditPage.bind(this));
         this.createRoute('post', '/edit/:id', this.editBadge.bind(this));
 
-        this.createRoute('get', '/delete/:id', BadgesRoute.badgeDeletePage);
-        this.createRoute('post', '/delete/:id', BadgesRoute.deleteBadge);
+        this.createRoute('get', '/delete/:id', this.badgeDeletePage.bind(this));
+        this.createRoute('post', '/delete/:id', this.deleteBadge.bind(this));
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
     private async editBadge(request: Request<any, IAssignableInput>, response: Response) {
 
         if (!this.assignableValidator(request.body)) {
-            response.locals.error = (this.assignableValidator.errors as DefinedError[]).join(', ');
-            return BadgesRoute.badgeEditPage(request, response);
+            return BadgesRoute.renderValidationError(response, this.assignableValidator, this.badgeEditPage.bind(this));
         }
 
         const badgeError = await BadgesRoute.validateAssignableInput(request.body, BadgeModel.doQuery(), request.params.id);
         if (badgeError) {
             response.locals.error = badgeError;
-            return BadgesRoute.badgeEditPage(request, response);
+            return this.badgeEditPage(request, response);
         }
 
         const badge = await BadgeModel.findOne(request.params.id);
@@ -51,20 +47,20 @@ export class BadgesRoute extends BaseRoute {
         badge.name = request.body.name;
 
         if (request.body.tsRank) {
-            const teamspeakRankError = await BadgesRoute.setTeamspeakRank(request.body.tsRank, badge, BadgesRoute.teamspeak);
+            const teamspeakRankError = await BadgesRoute.setTeamspeakRank(request.body.tsRank, badge, this.teamspeak);
             if (teamspeakRankError) {
                 response.locals.error = teamspeakRankError;
-                return BadgesRoute.badgeEditPage(request, response);
+                return this.badgeEditPage(request, response);
             }
         } else {
             badge.teamspeakRank = null;
         }
 
         if (request.body.enjinTag) {
-            const enjinRankError = await BadgesRoute.setEnjinTag(request.body.enjinTag, badge, BadgesRoute.enjin);
+            const enjinRankError = await BadgesRoute.setEnjinTag(request.body.enjinTag, badge, this.enjin);
             if (enjinRankError) {
                 response.locals.error = enjinRankError;
-                return BadgesRoute.badgeEditPage(request, response);
+                return this.badgeEditPage(request, response);
             }
         } else {
             badge.enjinTag = null;
@@ -76,21 +72,21 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async badgeEditPage(request: Request<{id: number}>, response: Response) {
+    private async badgeEditPage(request: Request<{id: number}>, response: Response, next?: NextFunction) {
         const badge = await BadgeModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
 
         if (!badge) {
-            return BadgesRoute.sendNotFound(response, request.originalUrl);
+            return next ? next() : BadgesRoute.sendNotFound(response, request.originalUrl);
         }
 
-        const enjinTags = await BadgesRoute.enjin.getTags();
-        const tsRanks = await BadgesRoute.teamspeak.getRanks();
+        const enjinTags = await this.enjin.getTags();
+        const tsRanks = await this.teamspeak.getRanks();
 
         return response.render('pages/badges/edit.hbs', { badge, enjinTags, tsRanks });
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async badgeDeletePage(request: Request<{id: number}>, response: Response) {
+    private async badgeDeletePage(request: Request<{id: number}>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id);
 
         if (!badge) {
@@ -101,7 +97,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async deleteBadge(request: Request<{id: number}>, response: Response) {
+    private async deleteBadge(request: Request<{id: number}>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!badge) {
@@ -110,7 +106,7 @@ export class BadgesRoute extends BaseRoute {
 
         if (badge.users.length) {
             response.locals.error = 'Cannot delete a badge that is still in use.';
-            return BadgesRoute.badgeDeletePage(request, response);
+            return this.badgeDeletePage(request, response);
         }
 
         await badge.remove();
@@ -119,15 +115,15 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private static async badgeCreatePage(_request: Request, response: Response) {
-        const enjinTags = await BadgesRoute.enjin.getTags();
-        const tsRanks = await BadgesRoute.teamspeak.getRanks();
+    private async badgeCreatePage(_request: Request, response: Response) {
+        const enjinTags = await this.enjin.getTags();
+        const tsRanks = await this.teamspeak.getRanks();
 
         return response.render('pages/badges/create.hbs', { enjinTags, tsRanks });
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkLogin)
-    private static async badgesPage(_request: Request, response: Response) {
+    private async badgesPage(_request: Request, response: Response) {
         const badges = await BadgeModel.doQuery()
             .leftJoinAndSelect(`${BadgeModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
             .leftJoinAndSelect(`${BadgeModel.alias}.enjinTag`, EnjinTagModel.alias)
@@ -140,31 +136,30 @@ export class BadgesRoute extends BaseRoute {
     private async createBadge(request: Request<any, IAssignableInput>, response: Response) {
 
         if (!this.assignableValidator(request.body)) {
-            response.locals.error = this.assignableValidator.errors as DefinedError[];
-            return BadgesRoute.badgeCreatePage(request, response);
+            return BadgesRoute.renderValidationError(response, this.assignableValidator, this.badgeCreatePage.bind(this));
         }
 
         const badgeError = await BadgesRoute.validateAssignableInput(request.body, BadgeModel.doQuery());
         if (badgeError) {
             response.locals.error = badgeError;
-            return BadgesRoute.badgeCreatePage(request, response);
+            return this.badgeCreatePage(request, response);
         }
 
         const badge = new BadgeModel(request.body.name);
 
         if (request.body.tsRank) {
-            const teamspeakRankError = await BadgesRoute.setTeamspeakRank(request.body.tsRank, badge, BadgesRoute.teamspeak);
+            const teamspeakRankError = await BadgesRoute.setTeamspeakRank(request.body.tsRank, badge, this.teamspeak);
             if (teamspeakRankError) {
                 response.locals.error = teamspeakRankError;
-                return BadgesRoute.badgeCreatePage(request, response);
+                return this.badgeCreatePage(request, response);
             }
         }
 
         if (request.body.enjinTag) {
-            const enjinRankError = await BadgesRoute.setEnjinTag(request.body.enjinTag, badge, BadgesRoute.enjin);
+            const enjinRankError = await BadgesRoute.setEnjinTag(request.body.enjinTag, badge, this.enjin);
             if (enjinRankError) {
                 response.locals.error = enjinRankError;
-                return BadgesRoute.badgeCreatePage(request, response);
+                return this.badgeCreatePage(request, response);
             }
         }
 

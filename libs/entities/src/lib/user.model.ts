@@ -96,4 +96,8 @@ export class UserModel extends BaseModel {
     public static doQuery(): SelectQueryBuilder<UserModel> {
         return UserModel.createQueryBuilder(UserModel.alias);
     }
+
+    public toString(): string {
+        return `User ${this.name} (#${this.id})`;
+    }
 }

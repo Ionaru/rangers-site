@@ -6,17 +6,17 @@ export class RootRoute extends BaseRoute {
 
     public constructor() {
         super();
-        this.createRoute('get', '', RootRoute.homePage);
-        this.createRoute('get', '/user', RootRoute.userPage);
+        this.createRoute('get', '/', this.homePage.bind(this));
+        this.createRoute('get', '/user', this.userPage.bind(this));
     }
 
-    public static homePage(_request: Request, response: Response): void {
+    @RootRoute.requestDecorator(RootRoute.checkAdmin)
+    private async userPage(_request: Request, response: Response) {
+        return response.render('pages/user.hbs');
+    }
+
+    private homePage(_request: Request, response: Response): void {
         response.locals.title = 'home';
         return response.render('pages/home.hbs');
-    }
-
-    @RootRoute.requestDecorator(RootRoute.checkLogin)
-    private static async userPage(_request: Request, response: Response) {
-        return response.render('pages/user.hbs');
     }
 }

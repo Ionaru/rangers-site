@@ -3,19 +3,18 @@ import { UserModel } from '@rangers-site/entities';
 import { StatusCodes } from 'http-status-codes';
 
 import { BaseRoute } from './base.route';
-import { RootRoute } from './root.route';
 
 export class GlobalRoute extends BaseRoute {
 
     public constructor() {
         super();
-        this.createRoute('all', '', GlobalRoute.globalRoute);
+        this.createRoute('all', '*', this.globalRoute.bind(this));
     }
 
     /**
      * All requests to the server go through this router (except when fetching static files).
      */
-    private static async globalRoute(request: Request, response: Response, next?: NextFunction): Promise<Response | void> {
+    private async globalRoute(request: Request, response: Response, next?: NextFunction): Promise<Response | void> {
 
         if (!request.session) {
             return GlobalRoute.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoSession');
@@ -29,8 +28,7 @@ export class GlobalRoute extends BaseRoute {
                 request.logout();
                 response.locals.error = 'This account is disabled, you cannot log in.';
                 if (request.session) {
-                    // noinspection JSDeprecatedSymbols
-                    (request.session as any).save(() => RootRoute.homePage(request, response));
+                    request.session.save(() => response.redirect('/'));
                 }
                 return;
             }
