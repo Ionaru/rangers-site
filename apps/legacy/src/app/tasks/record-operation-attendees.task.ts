@@ -56,7 +56,7 @@ export class RecordOperationAttendeesTask {
 
     private async checkAttendance(operation: OperationModel): Promise<void> {
 
-        const clients = await this.teamspeak.getClientsInChannel(TeamspeakService.operationsChannel);
+        const clients = await this.teamspeak.getClientsInChannel(Number(process.env.RANGERS_TS_OPERATIONS_CHANNEL));
 
         RecordOperationAttendeesTask.debug(`${clients.length} people currently here!`);
 
