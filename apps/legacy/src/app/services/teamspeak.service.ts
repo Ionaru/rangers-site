@@ -219,9 +219,11 @@ export class TeamspeakService implements IService {
 
         this.client.once('close', (e?: string) => {
             process.emitWarning(`Connection closed, reason: ${e}`);
+            delete this.clientId;
         });
 
         this.client.on('clientconnect', (client) => {
+            // User connects to TS.
             TeamspeakService.debug(`clientconnect -> ${client.client.uniqueIdentifier}`);
             this.syncClient(client.client);
         });
