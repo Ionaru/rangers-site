@@ -140,12 +140,9 @@ export class BaseRoute extends AjvValidationRoute {
     }
 
     protected static checkAdmin(request: Request, response: Response, nextFunction: NextFunction): NextFunction | Response {
-        if (request.user && request.user.discordUser && process.env.RANGERS_ADMINS) {
-            const admins = process.env.RANGERS_ADMINS.split(',');
-            if (admins.includes(request.user.discordUser)) {
-                BaseRoute.debug(`${request.user} used admin override for route: '${request.path}'`);
-                return nextFunction;
-            }
+        if (BaseRoute.isAdmin(request)) {
+            BaseRoute.debug(`${request.user} used admin override for route: '${request.path}'`);
+            return nextFunction;
         }
         return BaseRoute.sendNotFound(response, request.originalUrl);
     }
@@ -277,6 +274,23 @@ export class BaseRoute extends AjvValidationRoute {
         if (fs.existsSync(oldImage)) {
             fs.unlinkSync(oldImage);
         }
+    }
+
+    protected static isAdmin(request: Request): boolean {
+        if (!request.user || !request.user.discordUser) {
+            return false;
+        }
+
+        const admins = process.env.RANGERS_ADMINS?.split(',') || [];
+        return admins.includes(request.user.discordUser);
+    }
+
+    protected static isAboutSelf(request: Request<{ id: number | string }>): boolean {
+        if (!request.user) {
+            return false;
+        }
+
+        return request.params.id === request.user.id.toString();
     }
 
     @BaseRoute.requestDecorator(BaseRoute.checkLogin)

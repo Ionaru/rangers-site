@@ -59,10 +59,9 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async editUser(request: Request<{id: number}>, response: Response) {
+    private async editUser(request: Request<{ id: number }>, response: Response) {
 
-        const admins = process.env.RANGERS_ADMINS?.split(',');
-        if (!admins?.includes(response.locals.user.discordUser) && request.params.id === response.locals.user.id.toString()) {
+        if (UsersRoute.isAboutSelf(request) && !UsersRoute.isAdmin(request)) {
             response.locals.error = 'You cannot edit yourself!';
             return this.editUserPage(request, response);
         }
@@ -148,7 +147,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async editUserPage(request: Request<{id: number}>, response: Response) {
+    private async editUserPage(request: Request<{ id: number }>, response: Response) {
         const user = await UserModel.findOne(request.params.id,
             { relations: ['rank', 'roles', 'badges', 'ts3User'] },
         );
@@ -185,7 +184,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async userDeletePage(request: Request<{id: number}>, response: Response) {
+    private async userDeletePage(request: Request<{ id: number }>, response: Response) {
         const user = await UserModel.findOne(request.params.id);
 
         if (!user) {
@@ -197,9 +196,9 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async deleteUser(request: Request<{id: number}>, response: Response) {
+    private async deleteUser(request: Request<{ id: number }>, response: Response) {
 
-        if (request.params.id === response.locals.user.id.toString()) {
+        if (UsersRoute.isAboutSelf(request)) {
             response.locals.error = 'You cannot delete yourself!';
             return this.userDeletePage(request, response);
         }
@@ -236,7 +235,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async syncUser(request: Request<{id: number}>, response: Response) {
+    private async syncUser(request: Request<{ id: number }>, response: Response) {
 
         const user = await UserModel.findOne(request.params.id);
 
