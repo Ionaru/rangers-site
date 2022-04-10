@@ -19,37 +19,41 @@ import { TeamspeakService } from '../services/teamspeak.service';
 import { BaseRoute } from './base.route';
 
 interface IUserInput {
-    ts3User?: number;
+    enjinUser: string;
+    ts3User: string;
 }
 
 export class UsersRoute extends BaseRoute {
 
-    private static teamspeak: TeamspeakService;
-    private static enjin: EnjinService;
-
     private readonly userValidator: ValidateFunction<IUserInput>;
 
-    public constructor(teamSpeak: TeamspeakService, enjin: EnjinService) {
+    public constructor(
+        private readonly teamspeak: TeamspeakService,
+        private readonly enjin: EnjinService,
+    ) {
         super();
-        UsersRoute.teamspeak = teamSpeak;
-        UsersRoute.enjin = enjin;
-        this.createRoute('get', '/', UsersRoute.usersPage);
+        this.createRoute('get', '/', this.usersPage.bind(this));
 
-        this.createRoute('get', '/edit/:id', UsersRoute.editUserPage);
+        this.createRoute('get', '/edit/:id', this.editUserPage.bind(this));
         this.createRoute('post', '/edit/:id', this.editUser.bind(this));
 
-        this.createRoute('get', '/delete/:id', UsersRoute.userDeletePage);
-        this.createRoute('post', '/delete/:id', UsersRoute.deleteUser);
+        this.createRoute('get', '/delete/:id', this.userDeletePage.bind(this));
+        this.createRoute('post', '/delete/:id', this.deleteUser.bind(this));
 
-        this.createRoute('get', '/sync/:id', UsersRoute.syncUser);
+        this.createRoute('get', '/sync/:id', this.syncUser.bind(this));
 
         this.userValidator = this.createValidateFunction({
             properties: {
+                enjinUser: {
+                    nullable: true,
+                    type: 'string',
+                },
                 ts3User: {
                     nullable: true,
-                    type: 'number',
+                    type: 'string',
                 },
             },
+            required: ['enjinUser', 'ts3User'],
             type: 'object',
         });
     }
@@ -60,12 +64,12 @@ export class UsersRoute extends BaseRoute {
         const admins = process.env.RANGERS_ADMINS?.split(',');
         if (!admins?.includes(response.locals.user.discordUser) && request.params.id === response.locals.user.id.toString()) {
             response.locals.error = 'You cannot edit yourself!';
-            return UsersRoute.editUserPage(request, response);
+            return this.editUserPage(request, response);
         }
 
         if (!this.userValidator(request.body)) {
             response.locals.error = this.userValidator.errors as DefinedError[];
-            return UsersRoute.editUserPage(request, response);
+            return UsersRoute.renderValidationError(response, this.userValidator, this.editUserPage.bind(this));
         }
 
         const user = await UserModel.findOne(request.params.id,
@@ -112,12 +116,23 @@ export class UsersRoute extends BaseRoute {
         // user.badges = badges;
         */
 
-        let ts3User: TeamspeakUserModel | undefined | null = null;
+        let enjinUser: typeof user.enjinUser = null;
+        if (request.body.enjinUser) {
+            const existingEnjinUser = await UserModel.findOne({ enjinUser: request.body.enjinUser });
+            if (existingEnjinUser) {
+                response.locals.error = `Enjin user already assigned to another user: ${existingEnjinUser.name}`;
+                return this.editUserPage(request, response);
+            }
+            enjinUser = request.body.enjinUser;
+        }
+        user.enjinUser = enjinUser;
+
+        let ts3User: typeof user.ts3User = null;
         if (request.body.ts3User) {
             ts3User = await TeamspeakUserModel.findOne(request.body.ts3User);
             if (!ts3User) {
                 response.locals.error = 'Teamspeak user not found.';
-                return UsersRoute.editUserPage(request, response);
+                return this.editUserPage(request, response);
             }
         }
 
@@ -125,13 +140,15 @@ export class UsersRoute extends BaseRoute {
 
         await user.save();
 
-        await UsersRoute.teamspeak.syncUser(user);
+        if (user.ts3User) {
+            await this.teamspeak.syncUser(user);
+        }
 
         return response.redirect('/users');
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async editUserPage(request: Request<{id: number}>, response: Response) {
+    private async editUserPage(request: Request<{id: number}>, response: Response) {
         const user = await UserModel.findOne(request.params.id,
             { relations: ['rank', 'roles', 'badges', 'ts3User'] },
         );
@@ -144,7 +161,7 @@ export class UsersRoute extends BaseRoute {
         const roles = await RoleModel.find();
         const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
         const rankEnjinTags = await RankModel.getEnjinTags();
-        const enjinResponse = await UsersRoute.enjin.getUsersWithTags(...rankEnjinTags);
+        const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
 
         const enjinUsers = sortArrayByObjectProperty(objectToObjectsArray(enjinResponse), (x) => x.username);
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -152,7 +169,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
-    private static async usersPage(_request: Request, response: Response) {
+    private async usersPage(_request: Request, response: Response) {
         const users = await UserModel.doQuery()
             .leftJoinAndSelect(`${UserModel.alias}.rank`, RankModel.alias)
             .leftJoinAndSelect(`${UserModel.alias}.roles`, RoleModel.alias)
@@ -162,13 +179,13 @@ export class UsersRoute extends BaseRoute {
             .getMany();
 
         const rankEnjinTags = await RankModel.getEnjinTags();
-        const enjinUsers = await UsersRoute.enjin.getUsersWithTags(...rankEnjinTags);
+        const enjinUsers = await this.enjin.getUsersWithTags(...rankEnjinTags);
 
         return response.render('pages/users/index.hbs', { enjinUsers, users });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async userDeletePage(request: Request<{id: number}>, response: Response) {
+    private async userDeletePage(request: Request<{id: number}>, response: Response) {
         const user = await UserModel.findOne(request.params.id);
 
         if (!user) {
@@ -180,11 +197,11 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async deleteUser(request: Request<{id: number}>, response: Response) {
+    private async deleteUser(request: Request<{id: number}>, response: Response) {
 
         if (request.params.id === response.locals.user.id.toString()) {
             response.locals.error = 'You cannot delete yourself!';
-            return UsersRoute.userDeletePage(request, response);
+            return this.userDeletePage(request, response);
         }
 
         const user = await UserModel.findOne(request.params.id);
@@ -219,7 +236,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private static async syncUser(request: Request<{id: number}>, response: Response) {
+    private async syncUser(request: Request<{id: number}>, response: Response) {
 
         const user = await UserModel.findOne(request.params.id);
 
@@ -229,15 +246,15 @@ export class UsersRoute extends BaseRoute {
 
         if (!user.enjinUser) {
             response.locals.error = `User ${user.name} has no linked Enjin account, cannot sync.`;
-            return UsersRoute.usersPage(request, response);
+            return this.usersPage(request, response);
         }
 
         if (!user.ts3User) {
             response.locals.error = `User ${user.name} has no linked TS3 account, cannot sync.`;
-            return UsersRoute.usersPage(request, response);
+            return this.usersPage(request, response);
         }
 
-        const userTags = await UsersRoute.enjin.getUserTags(user.enjinUser);
+        const userTags = await this.enjin.getUserTags(user.enjinUser);
 
         const rank = await RankModel.findOne({
             relations: ['enjinTag', 'teamspeakRank'],
@@ -259,7 +276,7 @@ export class UsersRoute extends BaseRoute {
         user.badges = badges;
         await user.save();
 
-        await UsersRoute.teamspeak.syncUser(user);
+        await this.teamspeak.syncUser(user);
 
         return response.redirect('/users');
     }
