@@ -118,7 +118,7 @@ export class UsersRoute extends BaseRoute {
         let enjinUser: typeof user.enjinUser = null;
         if (request.body.enjinUser) {
             const existingEnjinUser = await UserModel.findOne({ enjinUser: request.body.enjinUser });
-            if (existingEnjinUser) {
+            if (existingEnjinUser && existingEnjinUser.id !== user.id) {
                 response.locals.error = `Enjin user already assigned to another user: ${existingEnjinUser.name}`;
                 return this.editUserPage(request, response);
             }
