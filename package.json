@@ -73,7 +73,7 @@
     },
     "devDependencies": {
         "@ionaru/eslint-config": "^6.2.0",
-        "@nrwl/cli": "13.8.8",
+        "@nrwl/cli": "13.10.1",
         "@nrwl/eslint-plugin-nx": "13.10.1",
         "@nrwl/express": "13.10.1",
         "@nrwl/jest": "13.10.1",
