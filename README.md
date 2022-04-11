@@ -7,6 +7,13 @@ Additionally, a discord bot tracks LOAs and TS3 integration tracks activity.
 
 The project uses the Nx-style monorepo pattern, more on https://nx.dev/.
 
+The project in its current form has several parts:
+- The website is a server-side rendered (SSR) application that uses the [Express](https://expressjs.com/) framework. But abstracted through https://github.com/Ionaru/micro-web-service. Templating is done with [Handlebars](https://handlebarsjs.com/).
+- The Discord bot uses the [Discord.js](https://discord.js.org/) framework and [/create](https://slash-create.js.org/), it listens to `/loa` and `/loa-cancel` commands in a specific Discord channel.
+- Syncronization between Enjin and this website is done through a few tasks in [apps/legacy/src](apps/legacy/src/app/tasks) and mostly uses a regular requests library ([Axios](https://axios-http.com/)) as seen in [apps/legacy/src/app/services/enjin.service.ts](apps/legacy/src/app/services/enjin.service.ts).
+- Interaction with Teamspeak is handled through the [ts3-nodejs-library](https://multivit4min.github.io/TS3-NodeJS-Library/), it records who is in the Operation TS3 channel during operation times, and adds/removes roles where needed.
+- The database is accessed through [TypoORM](https://typeorm.io/) and has a [MySQL](https://www.mysql.com/) backend.
+
 Create a `.env` file in the root of the repository and add all the options from the [Environment variables](#environment-variables) section.
 
 ### Useful project links
