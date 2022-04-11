@@ -13,6 +13,7 @@ import {
 import { DefinedError, ValidateFunction } from 'ajv';
 import { In } from 'typeorm';
 
+import { debug } from '../../debug';
 import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
@@ -24,6 +25,8 @@ interface IUserInput {
 }
 
 export class UsersRoute extends BaseRoute {
+
+    protected static readonly debug = debug.extend(UsersRoute.name);
 
     private readonly userValidator: ValidateFunction<IUserInput>;
 
@@ -61,15 +64,21 @@ export class UsersRoute extends BaseRoute {
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
     private async editUser(request: Request<{ id: number }>, response: Response) {
 
+        UsersRoute.debug('editUser', request.params.id);
+
         if (UsersRoute.isAboutSelf(request) && !UsersRoute.isAdmin(request)) {
             response.locals.error = 'You cannot edit yourself!';
             return this.editUserPage(request, response);
         }
 
+        UsersRoute.debug('editUser', 'validating');
+
         if (!this.userValidator(request.body)) {
             response.locals.error = this.userValidator.errors as DefinedError[];
             return UsersRoute.renderValidationError(response, this.userValidator, this.editUserPage.bind(this));
         }
+
+        UsersRoute.debug('editUser', 'validated');
 
         const user = await UserModel.findOne(request.params.id,
             { relations: ['rank', 'roles', 'badges'] },
@@ -77,6 +86,8 @@ export class UsersRoute extends BaseRoute {
         if (!user) {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
+
+        UsersRoute.debug('editUser', 'found user');
 
         // NOTE: Ranks, roles and badges are synced with Enjin currently.
 

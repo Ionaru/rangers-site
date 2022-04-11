@@ -305,9 +305,14 @@ export class BaseRoute extends AjvValidationRoute {
         const user = request.user;
         const requiredPermission = params[0] as Permission;
 
+        BaseRoute.debug(`Checking permission "${requiredPermission}" for ${user}`);
+
         if (user && BaseRoute.checkHasPermission(user, requiredPermission)) {
+            BaseRoute.debug(`${user} has permission "${requiredPermission}"`);
             return nextFunction;
         }
+
+        BaseRoute.debug(`${user} does not have permission "${requiredPermission}"`);
 
         return () => BaseRoute.sendNotFound(response, request.originalUrl);
     }
