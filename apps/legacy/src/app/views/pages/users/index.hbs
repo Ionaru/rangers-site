@@ -6,67 +6,68 @@
     <div class="table-responsive">
         <table class="table">
             <thead>
-            <tr>
-                <th scope="col">
-                    <i class="fab fa-discord"></i>
-                    Name
-                </th>
-                <th scope="col">
-                    <i class="fas fa-globe"></i>
-                    Name
-                </th>
-                <th scope="col">
-                    <i class="fab fa-teamspeak"></i>
-                    Name
-                </th>
-                <th scope="col">Rank</th>
-                <th scope="col">Roles</th>
-                <th scope="col">Badges</th>
-                {{#hasPermission user 'EDIT_USER_RANK'}}
+                <tr>
+                    <th scope="col">
+                        <i class="fab fa-discord"></i>
+                        Name
+                    </th>
+                    <th scope="col">
+                        <i class="fas fa-globe"></i>
+                        Name
+                    </th>
+                    <th scope="col">
+                        <i class="fab fa-teamspeak"></i>
+                        Name
+                    </th>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Roles</th>
+                    <th scope="col">Badges</th>
+                    {{#hasPermission user 'EDIT_USER_RANK'}}
                     <th scope="col" class="text-right">Actions</th>
-                {{/hasPermission}}
-            </tr>
+                    {{/hasPermission}}
+                </tr>
             </thead>
             <tbody>
-            {{#each users}}
+                {{#each users}}
                 {{#if this.discordUser}}
-                    <tr>
-                        <th class="align-middle">{{this.name}}</th>
-                        <th class="align-middle">
-                            {{#with (lookup ../enjinUsers this.enjinUser)}}
-                                {{this.username}}
-                            {{/with}}
-                        </th>
-                        <th class="align-middle">{{this.ts3User.nickname}}</th>
-                        <td class="align-middle">
-                            {{this.rank.name}}
-                        </td>
-                        <td class="align-middle">
-                            {{#each this.roles}}
-                                {{this.name}}{{#unless @last}},{{/unless}}
-                            {{/each}}
-                        </td>
-                        <td class="align-middle">
-                            {{#each this.badges}}
-                                {{this.name}}{{#unless @last}},{{/unless}}
-                            {{/each}}
-                        </td>
-                        {{#hasPermission ../user 'EDIT_USER_RANK'}}
-                            <td class="text-right align-middle">
-                                <a href="/users/sync/{{../this.id}}" class="btn btn-info">
-                                    <i class="fas fa-sync fa-fw"></i>
-                                </a>
-                                <a href="/users/edit/{{../this.id}}" class="btn btn-warning">
-                                    <i class="fas fa-pen fa-fw"></i>
-                                </a>
-                                <a href="/users/delete/{{../this.id}}" class="btn btn-danger">
-                                    <i class="fas fa-user-slash fa-fw"></i>
-                                </a>
-                            </td>
-                        {{/hasPermission}}
-                    </tr>
+                <tr>
+                    <th class="align-middle">{{this.name}}</th>
+                    <th class="align-middle">
+                        {{#with (lookup ../enjinUsers this.enjinUser)}}
+                        {{this.username}}
+                        {{/with}}
+                    </th>
+                    <th class="align-middle">{{this.ts3User.nickname}}</th>
+                    <td class="align-middle">
+                        {{this.rank.name}}
+                    </td>
+                    <td class="align-middle">
+                        {{#each this.roles}}
+                        {{this.name}}{{#unless @last}},{{/unless}}
+                        {{/each}}
+                    </td>
+                    <td class="align-middle">
+                        {{#each this.badges}}
+                        {{this.name}}{{#unless @last}},{{/unless}}
+                        {{/each}}
+                    </td>
+                    {{#hasPermission ../user 'EDIT_USER_RANK'}}
+                    <td class="text-right align-middle">
+                        <a href="/users/sync/{{../this.id}}" class="btn btn-info"
+                            title="Fetch ranks, roles and badges from Enjin and sync to other platforms if possible">
+                            <i class="fas fa-sync fa-fw"></i>
+                        </a>
+                        <a href="/users/edit/{{../this.id}}" class="btn btn-warning">
+                            <i class="fas fa-pen fa-fw"></i>
+                        </a>
+                        <a href="/users/delete/{{../this.id}}" class="btn btn-danger">
+                            <i class="fas fa-user-slash fa-fw"></i>
+                        </a>
+                    </td>
+                    {{/hasPermission}}
+                </tr>
                 {{/if}}
-            {{/each}}
+                {{/each}}
             </tbody>
         </table>
     </div>

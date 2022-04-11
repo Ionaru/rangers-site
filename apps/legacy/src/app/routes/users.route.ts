@@ -255,12 +255,10 @@ export class UsersRoute extends BaseRoute {
         }
 
         if (!user.enjinUser) {
-            response.locals.error = `User ${user.name} has no linked Enjin account, cannot sync.`;
-            return this.usersPage(request, response);
-        }
-
-        if (!user.ts3User) {
-            response.locals.error = `User ${user.name} has no linked TS3 account, cannot sync.`;
+            user.rank = null;
+            user.roles = [];
+            user.badges = [];
+            await user.save();
             return this.usersPage(request, response);
         }
 
@@ -286,7 +284,9 @@ export class UsersRoute extends BaseRoute {
         user.badges = badges;
         await user.save();
 
-        await this.teamspeak.syncUser(user);
+        if (user.ts3User) {
+            await this.teamspeak.syncUser(user);
+        }
 
         return response.redirect('/users');
     }
