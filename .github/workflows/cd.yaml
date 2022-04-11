@@ -27,7 +27,7 @@ jobs:
 
         strategy:
             matrix:
-                app: [entities, interfaces, api, legacy]
+                app: [entities, interfaces, legacy]
 
         runs-on: ubuntu-latest
 
@@ -52,7 +52,7 @@ jobs:
 
         strategy:
             matrix:
-                app: [api, legacy]
+                app: [legacy]
 
         runs-on: ubuntu-latest
         steps:
@@ -84,7 +84,7 @@ jobs:
 
         strategy:
             matrix:
-                app: [api, legacy]
+                app: [legacy]
 
         runs-on: ubuntu-latest
         steps:

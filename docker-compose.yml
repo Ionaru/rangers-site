@@ -2,20 +2,6 @@ version: '3.8'
 
 services:
 
-    api:
-        # Main API gateway
-        image: docker.saturnserver.org/rangers/api:latest
-        environment:
-            - DEBUG
-            - RANGERS_API_PORT
-            - RANGERS_API_SESSION_KEY
-            - RANGERS_API_SESSION_SECRET
-            - RANGERS_API_SESSION_SECURE
-            - RANGERS_API_LEGACY_URL
-        ports:
-            - "${RANGERS_API_PORT:-2000}:${RANGERS_API_PORT:-2000}"
-        restart: unless-stopped
-
     legacy:
         # The old monolithic version of this app.
         image: docker.saturnserver.org/rangers/legacy:latest
