@@ -33,5 +33,7 @@ services:
             - RANGERS_TASK_SYNC_BADGES
             - RANGERS_TASK_SYNC_ENJIN_TAGS
         restart: unless-stopped
+        ports:
+            - "${RANGERS_PORT:-2000}:${RANGERS_PORT:-2000}"
         volumes:
             - ${RANGERS_CERTS_VOLUME}:/app/data
