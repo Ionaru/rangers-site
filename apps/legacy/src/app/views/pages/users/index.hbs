@@ -1,6 +1,7 @@
 <div class="container-fluid pt-3">
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between align-items-center">
         <h1>Users</h1>
+            <input id="user-search" type="text" class="form-control w-auto" placeholder="Search">
     </div>
 
     <div class="table-responsive">
@@ -31,13 +32,13 @@
                 {{#each users}}
                 {{#if this.discordUser}}
                 <tr>
-                    <th class="align-middle">{{this.name}}</th>
-                    <th class="align-middle">
+                    <td class="align-middle user-name font-weight-bold">{{this.name}}</td>
+                    <td class="align-middle font-weight-bold">
                         {{#with (lookup ../enjinUsers this.enjinUser)}}
                         {{this.username}}
                         {{/with}}
-                    </th>
-                    <th class="align-middle">{{this.ts3User.nickname}}</th>
+                    </td>
+                    <td class="align-middle font-weight-bold">{{this.ts3User.nickname}}</td>
                     <td class="align-middle">
                         {{this.rank.name}}
                     </td>
@@ -72,3 +73,15 @@
         </table>
     </div>
 </div>
+
+<script>
+    const searchField = document.getElementById('user-search');
+    searchField.addEventListener('keyup', (e) => {
+        const search = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row) => {
+            const name = row.querySelector('.user-name').innerText.toLowerCase();
+            row.style.display = name.includes(search) ? 'table-row' : 'none';
+        });
+    });
+</script>
