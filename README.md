@@ -9,6 +9,12 @@ The project uses the Nx-style monorepo pattern, more on https://nx.dev/.
 
 Create a `.env` file in the root of the repository and add all the options from the [Environment variables](#environment-variables) section.
 
+### Useful project links
+- [Legacy app folder](apps/legacy/src)
+- [Legacy app database migrations](apps/legacy/migrations)
+- [Legacy app dockerfile](apps/legacy/Dockerfile)
+- [Entities folder](libs/entities/src/lib)
+
 ### Commands
 
 - `npm run start`: Starts the development server.
@@ -26,12 +32,22 @@ This program should be deployed using Docker or Docker-Compose.
 #### Discord app
 
 The program needs access to a Discord Developer Application to function.
-More information here: https://discord.com/developers/applications
+More information here: https://discord.com/developers/applications.
 
 #### Teamspeak credentials
 
 The programs needs access to a Teamspeak server to function.
 A ServerQuery username and password need to be created on a TS3 server and entered in the variables below.
+
+#### Database SSL certificates
+
+Three certificates are required in the `data/` folder to securely connect to a database.
+
+- `ca.pem`
+- `client-cert.pem`
+- `client-key.pem`
+
+More information on https://dev.mysql.com/doc/refman/5.7/en/encrypted-connections.html.
 
 #### Environment variables
 
