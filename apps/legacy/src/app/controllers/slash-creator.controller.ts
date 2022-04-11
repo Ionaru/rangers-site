@@ -35,18 +35,6 @@ export class SlashCreatorController implements IController<SlashCreatorService, 
         SlashCreatorController.debug('Ready');
     }
 
-    public static getCommandGuilds(): string[] {
-        const guildsRaw = process.env.BB_DISCORD_GUILDS;
-
-        if (!guildsRaw) {
-            throw new Error('Command configuration error!');
-        }
-
-        return guildsRaw.toString()
-            .split(',')
-            .map((id) => id.trim());
-    }
-
     public async start(...[discordService]: [DiscordService]): Promise<SlashCreatorService> {
         SlashCreatorController.debug('Start');
         this.creator.withServer(new GatewayServer(discordService.getCommandHandler()));
