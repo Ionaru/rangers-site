@@ -1,96 +1,65 @@
-# RangersSite
+# 7R Website, activity tracker and Discord bot
 
-This project was generated using [Nx](https://nx.dev).
+This repo contains the code for a website and user-management system in use by the 7R community.
+Additionally, a discord bot tracks LOAs and TS3 integration tracks activity.
 
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+## Development
 
-🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
+The project uses the Nx-style monorepo pattern, more on https://nx.dev/.
 
-## Adding capabilities to your workspace
+Create a `.env` file in the root of the repository and add all the options from the [Environment variables](#environment-variables) section.
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+### Commands
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects
-as well.
+- `npm run start`: Starts the development server.
+- `npm run lint`: Lints the code for errors and style violations.
+- `npm run nx build-image legacy -- --tag latest`: Build a Docker image of the Legacy app.
+- `npm run migrate -- -- -c legacy`: Run database migrations for the legacy app/connection.
+- `npm run typeorm -- migration:generate -c legacy -n "Migration purpose"`: Generate a migration for the legacy app/connection.
 
-Below are our core plugins:
+## Deployment
 
-- [React](https://reactjs.org)
-    - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-    - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-    - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-    - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-    - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-    - `npm install --save-dev @nrwl/node`
+This program should be deployed using Docker or Docker-Compose.
 
-There are also many [community plugins](https://nx.dev/nx-community) you could add.
+### Configuration
 
-## Generate an application
+#### Discord app
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+The program needs access to a Discord Developer Application to function.
+More information here: https://discord.com/developers/applications
 
-> You can use any of the plugins above to generate applications as well.
+#### Teamspeak credentials
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+The programs needs access to a Teamspeak server to function.
+A ServerQuery username and password need to be created on a TS3 server and entered in the variables below.
 
-## Generate a library
+#### Environment variables
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+Environment variables are used to store most configuration data.
 
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are shareable across libraries and applications. They can be imported from `@rangers-site/mylib`.
-
-## Development server
-
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you
-change any of the source files.
-
-## Code scaffolding
-
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use
-the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
-
-## ☁ Nx Cloud
-
-### Computation Memoization in the Cloud
-
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that
-are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s
-advanced code generation and project dependency graph, plus a unified experience for both frontend and backend
-developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+- `DEBUG` (optional): Parameters for the debug package. See <https://www.npmjs.com/package/debug> for more information.
+- `RANGERS_ADMINS` (optional): A comma-separated list of Discord IDs of users who are "admin" on the website.
+- `RANGERS_COOKIE_NAME`: The name of the cookie used to store the user's session.
+- `RANGERS_COOKIE_SECRET`: The secret used to sign the cookie.
+- `RANGERS_DB_HOST`: The hostname of the database.
+- `RANGERS_DB_NAME`: The name of the database.
+- `RANGERS_DB_PASS`: The password of the database account.
+- `RANGERS_DB_PORT`: The port of the database.
+- `RANGERS_DB_USER`: The username of the database account.
+- `RANGERS_DISCORD_CLIENT_ID`: The client ID of the Discord app.
+- `RANGERS_DISCORD_CLIENT_SECRET`: The client secret of the Discord app.
+- `RANGERS_DISCORD_RETURN_URL`: The URL to return to after logging in with Discord, must match one configured in the Discord application.
+- `RANGERS_DISCORD_TOKEN`: The token of the Discord app.
+- `RANGERS_ENJIN_DOMAIN`: The domain of the Enjin website.
+- `RANGERS_ENJIN_KEY`: The API key of the Enjin website.
+- `RANGERS_PORT`: The port the website should listen on.
+- `RANGERS_TS_HOST`: The hostname of the Teamspeak server.
+- `RANGERS_TS_NICKNAME`: The nickname of the bot on the Teamspeak server.
+- `RANGERS_TS_PASSWORD`: The password of the bot on the Teamspeak server.
+- `RANGERS_TS_PORT`: The port of the Teamspeak server.
+- `RANGERS_TS_QUERY_PORT`: The query port of the Teamspeak server.
+- `RANGERS_TS_USERNAME`: The username of the bot on the Teamspeak server, can differ from the nickname.
+- `RANGERS_TASK_SYNC_RANKS` (optional, default false): Whether to sync the ranks of users with Enjin.
+- `RANGERS_TASK_SYNC_ROLES` (optional, default false): Whether to sync the roles of users with Enjin.
+- `RANGERS_TASK_SYNC_BADGES` (optional, default false): Whether to sync the badges of users with Enjin.
+- `RANGERS_TASK_SYNC_ENJIN_TAGS` (optional, default false): Whether to sync available ranks, roles and badges with Enjin.
