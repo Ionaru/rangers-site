@@ -34,6 +34,7 @@ export class BadgeModel extends BaseModel implements IAssignableModel, IImageabl
     public users!: UserModel[];
 
     @ManyToOne(() => TeamspeakRankModel, {
+        eager: true,
         nullable: true,
     })
     public teamspeakRank?: TeamspeakRankModel | null;
