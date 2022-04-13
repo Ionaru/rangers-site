@@ -54,11 +54,6 @@ export class TeamSpeakBotController implements IController<TeamspeakService> {
 
     public async stop(): Promise<void> {
         TeamSpeakBotController.debug('Stop');
-        try {
-            await this.client.logout();
-            await this.client.quit();
-        } catch {
-            process.emitWarning('logout() or quit() failed, assuming logged out.');
-        }
+        this.client.forceQuit();
     }
 }
