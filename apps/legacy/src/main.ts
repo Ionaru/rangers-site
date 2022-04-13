@@ -106,9 +106,9 @@ const start = async () => {
         await databaseController.stop();
     };
 
-    const exit = () => {
-        debug('Auf Wiedersehen');
-        process.exit(0);
+    const exit = (code = 0) => {
+        debug(`Auf Wiedersehen (${code})`);
+        process.exit(code);
     };
 
     handleExceptions(stop, exit);
