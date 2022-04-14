@@ -205,16 +205,27 @@ export class TeamspeakService implements IService {
         return client;
     }
 
+    private async reconnect() {
+        TeamspeakService.debug('Reconnecting...');
+        this.client.removeAllListeners('clientconnect');
+        this.client.forceQuit();
+        delete this.clientId;
+        return this.connect();
+    }
+
     private async connect() {
         if (this.clientId) {
             return;
         }
 
+        this.client.once('error', (err: Error) => {
+            TeamspeakService.debug(`Error: ${err}`);
+            this.reconnect();
+        });
+
         this.client.once('close', (e?: string) => {
-            process.emitWarning(`Connection closed, reason: ${e}`);
-            this.client.removeAllListeners('clientconnect');
-            delete this.clientId;
-            this.connect();
+            TeamspeakService.debug(`Connection closed, reason: ${e}`);
+            this.reconnect();
         });
 
         this.client.on('clientconnect', (client) => {
