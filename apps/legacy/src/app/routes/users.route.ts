@@ -158,13 +158,15 @@ export class UsersRoute extends BaseRoute {
 
         const ranks = await RankModel.find();
         const roles = await RoleModel.find();
+        const badges = await BadgeModel.find();
         const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
         const rankEnjinTags = await RankModel.getEnjinTags();
         const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
 
         const enjinUsers = sortArrayByObjectProperty(objectToObjectsArray(enjinResponse), (x) => x.username);
+
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        return response.render('pages/users/edit.hbs', { enjinUsers, ranks, roles, ts3Users, user_: user });
+        return response.render('pages/users/edit.hbs', { badges, enjinUsers, ranks, roles, ts3Users, user_: user });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
