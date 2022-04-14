@@ -1,5 +1,5 @@
 import { filterArray } from '@ionaru/array-utils';
-import { BadgeModel, RankModel, RoleModel, UserModel } from '@rangers-site/entities';
+import { BadgeModel, RankModel, RoleModel, TeamspeakUserModel, UserModel } from '@rangers-site/entities';
 import { IService } from '@rangers-site/interfaces';
 import {
     ClientType,
@@ -178,7 +178,22 @@ export class TeamspeakService implements IService {
         await this.applyRankToUser(user);
     }
 
+    public async syncClientDatabase(client: TeamSpeakClient) {
+        const existingTeamspeakUser = await TeamspeakUserModel.findOne({ uid: client.uniqueIdentifier });
+        if (existingTeamspeakUser) {
+            if (existingTeamspeakUser.nickname !== client.nickname) {
+                existingTeamspeakUser.nickname = client.nickname;
+                await existingTeamspeakUser.save();
+            }
+        } else {
+            const teamspeakUser = new TeamspeakUserModel(client.uniqueIdentifier, client.nickname);
+            await teamspeakUser.save();
+        }
+    }
+
     public async syncClient(client: TeamSpeakClient) {
+        await this.syncClientDatabase(client);
+
         const user = await UserModel.findOne({
             relations: ['ts3User', 'rank', 'roles', 'badges'],
             where: { ts3User: { uid: client.uniqueIdentifier } },
