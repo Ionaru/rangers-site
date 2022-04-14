@@ -243,10 +243,12 @@ export class TeamspeakService implements IService {
             this.reconnect();
         });
 
-        this.client.on('clientconnect', (client) => {
+        this.client.on('clientconnect', (event) => {
             // User connects to TS.
-            TeamspeakService.debug(`clientconnect -> ${client.client.uniqueIdentifier}`);
-            this.syncClient(client.client);
+            TeamspeakService.debug(`clientconnect -> ${event.client.uniqueIdentifier}`);
+            if (!event.client.isQuery()) {
+                this.syncClient(event.client);
+            }
         });
 
         TeamspeakService.debug('Connecting to TS3...');
