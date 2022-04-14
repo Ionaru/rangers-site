@@ -66,8 +66,8 @@ const start = async () => {
 
     // Tasks
 
-    const operationAttendeesService = new RecordOperationAttendeesTask(teamspeakService, databaseService);
-    operationAttendeesService.start();
+    const operationAttendeesTask = new RecordOperationAttendeesTask(teamspeakService, databaseService);
+    operationAttendeesTask.start();
 
     const syncEnjinTagsTask = new SyncEnjinTagsTask(enjinService);
     syncEnjinTagsTask.start();
