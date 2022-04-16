@@ -82,6 +82,7 @@ Environment variables are used to store most configuration data.
 - `RANGERS_TS_PORT`: The port of the Teamspeak server.
 - `RANGERS_TS_QUERY_PORT`: The query port of the Teamspeak server.
 - `RANGERS_TS_USERNAME`: The username of the bot on the Teamspeak server, can differ from the nickname.
+- `RANGERS_TS_OPERATIONS_CHANNEL`: The TS3 channel ID of the Operations channel, used to register player activity.
 - `RANGERS_TASK_SYNC_RANKS` (optional, default false): Whether to sync the ranks of users with Enjin.
 - `RANGERS_TASK_SYNC_ROLES` (optional, default false): Whether to sync the roles of users with Enjin.
 - `RANGERS_TASK_SYNC_BADGES` (optional, default false): Whether to sync the badges of users with Enjin.

@@ -28,6 +28,7 @@ services:
             - RANGERS_TS_PORT
             - RANGERS_TS_QUERY_PORT
             - RANGERS_TS_USERNAME
+            - RANGERS_TS_OPERATIONS_CHANNEL
             - RANGERS_TASK_SYNC_RANKS
             - RANGERS_TASK_SYNC_ROLES
             - RANGERS_TASK_SYNC_BADGES
