@@ -1,19 +1,29 @@
 <div class="container-fluid pt-3">
     <div class="ct-chart"></div>
     <script>
-        const opsLimit = 50;
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+
+        const opsLimit = params.show ?? 52;
+        const opDates = [{{#each ops}}'{{this.date}}',{{/each}}].reverse();
+        const opAttendance = [{{#each ops}}{{this.playerCount}},{{/each}}].reverse();
+        const loas = [{{#each ops}}{{this.loas}},{{/each}}].reverse();
+
         const data = {
-            labels: [{{#each ops}}'{{this.date}}',{{/each}}].reverse().slice(-1 * opsLimit),
+            labels: opDates.slice(-1 * opsLimit),
             series: [
                 {
                     name: 'Attendance',
-                    data: [{{#each ops}}{{this.playerCount}},{{/each}}].reverse().slice(-1 * opsLimit)
+                    data: opAttendance.slice(-1 * opsLimit)
                 },
-                {name: 'LOAs', data: [{{#each ops}}{{this.loas}},{{/each}}].reverse().slice(-1 * opsLimit)}
+                {name: 'LOAs', data: loas.slice(-1 * opsLimit)}
             ],
         };
 
         new Chartist.Line('.ct-chart', data, {
+            axisX: {
+                labelInterpolationFnc: (value, index) => index % 4  === 0 ? value : null,
+            },
             axisY: {onlyInteger: true, low: 0},
             height: 400,
             plugins: [
@@ -24,16 +34,116 @@
 </div>
 
 <div class="container pt-3">
-
     <hr>
 
-    <div id="operation-list">
-        {{#each ops}}
-            <p>
-                <a href="/operation/{{this.date}}">
-                    Operation on {{this.date}}, {{this.playerCount}} players, {{this.loas}} LOAs.
-                </a>
-            </p>
-        {{/each}}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th role="button" scope="col" onclick="sortTable(operationDateSorter)">
+                        <i class="fa-solid fa-calendar"></i>
+                        Date
+                        <i id="date-sorter" class="fa-solid fa-sort-down"></i>
+                    </th>
+                    <th role="button" scope="col" onclick="sortTable(operationAttendanceSorter)">
+                        <i class="fa-solid fa-users"></i>
+                        Attendance
+                        <i id="attendance-sorter" class="fa-solid fa-sort"></i>
+                    </th>
+                    <th role="button" scope="col" onclick="sortTable(operationLoasSorter)">
+                        <i class="fa-solid fa-user-slash"></i>
+                        LOAs
+                        <i id="loas-sorter" class="fa-solid fa-sort loas-sorter"></i>
+                    </th>
+                    <th scope="col" class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ops}}
+                    <tr>
+                        <td class="align-middle user-name font-weight-bold operation-date">
+                            <a href="/operation/{{this.date}}">{{this.date}}</a>
+                        </td>
+                        <td class="align-middle operation-attendance">
+                            {{this.playerCount}}
+                        </td>
+                        <td class="align-middle operation-loas">
+                            {{this.loas}}
+                        </td>
+                        <td class="text-right align-middle">
+                            <a href="/operation/{{this.date}}" class="btn btn-info" title="Go to operation">
+                                <i class="fa-solid fa-arrow-up-right-from-square fa-fw"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <script>
+            const buildSorter = (a, b, key) => {
+                const aDate = a.querySelector(key).innerText;
+                const bDate = b.querySelector(key).innerText;
+                return aDate.localeCompare(bDate);
+            };
+
+            const buildNumberSorter = (a, b, key) => {
+                const aDate = a.querySelector(key).innerText;
+                const bDate = b.querySelector(key).innerText;
+                return Number(aDate) - Number(bDate);
+            };
+
+            const operationDateSorter = {
+                name: 'date-sorter',
+                sorted: false,
+                inverted: false,
+                sort: (a, b) => buildSorter(a, b, '.operation-date'),
+            };
+
+            const operationAttendanceSorter = {
+                name: 'attendance-sorter',
+                sorted: false,
+                inverted: false,
+                sort: (a, b) => buildNumberSorter(a, b, '.operation-attendance'),
+            };
+
+            const operationLoasSorter = {
+                name: 'loas-sorter',
+                sorted: false,
+                inverted: false,
+                sort: (a, b) => buildNumberSorter(a, b, '.operation-loas'),
+            };
+
+            const sortTable = (sorter) => {
+                const table = document.querySelector('table');
+                const tbody = table.querySelector('tbody');
+                const rows = [...tbody.querySelectorAll('tr')];
+
+                for (const otherSorter of [operationDateSorter, operationAttendanceSorter, operationLoasSorter]) {
+                    if (otherSorter.name !== sorter.name) {
+                        otherSorter.sorted = false;
+                        otherSorter.inverted = false;
+                        table.querySelector(`#${otherSorter.name}`).classList.remove('fa-sort-up');
+                        table.querySelector(`#${otherSorter.name}`).classList.remove('fa-sort-down');
+                        table.querySelector(`#${otherSorter.name}`).classList.add('fa-sort');
+                    }
+                }
+
+                sorter.sorted = true;
+                sorter.inverted = !sorter.inverted;
+
+                rows.sort(sorter.sort);
+
+                table.querySelector(`#${sorter.name}`).classList.remove('fa-sort');
+                if (sorter.inverted) {
+                    rows.reverse();
+                    table.querySelector(`#${sorter.name}`).classList.add('fa-sort-down');
+                } else {
+                    table.querySelector(`#${sorter.name}`).classList.add('fa-sort-up');
+                }
+
+                tbody.innerHTML = '';
+                tbody.append(...rows);
+            }
+        </script>
     </div>
 </div>

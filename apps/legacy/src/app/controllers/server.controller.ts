@@ -79,6 +79,7 @@ export class ServerController implements IController<void> {
                     ...contentSecurityPolicy.getDefaultDirectives(),
                     'frame-src': ['\'self\'', 'https://youtube.com/embed/', 'https://www.youtube.com/embed/'],
                     'script-src': ['\'self\'', '\'unsafe-inline\''],
+                    'script-src-attr': ['\'unsafe-inline\''],
                 },
             }),
         ];
