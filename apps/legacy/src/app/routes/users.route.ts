@@ -162,8 +162,8 @@ export class UsersRoute extends BaseRoute {
         const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
         const rankEnjinTags = await RankModel.getEnjinTags();
         const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
-
-        const enjinUsers = sortArrayByObjectProperty(objectToObjectsArray(enjinResponse), (x) => x.username);
+        const enjinUsers = objectToObjectsArray(enjinResponse);
+        sortArrayByObjectProperty(enjinUsers, (x) => x.username);
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
         return response.render('pages/users/edit.hbs', { badges, enjinUsers, ranks, roles, ts3Users, user_: user });

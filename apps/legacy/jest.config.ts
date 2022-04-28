@@ -1,15 +1,15 @@
 module.exports = {
+    coverageDirectory: '../../coverage/apps/legacy',
     displayName: 'legacy',
-    preset: '../../jest.preset.js',
     globals: {
         'ts-jest': {
             tsconfig: '<rootDir>/tsconfig.spec.json',
         },
     },
+    moduleFileExtensions: ['ts', 'js', 'html'],
+    preset: '../../jest.preset.ts',
+    testEnvironment: 'node',
     transform: {
         '^.+\\.[tj]s$': 'ts-jest',
     },
-    moduleFileExtensions: ['ts', 'js', 'html'],
-    coverageDirectory: '../../coverage/apps/legacy',
-    testEnvironment: 'node',
 };

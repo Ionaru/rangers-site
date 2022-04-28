@@ -1,14 +1,14 @@
 module.exports = {
-    displayName: 'interfaces',
-    preset: '../../jest.preset.js',
+    coverageDirectory: '../../coverage/libs/entities',
+    displayName: 'entities',
     globals: {
         'ts-jest': {
             tsconfig: '<rootDir>/tsconfig.spec.json',
         },
     },
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+    preset: '../../jest.preset.ts',
     transform: {
         '^.+\\.[tj]sx?$': 'ts-jest',
     },
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-    coverageDirectory: '../../coverage/libs/interfaces',
 };
