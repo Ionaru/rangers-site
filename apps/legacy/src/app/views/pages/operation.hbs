@@ -90,14 +90,14 @@
                             <ul class="list-group list-group-flush">
                                 {{#if @first}}
                                     <li class="list-group-item">
-                                        <i class="fas fa-fw fa-play"></i>
+                                        <i class="fa-solid fa-fw fa-play"></i>
                                         Operation started
                                     </li>
                                 {{/if}}
 
                                 {{#each this.joined}}
                                     <li class="list-group-item">
-                                        <i class="fas fa-fw fa-sign-in-alt text-primary"></i>
+                                        <i class="fa-solid fa-fw fa-sign-in-alt text-primary"></i>
                                         {{#if this.user}}
                                             {{this.user.name}}
                                         {{else}}
@@ -108,7 +108,7 @@
 
                                 {{#each this.left}}
                                     <li class="list-group-item">
-                                        <i class="fas fa-fw fa-sign-out-alt text-danger"></i>
+                                        <i class="fa-solid fa-fw fa-sign-out-alt text-danger"></i>
                                         {{#if this.user}}
                                             {{this.user.name}}
                                         {{else}}
@@ -119,7 +119,7 @@
 
                                 {{#if @last}}
                                     <li class="list-group-item">
-                                        <i class="fas fa-fw fa-stop"></i>
+                                        <i class="fa-solid fa-fw fa-stop"></i>
                                         End of tracking
                                     </li>
                                 {{/if}}
