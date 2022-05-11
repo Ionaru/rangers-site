@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     coverageDirectory: '../../coverage/libs/interfaces',
     displayName: 'interfaces',
     globals: {
@@ -7,7 +7,7 @@ module.exports = {
         },
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-    preset: '../../jest.preset.ts',
+    preset: '../../jest.preset.js',
     transform: {
         '^.+\\.[tj]sx?$': 'ts-jest',
     },

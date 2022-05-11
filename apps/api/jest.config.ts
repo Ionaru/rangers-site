@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     coverageDirectory: '../../coverage/apps/api',
     displayName: 'api',
     globals: {
@@ -7,7 +7,7 @@ module.exports = {
         },
     },
     moduleFileExtensions: ['ts', 'js', 'html'],
-    preset: '../../jest.preset.ts',
+    preset: '../../jest.preset.js',
     testEnvironment: 'node',
     transform: {
         '^.+\\.[tj]s$': 'ts-jest',
