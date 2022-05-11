@@ -172,11 +172,12 @@ export class UsersRoute extends BaseRoute {
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
     private async usersPage(_request: Request, response: Response) {
         const users = await UserModel.doQuery()
-            .leftJoinAndSelect(`${UserModel.alias}.rank`, RankModel.alias)
+            .innerJoinAndSelect(`${UserModel.alias}.rank`, RankModel.alias)
             .leftJoinAndSelect(`${UserModel.alias}.roles`, RoleModel.alias)
             .leftJoinAndSelect(`${UserModel.alias}.badges`, BadgeModel.alias)
             .leftJoinAndSelect(`${UserModel.alias}.ts3User`, TeamspeakUserModel.alias)
-            .orderBy(`${UserModel.alias}.name`, 'ASC')
+            .orderBy(`${UserModel.alias}.rank`, 'ASC')
+            .addOrderBy(`${UserModel.alias}.name`, 'ASC')
             .getMany();
 
         const rankEnjinTags = await RankModel.getEnjinTags();
