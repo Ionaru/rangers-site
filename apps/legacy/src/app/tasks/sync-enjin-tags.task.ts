@@ -6,7 +6,7 @@ import { debug } from '../../debug';
 import { EnjinService } from '../services/enjin.service';
 
 export class SyncEnjinTagsTask {
-    private static readonly debug = debug.extend('SyncRanksTask');
+    private static readonly debug = debug.extend('SyncEnjinTagsTask');
     private readonly syncJob: CronJob;
 
     public constructor(

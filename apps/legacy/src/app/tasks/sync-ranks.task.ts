@@ -15,7 +15,7 @@ export class SyncRanksTask {
         private readonly enjin: EnjinService,
     ) {
         this.syncJob = new CronJob({
-            cronTime: '0 */5 * * * *',
+            cronTime: '0 5/15 * * * *', // Every 15 minutes starting at minute 5
             onTick: () => this.tick(),
             runOnInit: false,
             timeZone: 'Europe/Berlin',

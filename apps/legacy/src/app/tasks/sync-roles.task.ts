@@ -7,7 +7,7 @@ import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 export class SyncRolesTask {
-    private static readonly debug = debug.extend('SyncRanksTask');
+    private static readonly debug = debug.extend('SyncRolesTask');
     private readonly syncJob: CronJob;
 
     public constructor(
@@ -15,7 +15,7 @@ export class SyncRolesTask {
         private readonly enjin: EnjinService,
     ) {
         this.syncJob = new CronJob({
-            cronTime: '0 3-59/5 * * * *', // Every 5 minutes starting at minute 3
+            cronTime: '0 10/15 * * * *', // Every 15 minutes starting at minute 10
             onTick: () => this.tick(),
             runOnInit: false,
             timeZone: 'Europe/Berlin',
