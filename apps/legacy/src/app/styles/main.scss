@@ -40,6 +40,11 @@ html {
             color: #81878c;
         }
 
+        .form-control:focus {
+            border-color: $primary;
+            box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
+        }
+
         .justify-content-evenly {
             justify-content: space-evenly !important;
         }
@@ -60,8 +65,8 @@ html {
 
             &.show {
                 outline: 0 !important;
-                border-color: $input-focus-border-color !important;
-                box-shadow: $input-focus-box-shadow !important;
+                border-color: $primary !important;
+                box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
             }
 
             button.dropdown-toggle {
@@ -70,8 +75,8 @@ html {
 
                 &:focus {
                     outline: 0 !important;
-                    border-color: $input-focus-border-color !important;
-                    box-shadow: $input-focus-box-shadow !important;
+                    border-color: $primary !important;
+                    box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
                 }
 
                 &:active {
