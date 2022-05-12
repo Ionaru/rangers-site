@@ -10,9 +10,10 @@ import {
     TeamspeakUserModel,
     UserModel,
 } from '@rangers-site/entities';
-import { DefinedError, ValidateFunction } from 'ajv';
+import { ValidateFunction } from 'ajv';
 import { In } from 'typeorm';
 
+import { DiscordService } from '../services/discord.service';
 import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
@@ -23,16 +24,27 @@ interface IUserInput {
     ts3User: string;
 }
 
+interface ILinkInput {
+    discordUser: string;
+    enjinUser: string;
+    ts3User: string;
+}
+
 export class UsersRoute extends BaseRoute {
 
     private readonly userValidator: ValidateFunction<IUserInput>;
+    private readonly linkValidator: ValidateFunction<ILinkInput>;
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
         private readonly enjin: EnjinService,
+        private readonly discord: DiscordService,
     ) {
         super();
         this.createRoute('get', '/', this.usersPage.bind(this));
+
+        this.createRoute('get', '/link', this.linkUserPage.bind(this));
+        this.createRoute('post', '/link', this.linkUser.bind(this));
 
         this.createRoute('get', '/edit/:id', this.editUserPage.bind(this));
         this.createRoute('post', '/edit/:id', this.editUser.bind(this));
@@ -56,10 +68,29 @@ export class UsersRoute extends BaseRoute {
             required: ['enjinUser', 'ts3User'],
             type: 'object',
         });
+
+        this.linkValidator = this.createValidateFunction({
+            properties: {
+                discordUser: {
+                    minLength: 1,
+                    type: 'string',
+                },
+                enjinUser: {
+                    minLength: 1,
+                    type: 'string',
+                },
+                ts3User: {
+                    minLength: 1,
+                    type: 'string',
+                },
+            },
+            required: ['discordUser', 'enjinUser', 'ts3User'],
+            type: 'object',
+        });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async editUser(request: Request<{ id: number }>, response: Response) {
+    private async editUser(request: Request<{ id: number; }>, response: Response) {
 
         if (UsersRoute.isAboutSelf(request) && !UsersRoute.isAdmin(request)) {
             response.locals.error = 'You cannot edit yourself!';
@@ -67,7 +98,6 @@ export class UsersRoute extends BaseRoute {
         }
 
         if (!this.userValidator(request.body)) {
-            response.locals.error = this.userValidator.errors as DefinedError[];
             return UsersRoute.renderValidationError(response, this.userValidator, this.editUserPage.bind(this));
         }
 
@@ -147,7 +177,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async editUserPage(request: Request<{ id: number }>, response: Response) {
+    private async editUserPage(request: Request<{ id: number; }>, response: Response) {
         const user = await UserModel.findOne(request.params.id,
             { relations: ['rank', 'roles', 'badges', 'ts3User'] },
         );
@@ -169,6 +199,75 @@ export class UsersRoute extends BaseRoute {
         return response.render('pages/users/edit.hbs', { badges, enjinUsers, ranks, roles, ts3Users, user_: user });
     }
 
+    @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
+    private async linkUser(request: Request, response: Response) {
+
+        if (!this.linkValidator(request.body)) {
+            return UsersRoute.renderValidationError(response, this.linkValidator, this.linkUserPage.bind(this));
+        }
+
+        if (request.user?.discordUser === request.body.discordUser && !UsersRoute.isAdmin(request)) {
+            response.locals.error = 'You cannot edit yourself!';
+            return this.linkUserPage(request, response);
+        }
+
+        // Check if link is not already in use.
+        const existingLinkedEnjinUser = await UserModel.findOne({ enjinUser: request.body.enjinUser });
+        if (existingLinkedEnjinUser && existingLinkedEnjinUser.discordUser !== request.body.discordUser) {
+            response.locals.error = `Enjin user already linked to: ${existingLinkedEnjinUser}.`;
+            return this.linkUserPage(request, response);
+        }
+
+        const existingLinkedTS3User = await UserModel.findOne({ where: { ts3User: request.body.ts3User } });
+        if (existingLinkedTS3User && existingLinkedTS3User.discordUser !== request.body.discordUser) {
+            response.locals.error = `TS3 user already linked to: ${existingLinkedTS3User}.`;
+            return this.linkUserPage(request, response);
+        }
+
+        // Get or create user from Discord id.
+        let user = await UserModel.findOne({
+            relations: ['ts3User'],
+            where: { discordUser: request.body.discordUser },
+        });
+
+        if (!user) {
+            const name = await this.discord.getNameFromId(request.body.discordUser);
+            user = await new UserModel(request.body.discordUser, name).save();
+        }
+
+        // Link user to TS3 user.
+        const ts3User = await TeamspeakUserModel.findOneOrFail(request.body.ts3User);
+        user.ts3User = ts3User;
+
+        // Link user to Enjin user.
+        user.enjinUser = request.body.enjinUser;
+
+        await user.save();
+
+        return response.redirect(`/users/sync/${user.id}`);
+    }
+
+    @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
+    private async linkUserPage(_: Request, response: Response) {
+
+        const allUsers = await UserModel.find();
+
+        const allDiscordUsers = await this.discord.getUsersInServer();
+        const discordUsers = allDiscordUsers.filter((x) => !allUsers.find((y) => y.discordUser === x.id));
+        sortArrayByObjectProperty(discordUsers, (x) => x.user.username);
+
+        const allTS3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
+        const ts3Users = allTS3Users.filter((x) => !allUsers.find((y) => y.ts3User?.id === x.id));
+
+        const rankEnjinTags = await RankModel.getEnjinTags();
+        const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
+        const allEnjinUsers = objectToObjectsArray(enjinResponse);
+        const enjinUsers = allEnjinUsers.filter((x) => !allUsers.find((y) => y.enjinUser === x.key));
+        sortArrayByObjectProperty(enjinUsers, (x) => x.username);
+
+        return response.render('pages/users/link.hbs', { discordUsers, enjinUsers, ts3Users });
+    }
+
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
     private async usersPage(_request: Request, response: Response) {
         const users = await UserModel.doQuery()
@@ -187,7 +286,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async userDeletePage(request: Request<{ id: number }>, response: Response) {
+    private async userDeletePage(request: Request<{ id: number; }>, response: Response) {
         const user = await UserModel.findOne(request.params.id);
 
         if (!user) {
@@ -199,7 +298,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async deleteUser(request: Request<{ id: number }>, response: Response) {
+    private async deleteUser(request: Request<{ id: number; }>, response: Response) {
 
         if (UsersRoute.isAboutSelf(request)) {
             response.locals.error = 'You cannot delete yourself!';
@@ -238,7 +337,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
-    private async syncUser(request: Request<{ id: number }>, response: Response) {
+    private async syncUser(request: Request<{ id: number; }>, response: Response) {
 
         const user = await UserModel.findOne(request.params.id);
 

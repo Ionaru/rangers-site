@@ -51,4 +51,10 @@ export class DiscordService implements IService {
         DiscordService.debug(`Resolved id ${id} to name ${name}`);
         return name;
     }
+
+    public async getUsersInServer(): Promise<GuildMember[]> {
+        const guild = await this.client.guilds.fetch(DiscordService.RangersGuild);
+        const members = await guild.members.fetch();
+        return [...members.values()];
+    }
 }

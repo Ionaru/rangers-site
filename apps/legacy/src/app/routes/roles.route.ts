@@ -78,7 +78,7 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private async roleEditPage(request: Request<{id: number}>, response: Response) {
+    private async roleEditPage(request: Request<{ id: number; }>, response: Response) {
         const role = await RoleModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
 
         if (!role) {
@@ -96,7 +96,7 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private async roleDeletePage(request: Request<{id: number}>, response: Response) {
+    private async roleDeletePage(request: Request<{ id: number; }>, response: Response) {
         const role = await RoleModel.findOne(request.params.id);
 
         if (!role) {
@@ -107,7 +107,7 @@ export class RolesRoute extends BaseRoute {
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
-    private async deleteRole(request: Request<{id: number}>, response: Response) {
+    private async deleteRole(request: Request<{ id: number; }>, response: Response) {
         const role = await RoleModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!role) {

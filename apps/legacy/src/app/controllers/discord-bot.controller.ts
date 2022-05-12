@@ -1,5 +1,5 @@
 import { IController } from '@rangers-site/interfaces';
-import { Client } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 
 import { debug } from '../../debug';
 import { DiscordService } from '../services/discord.service';
@@ -17,7 +17,7 @@ export class DiscordBotController implements IController<DiscordService> {
             throw new Error('Discord configuration error! Token missing.');
         }
 
-        this.client = new Client({intents: []});
+        this.client = new Client({intents: [Intents.FLAGS.GUILD_MEMBERS]});
         this.client.token = token;
 
         DiscordBotController.debug('Discord bot created.');

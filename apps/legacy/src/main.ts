@@ -55,11 +55,13 @@ const start = async () => {
     const discordBotController = new DiscordBotController();
     const discordService = await discordBotController.start();
 
-    const slashCreatorController = new SlashCreatorController();
-    const slashCreatorService = await slashCreatorController.start(discordService);
-    slashCreatorService.registerCommand((creator) => new LOACommand(creator, discordService));
-    slashCreatorService.registerCommand((creator) => new LOACancelCommand(creator));
-    await slashCreatorService.syncCommands();
+    if (process.env.RANGERS_DISCORD_REGISTER_COMMANDS === 'true') {
+        const slashCreatorController = new SlashCreatorController();
+        const slashCreatorService = await slashCreatorController.start(discordService);
+        slashCreatorService.registerCommand((creator) => new LOACommand(creator, discordService));
+        slashCreatorService.registerCommand((creator) => new LOACancelCommand(creator));
+        await slashCreatorService.syncCommands();
+    }
 
     const enjinController = new EnjinController();
     const enjinService = await enjinController.start();
@@ -92,7 +94,7 @@ const start = async () => {
         ['/badges', new BadgesRoute(teamspeakService, enjinService)],
         ['/op(eration)?', new OperationRoute()],
         ['/op(eration)?s', new OperationsRoute()],
-        ['/users', new UsersRoute(teamspeakService, enjinService)],
+        ['/users', new UsersRoute(teamspeakService, enjinService, discordService)],
         ['*', new NotFoundRoute()],
     ]);
     await serverController.start();

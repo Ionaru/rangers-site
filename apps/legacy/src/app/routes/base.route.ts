@@ -285,7 +285,7 @@ export class BaseRoute extends AjvValidationRoute {
         return admins.includes(request.user.discordUser);
     }
 
-    protected static isAboutSelf(request: Request<{ id: number | string }>): boolean {
+    protected static isAboutSelf(request: Request<{ id: number | string; }>): boolean {
         if (!request.user) {
             return false;
         }

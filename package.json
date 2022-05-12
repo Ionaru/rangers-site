@@ -32,7 +32,7 @@
     },
     "private": true,
     "dependencies": {
-        "@ionaru/array-utils": "^7.0.0",
+        "@ionaru/array-utils": "^8.0.0",
         "@ionaru/micro-web-service": "^5.0.0",
         "@ionaru/random-string": "4.0.0",
         "@ionaru/typeorm-utils": "^2.0.0",
@@ -72,7 +72,7 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
-        "@ionaru/eslint-config": "^6.2.0",
+        "@ionaru/eslint-config": "^7.0.1",
         "@nrwl/cli": "14.1.5",
         "@nrwl/eslint-plugin-nx": "14.1.5",
         "@nrwl/express": "14.1.5",

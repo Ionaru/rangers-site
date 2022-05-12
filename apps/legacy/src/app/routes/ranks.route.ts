@@ -87,7 +87,7 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private async rankEditPage(request: Request<{id: number}>, response: Response) {
+    private async rankEditPage(request: Request<{ id: number; }>, response: Response) {
         const rank = await RankModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag', 'permissions'] });
 
         if (!rank) {
@@ -104,7 +104,7 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private async rankDeletePage(request: Request<{id: number}>, response: Response) {
+    private async rankDeletePage(request: Request<{ id: number; }>, response: Response) {
         const rank = await RankModel.findOne(request.params.id);
 
         if (!rank) {
@@ -115,7 +115,7 @@ export class RanksRoute extends BaseRoute {
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
-    private async deleteRank(request: Request<{id: number}>, response: Response) {
+    private async deleteRank(request: Request<{ id: number; }>, response: Response) {
         const rank = await RankModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!rank) {

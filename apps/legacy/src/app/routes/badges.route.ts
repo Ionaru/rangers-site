@@ -72,7 +72,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private async badgeEditPage(request: Request<{id: number}>, response: Response, next?: NextFunction) {
+    private async badgeEditPage(request: Request<{ id: number; }>, response: Response, next?: NextFunction) {
         const badge = await BadgeModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
 
         if (!badge) {
@@ -86,7 +86,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private async badgeDeletePage(request: Request<{id: number}>, response: Response) {
+    private async badgeDeletePage(request: Request<{ id: number; }>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id);
 
         if (!badge) {
@@ -97,7 +97,7 @@ export class BadgesRoute extends BaseRoute {
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
-    private async deleteBadge(request: Request<{id: number}>, response: Response) {
+    private async deleteBadge(request: Request<{ id: number; }>, response: Response) {
         const badge = await BadgeModel.findOne(request.params.id, { relations: ['users'] });
 
         if (!badge) {
