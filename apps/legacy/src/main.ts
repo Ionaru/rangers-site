@@ -55,7 +55,7 @@ const start = async () => {
     const discordBotController = new DiscordBotController();
     const discordService = await discordBotController.start();
 
-    if (process.env.RANGERS_DISCORD_REGISTER_COMMANDS === 'true') {
+    if (process.env.RANGERS_DISCORD_REGISTER_COMMANDS !== 'false') {
         const slashCreatorController = new SlashCreatorController();
         const slashCreatorService = await slashCreatorController.start(discordService);
         slashCreatorService.registerCommand((creator) => new LOACommand(creator, discordService));
