@@ -22,13 +22,43 @@ export class DiscordService implements IService {
 
     public static getLoaDate(text: string) {
 
+        const guessTimezone = 'Europe/Berlin';
+
         if (text === '') {
             return moment()
-                .tz('Europe/Berlin');
+                .tz(guessTimezone);
+        }
+
+        for (const character of ['.', '-', '/']) {
+            if (text.includes(character)) {
+                const textParts = text.split(character);
+
+                if (textParts.length <= 1 || textParts.length > 3) {
+                    break;
+                }
+
+                textParts.reverse();
+                textParts.forEach((part, index) => textParts[index] = part.padStart(2, '0'));
+
+                // Fix year input.
+                if (textParts.length === 2) {
+                    textParts.unshift('2022');
+                } else if (textParts[0].length === 2) {
+                    textParts[0] = '20' + textParts[0];
+                }
+
+                text = textParts.join('-');
+                return moment(text)
+                    .tz(guessTimezone)
+                    .hours(5)
+                    .minute(0)
+                    .second(0)
+                    .millisecond(0);
+            }
         }
 
         return moment(guessDate(text))
-            .tz('Europe/Berlin')
+            .tz(guessTimezone)
             .hours(5)
             .minute(0)
             .second(0)
