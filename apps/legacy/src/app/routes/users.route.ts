@@ -255,7 +255,7 @@ export class UsersRoute extends BaseRoute {
         const allDiscordUsers = await this.discord.getUsersInServer();
         const discordUsers = allDiscordUsers.filter(
             (discordUser) => !allUsers.find(
-                (user) => user.discordUser === discordUser.id && !(user.enjinUser && user.ts3User?.id),
+                (user) => user.discordUser === discordUser.id && user.rank,
             ),
         );
         sortArrayByObjectProperty(discordUsers, (x) => x.user.username);
