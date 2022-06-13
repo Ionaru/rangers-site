@@ -253,7 +253,7 @@ export class UsersRoute extends BaseRoute {
         const allUsers = await UserModel.find();
 
         const allDiscordUsers = await this.discord.getUsersInServer();
-        const discordUsers = allDiscordUsers.filter((x) => !allUsers.find((y) => y.discordUser === x.id));
+        const discordUsers = allDiscordUsers.filter((_x) => !allUsers.find((y) => y.enjinUser && y.ts3User));
         sortArrayByObjectProperty(discordUsers, (x) => x.user.username);
 
         const allTS3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
