@@ -253,17 +253,29 @@ export class UsersRoute extends BaseRoute {
         const allUsers = await UserModel.find();
 
         const allDiscordUsers = await this.discord.getUsersInServer();
-        const discordUsers = allDiscordUsers.filter((_x) => !allUsers.find((y) => y.enjinUser && y.ts3User));
+        const discordUsers = allDiscordUsers.filter(
+            (discordUser) => !allUsers.find(
+                (user) => user.discordUser === discordUser.id && !(user.enjinUser && user.ts3User?.id),
+            ),
+        );
         sortArrayByObjectProperty(discordUsers, (x) => x.user.username);
 
         const allTS3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
-        const ts3Users = allTS3Users.filter((x) => !allUsers.find((y) => y.ts3User?.id === x.id));
+        const ts3Users = allTS3Users.filter(
+            (teamspeakUser) => !allUsers.find(
+                (user) => user.ts3User?.id === teamspeakUser.id,
+            ),
+        );
 
         const rankEnjinTags = await RankModel.getEnjinTags();
         const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
         const allEnjinUsers = objectToObjectsArray(enjinResponse);
-        const enjinUsers = allEnjinUsers.filter((x) => !allUsers.find((y) => y.enjinUser === x.key));
-        sortArrayByObjectProperty(enjinUsers, (x) => x.username);
+        const enjinUsers = allEnjinUsers.filter(
+            (enjinUser) => !allUsers.find(
+                (user) => user.enjinUser === enjinUser.key,
+            ),
+        );
+        sortArrayByObjectProperty(enjinUsers, (enjinUser) => enjinUser.username);
 
         return response.render('pages/users/link.hbs', { discordUsers, enjinUsers, ts3Users });
     }
