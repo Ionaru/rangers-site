@@ -39,8 +39,6 @@
             }
         ]
     },
-    "cli": {
-        "defaultCollection": "@nrwl/express"
-    },
-    "defaultProject": "api"
+    "defaultProject": "api",
+    "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }

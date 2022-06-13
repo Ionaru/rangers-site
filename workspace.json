@@ -2,6 +2,7 @@
     "version": 2,
     "projects": {
         "api": {
+            "$schema": "../../node_modules/nx/schemas/project-schema.json",
             "root": "apps/api",
             "sourceRoot": "apps/api/src",
             "projectType": "application",
@@ -84,6 +85,7 @@
             "tags": []
         },
         "entities": {
+            "$schema": "../../node_modules/nx/schemas/project-schema.json",
             "root": "libs/entities",
             "sourceRoot": "libs/entities/src",
             "projectType": "library",
@@ -113,6 +115,7 @@
             "tags": []
         },
         "interfaces": {
+            "$schema": "../../node_modules/nx/schemas/project-schema.json",
             "root": "libs/interfaces",
             "sourceRoot": "libs/interfaces/src",
             "projectType": "library",
@@ -142,6 +145,7 @@
             "tags": []
         },
         "legacy": {
+            "$schema": "../../node_modules/nx/schemas/project-schema.json",
             "root": "apps/legacy",
             "sourceRoot": "apps/legacy/src",
             "projectType": "application",
@@ -231,5 +235,6 @@
             },
             "tags": []
         }
-    }
+    },
+    "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }
