@@ -25,7 +25,7 @@ export class GlobalRoute extends BaseRoute {
         if (user) {
 
             if (user.disabled) {
-                request.logout();
+                request.logout(() => { /* No op */ });
                 response.locals.error = 'This account is disabled, you cannot log in.';
                 if (request.session) {
                     request.session.save(() => response.redirect('/'));

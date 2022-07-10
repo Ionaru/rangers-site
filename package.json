@@ -40,7 +40,7 @@
         "ajv-errors": "^3.0.0",
         "ajv-formats": "^2.1.1",
         "axios": "^0.27.2",
-        "bootstrap": "4.6.0",
+        "bootstrap": "^5.2.0-beta1",
         "chalk": "^5.0.0",
         "connect-typeorm": "1.1.4",
         "cors": "^2.8.5",

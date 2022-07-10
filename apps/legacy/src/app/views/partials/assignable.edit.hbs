@@ -9,20 +9,18 @@
 
     <form method="post" autocomplete="off" encType="multipart/form-data">
 
-        <div class="form-group">
-            <label for="role-input"><span class="text-capitalize">{{assignableName}}</span> name</label>
+        <div class="form-group mb-3">
+            <label class="form-label" for="role-input"><span class="text-capitalize">{{assignableName}}</span> name</label>
             <input type="text" class="form-control" id="role-input" value="{{assignable.name}}" name="name">
         </div>
 
         {{#if enjinTags}}
-            <div class="form-group">
-                <label for="enjin-group-input">Enjin tag</label>
+            <div class="form-group mb-3">
+                <label class="form-label" for="enjin-group-input">Enjin tag</label>
                 <div class="input-group flex-nowrap">
-                    <div class="input-group-prepend">
                     <span class="input-group-text" id="addon-wrapping">
                         <i class="fa-solid fa-globe fa-fw"></i>
                     </span>
-                    </div>
                     <select class="form-control selectpicker" id="enjin-group-input" name="enjinTag">
                         <option value="">None</option>
                         {{#each enjinTags}}
@@ -37,14 +35,12 @@
         {{/if}}
 
         {{#if tsRanks}}
-            <div class="form-group">
-                <label for="ts-group-input">Teamspeak group</label>
+            <div class="form-group mb-3">
+                <label class="form-label" for="ts-group-input">Teamspeak group</label>
                 <div class="input-group flex-nowrap">
-                    <div class="input-group-prepend">
                     <span class="input-group-text" id="addon-wrapping">
                         <i class="fa-brands fa-teamspeak fa-fw"></i>
                     </span>
-                    </div>
                     <select class="form-control selectpicker" id="ts-group-input" name="tsRank">
                         <option value="">None</option>
                         {{#each tsRanks}}
@@ -59,14 +55,12 @@
         {{/if}}
 
         {{#if discordRanks}}
-            <div class="form-group">
-                <label for="discord-role-input">Discord role</label>
+            <div class="form-group mb-3">
+                <label class="form-label" for="discord-role-input">Discord role</label>
                 <div class="input-group flex-nowrap">
-                    <div class="input-group-prepend">
                 <span class="input-group-text" id="addon-wrapping">
                     <i class="fa-brands fa-discord fa-fw"></i>
                 </span>
-                    </div>
                     <select disabled class="form-control selectpicker" id="discord-role-input">
                         <option>Coming soon™</option>
                     </select>
@@ -75,8 +69,8 @@
         {{/if}}
 
         {{#if permissions}}
-            <div class="form-group">
-                <label for="permission-select">Permissions</label>
+            <div class="form-group mb-3">
+                <label class="form-label" for="permission-select">Permissions</label>
                 <div class="input-group flex-nowrap w-100">
                     <select name="permissions" data-width="100%" id="permission-select" class="selectpicker" multiple
                             data-live-search="true">
@@ -90,8 +84,8 @@
         {{/if}}
 
             <!--        {{#if image}}-->
-        <!--            <div class="form-group">-->
-        <!--                <label for="image">Image (Max. 5MB)</label>-->
+        <!--            <div class="form-group mb-3">-->
+        <!--                <label class="form-label" for="image">Image (Max. 5MB)</label>-->
         <!--                <div class="input-group flex-nowrap">-->
         <!--                    <input type="file" id="image" name="image">-->
         <!--                </div>-->

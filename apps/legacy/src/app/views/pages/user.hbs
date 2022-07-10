@@ -15,21 +15,17 @@
 
     <div class="row">
         <div class="input-group flex-nowrap col-md-4">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="addon-wrapping">
-                    <i class="fa-brands fa-discord fa-fw"></i>
-                </span>
-            </div>
+            <span class="input-group-text" id="addon-wrapping">
+                <i class="fa-brands fa-discord fa-fw"></i>
+            </span>
             <input disabled type="text" class="form-control" placeholder="Discord user" aria-label="Username"
                    aria-describedby="addon-wrapping" value="{{user.name}}">
         </div>
 
         <div class="input-group flex-nowrap col-md-4">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="addon-wrapping">
-                    <i class="fa-brands fa-teamspeak fa-fw"></i>
-                </span>
-            </div>
+            <span class="input-group-text" id="addon-wrapping">
+                <i class="fa-brands fa-teamspeak fa-fw"></i>
+            </span>
             {{#if user.ts3User}}
                 <input type="text" class="form-control" placeholder="Teamspeak user" aria-label="Username"
                        aria-describedby="addon-wrapping">
@@ -39,11 +35,9 @@
         </div>
 
         <div class="input-group flex-nowrap col-md-4">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="addon-wrapping">
-                    <i class="fa-brands fa-steam fa-fw"></i>
-                </span>
-            </div>
+            <span class="input-group-text" id="addon-wrapping">
+                <i class="fa-brands fa-steam fa-fw"></i>
+            </span>
             {{#if user.steamUser}}
                 <input type="text" class="form-control" placeholder="Discord user" aria-label="Username"
                        aria-describedby="addon-wrapping">

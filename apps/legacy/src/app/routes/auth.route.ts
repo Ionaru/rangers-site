@@ -67,7 +67,7 @@ export class AuthRoute extends BaseRoute {
     }
 
     private static async logout(request: Request, response: Response) {
-        request.logout();
+        request.logout(() => { /* No op */ });
         if (request.session) {
             request.session.save(() => response.redirect('/'));
         }

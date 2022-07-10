@@ -1,10 +1,7 @@
 <nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="/">
-            <picture>
-                <source srcset="images/logo.webp" type="image/webp">
-                <img src="images/logo.png" alt="logo">
-            </picture>
+        <a class="navbar-brand p-0" href="/">
+            <img src="images/logo.webp" height="40" alt="logo">
         </a>
         {{#unless user}}
             <a type="button" class="btn btn-primary d-lg-none" href="/auth">Join 7R</a>
@@ -15,37 +12,37 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">Home</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Home</a>
                 </li>
                 {{#hasPermission user 'READ_OPERATIONS_ACTIVITY'}}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/operations">Operations</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/operations">Operations</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_RANKS'}}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/ranks">Ranks</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/ranks">Ranks</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_ROLES'}}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/roles">Roles</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/roles">Roles</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_BADGES'}}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/badges">Badges</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/badges">Badges</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_USER_RANK'}}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/users">Users</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/users">Users</a>
                     </li>
                 {{/hasPermission}}
             </ul>
-            <ul class="navbar-nav mr-3">
+            <ul class="navbar-nav me-3">
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="https://discord.gg/vbFMQXe">
                         <i class="fa-brands fa-discord fa-lg fa-fw"></i>
@@ -60,7 +57,7 @@
                 </li>
                 {{#if user}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             My account
                         </a>
@@ -71,7 +68,7 @@
                         </div>
                     </li>
                 {{else}}
-                    <li class="nav-ite ml-3">
+                    <li class="nav-item ms-3">
                         <a type="button" class="d-none d-lg-block btn btn-primary" href="/auth">Join 7R</a>
                     </li>
                 {{/if}}

@@ -4,8 +4,8 @@
     <p>Create a new link between Discord, Enjin and Teamspeak.</p>
 
     <form method="post">
-        <div class="form-group">
-            <label for="discordUser-input"><i class="fa-brands fa-discord"></i> Discord user</label>
+        <div class="form-group mb-3">
+            <label class="form-label" for="discordUser-input"><i class="fa-brands fa-discord"></i> Discord user</label>
             <select class="form-control" id="discordUser-input" name="discordUser" required>
                 <option value="">None</option>
                 {{#each discordUsers}}
@@ -15,8 +15,8 @@
                 {{/each}}
             </select>
         </div>
-        <div class="form-group">
-            <label for="enjinUser-input"><i class="fa-solid fa-globe"></i> Enjin user</label>
+        <div class="form-group mb-3">
+            <label class="form-label" for="enjinUser-input"><i class="fa-solid fa-globe"></i> Enjin user</label>
             <select class="form-control" id="enjinUser-input" name="enjinUser" required>
                 <option value="">None</option>
                 {{#each enjinUsers}}
@@ -26,8 +26,8 @@
                 {{/each}}
             </select>
         </div>
-        <div class="form-group">
-            <label for="ts3User-input"><i class="fa-brands fa-teamspeak"></i> Teamspeak user</label>
+        <div class="form-group mb-3">
+            <label class="form-label" for="ts3User-input"><i class="fa-brands fa-teamspeak"></i> Teamspeak user</label>
             <select class="form-control" id="ts3User-input" name="ts3User" required>
                 <option value="">None</option>
                 {{#each ts3Users}}
