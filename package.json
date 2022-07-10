@@ -60,7 +60,7 @@
         "moment": "^2.29.1",
         "moment-timezone": "^0.5.34",
         "mysql2": "^2.3.3",
-        "passport": "^0.5.2",
+        "passport": "^0.6.0",
         "passport-discord": "0.1.4",
         "passport-oauth2": "^1.6.1",
         "reflect-metadata": "0.1.13",
