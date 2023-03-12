@@ -22,8 +22,8 @@ import { FileArray } from 'express-fileupload';
 import { SelectQueryBuilder } from 'typeorm';
 
 import { debug } from '../../debug';
-import { TeamspeakService } from '../services/teamspeak.service';
 import { DiscordService } from '../services/discord.service';
+import { TeamspeakService } from '../services/teamspeak.service';
 
 interface IRenderData {
     [key: string]: any;
