@@ -79,9 +79,10 @@ export class BadgesRoute extends BaseRoute {
             return next ? next() : BadgesRoute.sendNotFound(response, request.originalUrl);
         }
 
+        const discordRoles = await this.discord.getRolesInServer();
         const tsRanks = await this.teamspeak.getRanks();
 
-        return response.render('pages/badges/edit.hbs', { badge, tsRanks });
+        return response.render('pages/badges/edit.hbs', { badge, discordRoles, tsRanks });
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)

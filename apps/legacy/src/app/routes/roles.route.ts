@@ -85,13 +85,14 @@ export class RolesRoute extends BaseRoute {
             return RolesRoute.sendNotFound(response, request.originalUrl);
         }
 
+        const discordRoles = await this.discord.getRolesInServer();
         const tsRanks = await this.teamspeak.getRanks();
         const permissions = Object.entries(Permission).map((permissionEntry) => ({
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
 
-        return response.render('pages/roles/edit.hbs', { permissions, role, tsRanks });
+        return response.render('pages/roles/edit.hbs', { discordRoles, permissions, role, tsRanks });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
