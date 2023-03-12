@@ -1,6 +1,7 @@
 import { Request, Response } from '@ionaru/micro-web-service';
 import { Permission, RoleModel, TeamspeakRankModel } from '@rangers-site/entities';
 
+import { DiscordService } from '../services/discord.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute, IPermissionableInput } from './base.route';
@@ -9,6 +10,7 @@ export class RolesRoute extends BaseRoute {
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
+        private readonly discord: DiscordService,
     ) {
         super();
         this.createRoute('get', '/', this.rolesPage.bind(this));
@@ -52,6 +54,16 @@ export class RolesRoute extends BaseRoute {
             }
         } else {
             role.teamspeakRank = null;
+        }
+
+        if (request.body.discordRole) {
+            const discordRoleError = await RolesRoute.setDiscordRole(request.body.discordRole, role, this.discord);
+            if (discordRoleError) {
+                response.locals.error = discordRoleError;
+                return this.roleEditPage(request, response);
+            }
+        } else {
+            role.discordRole = null;
         }
 
         const permissionsError = await RolesRoute.setPermissions(request.body.permissions, role);
@@ -123,11 +135,13 @@ export class RolesRoute extends BaseRoute {
 
     @RolesRoute.requestDecorator(RolesRoute.checkLogin)
     private async rolesPage(_request: Request, response: Response) {
+        const discordRoles = await this.discord.getRolesInServer();
+        const tsRanks = await this.teamspeak.getRanks();
         const roles = await RoleModel.doQuery()
             .leftJoinAndSelect(`${RoleModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
             .orderBy(`${RoleModel.alias}.name`, 'ASC')
             .getMany();
-        return response.render('pages/roles/index.hbs', { roles });
+        return response.render('pages/roles/index.hbs', { discordRoles, roles, tsRanks });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)

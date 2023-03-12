@@ -34,15 +34,21 @@
             </div>
         {{/if}}
 
-        {{#if discordRanks}}
+        {{#if discordRoles}}
             <div class="form-group mb-3">
                 <label class="form-label" for="discord-role-input">Discord role</label>
                 <div class="input-group flex-nowrap">
                 <span class="input-group-text" id="addon-wrapping">
                     <i class="fa-brands fa-discord fa-fw"></i>
                 </span>
-                    <select disabled class="form-control selectpicker" id="discord-role-input">
-                        <option>Coming soon™</option>
+                    <select class="form-control selectpicker" id="discord-role-input" name="discordRole">
+                        <option value="">None</option>
+                        {{#each discordRoles}}
+                            <option {{#ifCond ../assignable.discordRole 'streq' this.id}}selected{{/ifCond}}
+                                    value="{{this.id}}">
+                                {{this.name}} ({{this.id}})
+                            </option>
+                        {{/each}}
                     </select>
                 </div>
             </div>

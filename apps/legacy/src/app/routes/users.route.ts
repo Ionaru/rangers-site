@@ -18,6 +18,9 @@ import { TeamspeakService } from '../services/teamspeak.service';
 import { BaseRoute } from './base.route';
 
 interface IUserInput {
+    badges: string[];
+    roles: string[];
+    rank: string;
     ts3User: string;
 }
 
@@ -51,6 +54,24 @@ export class UsersRoute extends BaseRoute {
 
         this.userValidator = this.createValidateFunction({
             properties: {
+                badges: {
+                    default: undefined,
+                    items: {
+                        type: 'string',
+                    },
+                    type: 'array',
+                },
+                rank: {
+                    default: undefined,
+                    type: 'string',
+                },
+                roles: {
+                    default: undefined,
+                    items: {
+                        type: 'string',
+                    },
+                    type: 'array',
+                },
                 ts3User: {
                     default: undefined,
                     type: 'string',
@@ -77,6 +98,7 @@ export class UsersRoute extends BaseRoute {
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     private async editUser(request: Request<{ id: number; }>, response: Response) {
 
         if (UsersRoute.isAboutSelf(request) && !UsersRoute.isAdmin(request)) {
@@ -95,40 +117,38 @@ export class UsersRoute extends BaseRoute {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
 
-        /*
-        // let rank: RankModel | undefined | null = null;
-        // if (request.body.rank) {
-        //     rank = await RankModel.findOne(request.body.rank);
-        //     if (!rank) {
-        //         response.locals.error = 'Rank not found.';
-        //         return UsersRoute.editUserPage(request, response);
-        //     }
-        // }
+        let rank: RankModel | undefined | null = null;
+        if (request.body.rank) {
+            rank = await RankModel.findOne(request.body.rank);
+            if (!rank) {
+                response.locals.error = 'Rank not found.';
+                return this.editUserPage(request, response);
+            }
+        }
 
-        // user.rank = rank;
+        user.rank = rank;
 
-        // let roles: RoleModel[] | undefined | null = [];
-        // if (request.body.roles) {
-        //     roles = await RoleModel.findByIds(request.body.roles);
-        //     if (!roles.length) {
-        //         response.locals.error = 'Roles not found.';
-        //         return UsersRoute.editUserPage(request, response);
-        //     }
-        // }
+        let roles: RoleModel[] | undefined | null = [];
+        if (request.body.roles) {
+            roles = await RoleModel.findByIds(request.body.roles);
+            if (!roles.length) {
+                response.locals.error = 'Roles not found.';
+                return this.editUserPage(request, response);
+            }
+        }
 
-        // user.roles = roles;
+        user.roles = roles;
 
-        // let badges: BadgeModel[] | undefined | null = [];
-        // if (request.body.badges) {
-        //     badges = await BadgeModel.findByIds(request.body.badges);
-        //     if (!badges.length) {
-        //         response.locals.error = 'Badges not found.';
-        //         return UsersRoute.editUserPage(request, response);
-        //     }
-        // }
+        let badges: BadgeModel[] | undefined | null = [];
+        if (request.body.badges) {
+            badges = await BadgeModel.findByIds(request.body.badges);
+            if (!badges.length) {
+                response.locals.error = 'Badges not found.';
+                return this.editUserPage(request, response);
+            }
+        }
 
-        // user.badges = badges;
-        */
+        user.badges = badges;
 
         let ts3User: typeof user.ts3User = null;
         if (request.body.ts3User) {
@@ -238,6 +258,8 @@ export class UsersRoute extends BaseRoute {
             .leftJoinAndSelect(`${UserModel.alias}.ts3User`, TeamspeakUserModel.alias)
             .orderBy(`${UserModel.alias}.rank`, 'ASC')
             .addOrderBy(`${UserModel.alias}.name`, 'ASC')
+            .addOrderBy(`${BadgeModel.alias}.name`, 'ASC')
+            .addOrderBy(`${RoleModel.alias}.name`, 'ASC')
             .getMany();
 
         return response.render('pages/users/index.hbs', { users });

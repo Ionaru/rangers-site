@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from '@ionaru/micro-web-service';
 import { BadgeModel, Permission, TeamspeakRankModel } from '@rangers-site/entities';
 
+import { DiscordService } from '../services/discord.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute, IAssignableInput } from './base.route';
@@ -9,6 +10,7 @@ export class BadgesRoute extends BaseRoute {
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
+        private readonly discord: DiscordService,
     ) {
         super();
         this.createRoute('get', '/', this.badgesPage.bind(this));
@@ -52,6 +54,16 @@ export class BadgesRoute extends BaseRoute {
             }
         } else {
             badge.teamspeakRank = null;
+        }
+
+        if (request.body.discordRole) {
+            const discordRoleError = await BadgesRoute.setDiscordRole(request.body.discordRole, badge, this.discord);
+            if (discordRoleError) {
+                response.locals.error = discordRoleError;
+                return this.badgeEditPage(request, response);
+            }
+        } else {
+            badge.discordRole = null;
         }
 
         await badge.save();
@@ -110,11 +122,13 @@ export class BadgesRoute extends BaseRoute {
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkLogin)
     private async badgesPage(_request: Request, response: Response) {
+        const discordRoles = await this.discord.getRolesInServer();
+        const tsRanks = await this.teamspeak.getRanks();
         const badges = await BadgeModel.doQuery()
             .leftJoinAndSelect(`${BadgeModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
             .orderBy(`${BadgeModel.alias}.name`, 'ASC')
             .getMany();
-        return response.render('pages/badges/index.hbs', { badges });
+        return response.render('pages/badges/index.hbs', { badges, discordRoles, tsRanks });
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)

@@ -19,18 +19,18 @@
                 <tr>
                     <th class="align-middle">{{this.name}}</th>
                     <td class="align-middle">
-                        {{#if this.teamspeakRank}}
-                            {{this.teamspeakRank.name}} ({{this.teamspeakRank.id}})
-                        {{else}}
-                            None
-                        {{/if}}
+                        {{#each ../tsRanks}}
+                            {{#ifCond ../this.teamspeakRank.id 'streq' this.sgid}}
+                                {{../this.name}} (#{{../this.sgid}})
+                            {{/ifCond}}
+                        {{/each}}
                     </td>
                     <td class="align-middle">
-                        {{#if this.discordRank}}
-                            ... (#)
-                        {{else}}
-                            None
-                        {{/if}}
+                        {{#each ../discordRoles}}
+                            {{#ifCond ../this.discordRole 'streq' this.id}}
+                                {{../this.name}} (#{{../this.id}})
+                            {{/ifCond}}
+                        {{/each}}
                     </td>
                     {{#hasPermission ../user 'EDIT_ROLES'}}
                         <td class="text-right align-middle">

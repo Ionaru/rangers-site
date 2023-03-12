@@ -9,4 +9,5 @@ export interface IAssignableModel extends BaseModel {
     name: string;
     users: UserModel[];
     teamspeakRank?: TeamspeakRankModel | null;
+    discordRole?: string | null;
 }

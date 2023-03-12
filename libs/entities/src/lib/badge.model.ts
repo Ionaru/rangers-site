@@ -38,6 +38,12 @@ export class BadgeModel extends BaseModel implements IAssignableModel, IImageabl
     })
     public teamspeakRank?: TeamspeakRankModel | null;
 
+    @Column({
+        nullable: true,
+        type: String,
+    })
+    public discordRole?: string | null;
+
     public constructor(name: string) {
         super();
         this.name = name;

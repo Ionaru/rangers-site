@@ -38,7 +38,11 @@ export class RoleModel extends BaseModel implements IPermissionableModel {
     })
     public teamspeakRank?: TeamspeakRankModel | null;
 
-    // TODO: Role on Discord
+    @Column({
+        nullable: true,
+        type: String,
+    })
+    public discordRole?: string | null;
 
     public constructor(name: string) {
         super();

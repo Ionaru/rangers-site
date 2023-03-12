@@ -23,6 +23,7 @@ import { SelectQueryBuilder } from 'typeorm';
 
 import { debug } from '../../debug';
 import { TeamspeakService } from '../services/teamspeak.service';
+import { DiscordService } from '../services/discord.service';
 
 interface IRenderData {
     [key: string]: any;
@@ -31,6 +32,7 @@ interface IRenderData {
 export interface IAssignableInput {
     name: string;
     tsRank?: string;
+    discordRole?: string;
 }
 
 export interface IPermissionableInput extends IAssignableInput {
@@ -49,6 +51,10 @@ export class BaseRoute extends AjvValidationRoute {
 
         this.assignableValidator = this.createValidateFunction({
             properties: {
+                discordRole: {
+                    nullable: true,
+                    type: 'string',
+                },
                 name: {
                     // errorMessage: 'Name must be between 3 and 32 characters.',
                     maxLength: 32,
@@ -66,6 +72,10 @@ export class BaseRoute extends AjvValidationRoute {
 
         this.permissionableValidator = this.createValidateFunction({
             properties: {
+                discordRole: {
+                    nullable: true,
+                    type: 'string',
+                },
                 name: {
                     maxLength: 32,
                     minLength: 3,
@@ -152,6 +162,24 @@ export class BaseRoute extends AjvValidationRoute {
         permissionable.permissions = await PermissionModel.doQuery()
             .where(`${PermissionModel.alias}.slug IN (:slugs)`, { slugs: requestedPermissions })
             .getMany();
+    }
+
+    protected static async setDiscordRole(
+        discordRole: string, assignable: IAssignableModel, discord: DiscordService,
+    ): Promise<string | void> {
+
+        if (!discordRole) {
+            assignable.discordRole = null;
+            return;
+        }
+
+        const role = await discord.getRoleFromId(discordRole);
+
+        if (!role) {
+            return 'Discord role not found.';
+        }
+
+        assignable.discordRole = role.id;
     }
 
     protected static async setTeamspeakRank(

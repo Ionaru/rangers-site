@@ -223,6 +223,11 @@ export class TeamspeakService implements IService {
     private async reconnect() {
         TeamspeakService.debug('Reconnecting...');
         this.client.removeAllListeners('clientconnect');
+        try {
+            await this.client.quit();
+        } catch {
+            // Ignore
+        }
         this.client.forceQuit();
         delete this.clientId;
         return this.connect();

@@ -1,5 +1,5 @@
 import { IService } from '@rangers-site/interfaces';
-import { Client, GuildMember, User, WebSocketManager } from 'discord.js';
+import { Client, GuildMember, Role, User, WebSocketManager } from 'discord.js';
 import * as guessDate from 'guessdate-en';
 import * as moment from 'moment-timezone';
 import { InteractionHandler } from 'slash-create';
@@ -86,5 +86,16 @@ export class DiscordService implements IService {
         const guild = await this.client.guilds.fetch(DiscordService.RangersGuild);
         const members = await guild.members.fetch();
         return [...members.values()];
+    }
+
+    public async getRolesInServer(): Promise<Role[]> {
+        const guild = await this.client.guilds.fetch(DiscordService.RangersGuild);
+        const roles = await guild.roles.fetch();
+        return [...roles.values()];
+    }
+
+    public async getRoleFromId(id: string): Promise<Role | null> {
+        const guild = await this.client.guilds.fetch(DiscordService.RangersGuild);
+        return guild.roles.fetch(id);
     }
 }

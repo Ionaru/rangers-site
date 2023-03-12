@@ -1,6 +1,7 @@
 import { Request, Response } from '@ionaru/micro-web-service';
 import { Permission, RankModel, TeamspeakRankModel } from '@rangers-site/entities';
 
+import { DiscordService } from '../services/discord.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute, IPermissionableInput } from './base.route';
@@ -9,6 +10,7 @@ export class RanksRoute extends BaseRoute {
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
+        private readonly discord: DiscordService,
     ) {
         super();
         this.createRoute('get', '/', this.ranksPage.bind(this));
@@ -55,6 +57,16 @@ export class RanksRoute extends BaseRoute {
             rank.teamspeakRank = null;
         }
 
+        if (request.body.discordRole) {
+            const discordRoleError = await RanksRoute.setDiscordRole(request.body.discordRole, rank, this.discord);
+            if (discordRoleError) {
+                response.locals.error = discordRoleError;
+                return this.rankEditPage(request, response);
+            }
+        } else {
+            rank.discordRole = null;
+        }
+
         const permissionsError = await RanksRoute.setPermissions(request.body.permissions, rank);
         if (permissionsError) {
             response.locals.error = permissionsError;
@@ -82,12 +94,13 @@ export class RanksRoute extends BaseRoute {
             return RanksRoute.sendNotFound(response, request.originalUrl);
         }
 
+        const discordRoles = await this.discord.getRolesInServer();
         const tsRanks = await this.teamspeak.getRanks();
         const permissions = Object.entries(Permission).map((permissionEntry) => ({
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/ranks/edit.hbs', { permissions, rank, tsRanks });
+        return response.render('pages/ranks/edit.hbs', { discordRoles, permissions, rank, tsRanks });
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)
@@ -131,11 +144,13 @@ export class RanksRoute extends BaseRoute {
 
     @RanksRoute.requestDecorator(RanksRoute.checkLogin)
     private async ranksPage(_request: Request, response: Response) {
+        const discordRoles = await this.discord.getRolesInServer();
+        const tsRanks = await this.teamspeak.getRanks();
         const ranks = await RankModel.doQuery()
             .leftJoinAndSelect(`${RankModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
             .orderBy(`${RankModel.alias}.id`, 'ASC')
             .getMany();
-        return response.render('pages/ranks/index.hbs', { ranks });
+        return response.render('pages/ranks/index.hbs', { discordRoles, ranks, tsRanks });
     }
 
     @RanksRoute.requestDecorator(RanksRoute.checkPermission, Permission.EDIT_RANKS)

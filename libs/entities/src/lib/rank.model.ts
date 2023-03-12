@@ -43,7 +43,11 @@ export class RankModel extends BaseModel implements IPermissionableModel, IImage
     })
     public teamspeakRank?: TeamspeakRankModel | null;
 
-    // TODO: Rank on Discord
+    @Column({
+        nullable: true,
+        type: String,
+    })
+    public discordRole?: string | null;
 
     public constructor(name: string) {
         super();
