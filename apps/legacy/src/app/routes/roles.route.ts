@@ -1,7 +1,6 @@
 import { Request, Response } from '@ionaru/micro-web-service';
-import { EnjinTagModel, Permission, RoleModel, TeamspeakRankModel } from '@rangers-site/entities';
+import { Permission, RoleModel, TeamspeakRankModel } from '@rangers-site/entities';
 
-import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute, IPermissionableInput } from './base.route';
@@ -10,7 +9,6 @@ export class RolesRoute extends BaseRoute {
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
-        private readonly enjin: EnjinService,
     ) {
         super();
         this.createRoute('get', '/', this.rolesPage.bind(this));
@@ -56,16 +54,6 @@ export class RolesRoute extends BaseRoute {
             role.teamspeakRank = null;
         }
 
-        if (request.body.enjinTag) {
-            const enjinRankError = await RolesRoute.setEnjinTag(request.body.enjinTag, role, this.enjin);
-            if (enjinRankError) {
-                response.locals.error = enjinRankError;
-                return this.roleEditPage(request, response);
-            }
-        } else {
-            role.enjinTag = null;
-        }
-
         const permissionsError = await RolesRoute.setPermissions(request.body.permissions, role);
         if (permissionsError) {
             response.locals.error = permissionsError;
@@ -79,20 +67,19 @@ export class RolesRoute extends BaseRoute {
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
     private async roleEditPage(request: Request<{ id: number; }>, response: Response) {
-        const role = await RoleModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
+        const role = await RoleModel.findOne(request.params.id, { relations: ['teamspeakRank'] });
 
         if (!role) {
             return RolesRoute.sendNotFound(response, request.originalUrl);
         }
 
-        const enjinTags = await this.enjin.getTags();
         const tsRanks = await this.teamspeak.getRanks();
         const permissions = Object.entries(Permission).map((permissionEntry) => ({
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
 
-        return response.render('pages/roles/edit.hbs', { enjinTags, permissions, role, tsRanks });
+        return response.render('pages/roles/edit.hbs', { permissions, role, tsRanks });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
@@ -126,20 +113,18 @@ export class RolesRoute extends BaseRoute {
 
     @RolesRoute.requestDecorator(RolesRoute.checkPermission, Permission.EDIT_ROLES)
     private async roleCreatePage(_request: Request, response: Response) {
-        const enjinTags = await this.enjin.getTags();
         const tsRanks = await this.teamspeak.getRanks();
         const permissions = Object.entries(Permission).map((permissionEntry) => ({
             name: permissionEntry[1],
             slug: permissionEntry[0],
         }));
-        return response.render('pages/roles/create.hbs', { enjinTags, permissions, tsRanks });
+        return response.render('pages/roles/create.hbs', { permissions, tsRanks });
     }
 
     @RolesRoute.requestDecorator(RolesRoute.checkLogin)
     private async rolesPage(_request: Request, response: Response) {
         const roles = await RoleModel.doQuery()
             .leftJoinAndSelect(`${RoleModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
-            .leftJoinAndSelect(`${RoleModel.alias}.enjinTag`, EnjinTagModel.alias)
             .orderBy(`${RoleModel.alias}.name`, 'ASC')
             .getMany();
         return response.render('pages/roles/index.hbs', { roles });
@@ -164,14 +149,6 @@ export class RolesRoute extends BaseRoute {
             const teamspeakRankError = await RolesRoute.setTeamspeakRank(request.body.tsRank, role, this.teamspeak);
             if (teamspeakRankError) {
                 response.locals.error = teamspeakRankError;
-                return this.roleCreatePage(request, response);
-            }
-        }
-
-        if (request.body.enjinTag) {
-            const enjinRankError = await RolesRoute.setEnjinTag(request.body.enjinTag, role, this.enjin);
-            if (enjinRankError) {
-                response.locals.error = enjinRankError;
                 return this.roleCreatePage(request, response);
             }
         }

@@ -10,7 +10,6 @@ The project uses the Nx-style monorepo pattern, more on https://nx.dev/.
 The project in its current form has several parts:
 - The website is a server-side rendered (SSR) application that uses the [Express](https://expressjs.com/) framework. But abstracted through https://github.com/Ionaru/micro-web-service. Templating is done with [Handlebars](https://handlebarsjs.com/).
 - The Discord bot uses the [Discord.js](https://discord.js.org/) framework and [/create](https://slash-create.js.org/), it listens to `/loa` and `/loa-cancel` commands in a specific Discord channel.
-- Syncronization between Enjin and this website is done through a few tasks in [apps/legacy/src](apps/legacy/src/app/tasks) and mostly uses a regular requests library ([Axios](https://axios-http.com/)) as seen in [apps/legacy/src/app/services/enjin.service.ts](apps/legacy/src/app/services/enjin.service.ts).
 - Interaction with Teamspeak is handled through the [ts3-nodejs-library](https://multivit4min.github.io/TS3-NodeJS-Library/), it records who is in the Operation TS3 channel during operation times, and adds/removes roles where needed.
 - The database is accessed through [TypoORM](https://typeorm.io/) and has a [MySQL](https://www.mysql.com/) backend.
 
@@ -73,8 +72,6 @@ Environment variables are used to store most configuration data.
 - `RANGERS_DISCORD_CLIENT_SECRET`: The client secret of the Discord app.
 - `RANGERS_DISCORD_RETURN_URL`: The URL to return to after logging in with Discord, must match one configured in the Discord application.
 - `RANGERS_DISCORD_TOKEN`: The token of the Discord app.
-- `RANGERS_ENJIN_DOMAIN`: The domain of the Enjin website.
-- `RANGERS_ENJIN_KEY`: The API key of the Enjin website.
 - `RANGERS_PORT`: The port the website should listen on.
 - `RANGERS_TS_HOST`: The hostname of the Teamspeak server.
 - `RANGERS_TS_NICKNAME`: The nickname of the bot on the Teamspeak server.
@@ -83,7 +80,3 @@ Environment variables are used to store most configuration data.
 - `RANGERS_TS_QUERY_PORT`: The query port of the Teamspeak server.
 - `RANGERS_TS_USERNAME`: The username of the bot on the Teamspeak server, can differ from the nickname.
 - `RANGERS_TS_OPERATIONS_CHANNEL`: The TS3 channel ID of the Operations channel, used to register player activity.
-- `RANGERS_TASK_SYNC_RANKS` (optional, default false): Whether to sync the ranks of users with Enjin.
-- `RANGERS_TASK_SYNC_ROLES` (optional, default false): Whether to sync the roles of users with Enjin.
-- `RANGERS_TASK_SYNC_BADGES` (optional, default false): Whether to sync the badges of users with Enjin.
-- `RANGERS_TASK_SYNC_ENJIN_TAGS` (optional, default false): Whether to sync available ranks, roles and badges with Enjin.

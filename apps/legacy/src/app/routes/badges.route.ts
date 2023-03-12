@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from '@ionaru/micro-web-service';
-import { BadgeModel, EnjinTagModel, Permission, TeamspeakRankModel } from '@rangers-site/entities';
+import { BadgeModel, Permission, TeamspeakRankModel } from '@rangers-site/entities';
 
-import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute, IAssignableInput } from './base.route';
@@ -10,7 +9,6 @@ export class BadgesRoute extends BaseRoute {
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
-        private readonly enjin: EnjinService,
     ) {
         super();
         this.createRoute('get', '/', this.badgesPage.bind(this));
@@ -56,16 +54,6 @@ export class BadgesRoute extends BaseRoute {
             badge.teamspeakRank = null;
         }
 
-        if (request.body.enjinTag) {
-            const enjinRankError = await BadgesRoute.setEnjinTag(request.body.enjinTag, badge, this.enjin);
-            if (enjinRankError) {
-                response.locals.error = enjinRankError;
-                return this.badgeEditPage(request, response);
-            }
-        } else {
-            badge.enjinTag = null;
-        }
-
         await badge.save();
 
         return response.redirect('/badges');
@@ -73,16 +61,15 @@ export class BadgesRoute extends BaseRoute {
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
     private async badgeEditPage(request: Request<{ id: number; }>, response: Response, next?: NextFunction) {
-        const badge = await BadgeModel.findOne(request.params.id, { relations: ['teamspeakRank', 'enjinTag'] });
+        const badge = await BadgeModel.findOne(request.params.id, { relations: ['teamspeakRank'] });
 
         if (!badge) {
             return next ? next() : BadgesRoute.sendNotFound(response, request.originalUrl);
         }
 
-        const enjinTags = await this.enjin.getTags();
         const tsRanks = await this.teamspeak.getRanks();
 
-        return response.render('pages/badges/edit.hbs', { badge, enjinTags, tsRanks });
+        return response.render('pages/badges/edit.hbs', { badge, tsRanks });
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
@@ -116,17 +103,15 @@ export class BadgesRoute extends BaseRoute {
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkPermission, Permission.EDIT_BADGES)
     private async badgeCreatePage(_request: Request, response: Response) {
-        const enjinTags = await this.enjin.getTags();
         const tsRanks = await this.teamspeak.getRanks();
 
-        return response.render('pages/badges/create.hbs', { enjinTags, tsRanks });
+        return response.render('pages/badges/create.hbs', { tsRanks });
     }
 
     @BadgesRoute.requestDecorator(BadgesRoute.checkLogin)
     private async badgesPage(_request: Request, response: Response) {
         const badges = await BadgeModel.doQuery()
             .leftJoinAndSelect(`${BadgeModel.alias}.teamspeakRank`, TeamspeakRankModel.alias)
-            .leftJoinAndSelect(`${BadgeModel.alias}.enjinTag`, EnjinTagModel.alias)
             .orderBy(`${BadgeModel.alias}.name`, 'ASC')
             .getMany();
         return response.render('pages/badges/index.hbs', { badges });
@@ -151,14 +136,6 @@ export class BadgesRoute extends BaseRoute {
             const teamspeakRankError = await BadgesRoute.setTeamspeakRank(request.body.tsRank, badge, this.teamspeak);
             if (teamspeakRankError) {
                 response.locals.error = teamspeakRankError;
-                return this.badgeCreatePage(request, response);
-            }
-        }
-
-        if (request.body.enjinTag) {
-            const enjinRankError = await BadgesRoute.setEnjinTag(request.body.enjinTag, badge, this.enjin);
-            if (enjinRankError) {
-                response.locals.error = enjinRankError;
                 return this.badgeCreatePage(request, response);
             }
         }

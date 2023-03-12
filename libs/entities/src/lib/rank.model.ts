@@ -2,7 +2,6 @@ import { filterArray } from '@ionaru/array-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
-import { EnjinTagModel } from './enjin-tag.model';
 import { IImageableModel } from './imageable.model';
 import { PermissionModel } from './permission.model';
 import { IPermissionableModel } from './permissionable.model';
@@ -44,13 +43,6 @@ export class RankModel extends BaseModel implements IPermissionableModel, IImage
     })
     public teamspeakRank?: TeamspeakRankModel | null;
 
-    @ManyToOne(() => EnjinTagModel, {
-        eager: true,
-        nullable: true,
-        onDelete: 'SET NULL',
-    })
-    public enjinTag?: EnjinTagModel | null;
-
     // TODO: Rank on Discord
 
     public constructor(name: string) {
@@ -60,11 +52,6 @@ export class RankModel extends BaseModel implements IPermissionableModel, IImage
 
     public static doQuery(): SelectQueryBuilder<RankModel> {
         return RankModel.createQueryBuilder(RankModel.alias);
-    }
-
-    public static async getEnjinTags(): Promise<string[]> {
-        const entities = await this.find({ relations: ['enjinTag'] });
-        return filterArray(entities.map((e) => e.enjinTag?.id));
     }
 
     public static async getTeamspeakGroups(): Promise<string[]> {

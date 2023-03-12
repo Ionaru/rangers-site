@@ -3,7 +3,6 @@ import { Column, Entity, ManyToOne, OneToMany, SelectQueryBuilder } from 'typeor
 
 import { IAssignableModel } from './assignable.model';
 import { BaseModel } from './base.model';
-import { EnjinTagModel } from './enjin-tag.model';
 import { IImageableModel } from './imageable.model';
 import { TeamspeakRankModel } from './teamspeak-rank.model';
 import { UserModel } from './user.model';
@@ -39,13 +38,6 @@ export class BadgeModel extends BaseModel implements IAssignableModel, IImageabl
     })
     public teamspeakRank?: TeamspeakRankModel | null;
 
-    @ManyToOne(() => EnjinTagModel, {
-        eager: true,
-        nullable: true,
-        onDelete: 'SET NULL',
-    })
-    public enjinTag?: EnjinTagModel | null;
-
     public constructor(name: string) {
         super();
         this.name = name;
@@ -53,11 +45,6 @@ export class BadgeModel extends BaseModel implements IAssignableModel, IImageabl
 
     public static doQuery(): SelectQueryBuilder<BadgeModel> {
         return BadgeModel.createQueryBuilder(BadgeModel.alias);
-    }
-
-    public static async getEnjinTags(): Promise<string[]> {
-        const entities = await this.find({ relations: ['enjinTag'] });
-        return filterArray(entities.map((e) => e.enjinTag?.id));
     }
 
     public static async getTeamspeakGroups(): Promise<string[]> {

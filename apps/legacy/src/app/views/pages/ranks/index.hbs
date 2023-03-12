@@ -8,7 +8,6 @@
             <tr>
                 <th scope="col">Name</th>
                 <!--                <th scope="col"></th>-->
-                <th scope="col"><i class="fa-solid fa-globe fa-fw"></i>Enjin tag</th>
                 <th scope="col"><i class="fa-brands fa-teamspeak fa-fw"></i>Teamspeak group</th>
                 <th scope="col"><i class="fa-brands fa-discord fa-fw"></i>Discord role</th>
                 {{#hasPermission user 'EDIT_RANKS'}}
@@ -23,13 +22,6 @@
                     <!--                    <td class="align-middle">-->
                     <!--                        <img width="25px" src="uploads/{{this.image}}" alt="{{this.name}} image" />-->
                     <!--                    </td>-->
-                    <td class="align-middle">
-                        {{#if this.enjinTag}}
-                            {{this.enjinTag.name}} (#{{this.enjinTag.id}})
-                        {{else}}
-                            None
-                        {{/if}}
-                    </td>
                     <td class="align-middle">
                         {{#if this.teamspeakRank}}
                             {{this.teamspeakRank.name}} (#{{this.teamspeakRank.id}})

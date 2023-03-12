@@ -9,7 +9,6 @@ import {
     Response,
 } from '@ionaru/micro-web-service';
 import {
-    EnjinTagModel,
     IAssignableModel,
     IImageableModel,
     IPermissionableModel,
@@ -23,7 +22,6 @@ import { FileArray } from 'express-fileupload';
 import { SelectQueryBuilder } from 'typeorm';
 
 import { debug } from '../../debug';
-import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 interface IRenderData {
@@ -33,7 +31,6 @@ interface IRenderData {
 export interface IAssignableInput {
     name: string;
     tsRank?: string;
-    enjinTag?: string;
 }
 
 export interface IPermissionableInput extends IAssignableInput {
@@ -52,10 +49,6 @@ export class BaseRoute extends AjvValidationRoute {
 
         this.assignableValidator = this.createValidateFunction({
             properties: {
-                enjinTag: {
-                    nullable: true,
-                    type: 'string',
-                },
                 name: {
                     // errorMessage: 'Name must be between 3 and 32 characters.',
                     maxLength: 32,
@@ -73,10 +66,6 @@ export class BaseRoute extends AjvValidationRoute {
 
         this.permissionableValidator = this.createValidateFunction({
             properties: {
-                enjinTag: {
-                    nullable: true,
-                    type: 'string',
-                },
                 name: {
                     maxLength: 32,
                     minLength: 3,
@@ -189,30 +178,6 @@ export class BaseRoute extends AjvValidationRoute {
         }
 
         assignable.teamspeakRank = teamspeakRank;
-    }
-
-    protected static async setEnjinTag(
-        enjinTag: unknown, assignable: IAssignableModel, enjin: EnjinService,
-    ): Promise<string | void> {
-
-        if (!enjinTag || typeof enjinTag !== 'string' || isNaN(Number(enjinTag))) {
-            return 'Invalid Enjin rank input.';
-        }
-
-        let teamspeakRank = await EnjinTagModel.findOne(enjinTag) || null;
-
-        if (!teamspeakRank && enjinTag) {
-            const tag = await enjin.getTag(enjinTag);
-
-            if (!tag) {
-                return 'Enjin rank not found.';
-            }
-
-            teamspeakRank = new EnjinTagModel(tag.tag_id, tag.tagname);
-            await teamspeakRank.save();
-        }
-
-        assignable.enjinTag = teamspeakRank;
     }
 
     protected static async validateAssignableInput(

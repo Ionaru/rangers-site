@@ -9,7 +9,6 @@ import { LOACancelCommand } from './app/commands/loa-cancel.command';
 import { LOACommand } from './app/commands/loa.command';
 import { DatabaseController } from './app/controllers/database.controller';
 import { DiscordBotController } from './app/controllers/discord-bot.controller';
-import { EnjinController } from './app/controllers/enjin.controller';
 import { ServerController } from './app/controllers/server.controller';
 import { SlashCreatorController } from './app/controllers/slash-creator.controller';
 import { TeamSpeakBotController } from './app/controllers/teamspeak-bot.controller';
@@ -24,10 +23,6 @@ import { RolesRoute } from './app/routes/roles.route';
 import { RootRoute } from './app/routes/root.route';
 import { UsersRoute } from './app/routes/users.route';
 import { RecordOperationAttendeesTask } from './app/tasks/record-operation-attendees.task';
-import { SyncBadgesTask } from './app/tasks/sync-badges.task';
-import { SyncEnjinTagsTask } from './app/tasks/sync-enjin-tags.task';
-import { SyncRanksTask } from './app/tasks/sync-ranks.task';
-import { SyncRolesTask } from './app/tasks/sync-roles.task';
 import { debug } from './debug';
 
 const start = async () => {
@@ -43,7 +38,6 @@ const start = async () => {
     moment.locale('en');
 
     // Controllers
-
     const databaseController = new DatabaseController();
     const databaseService = await databaseController.start();
 
@@ -63,25 +57,10 @@ const start = async () => {
         await slashCreatorService.syncCommands();
     }
 
-    const enjinController = new EnjinController();
-    const enjinService = await enjinController.start();
-
     // Tasks
 
     const operationAttendeesTask = new RecordOperationAttendeesTask(teamspeakService, databaseService);
     operationAttendeesTask.start();
-
-    const syncEnjinTagsTask = new SyncEnjinTagsTask(enjinService);
-    syncEnjinTagsTask.start();
-
-    const syncRanksTask = new SyncRanksTask(teamspeakService, enjinService);
-    syncRanksTask.start();
-
-    const syncRolesTask = new SyncRolesTask(teamspeakService, enjinService);
-    syncRolesTask.start();
-
-    const syncBadgesTask = new SyncBadgesTask(teamspeakService, enjinService);
-    syncBadgesTask.start();
 
     // Start server
 
@@ -89,12 +68,12 @@ const start = async () => {
         ['*', new GlobalRoute()],
         ['/', new RootRoute()],
         ['/auth', new AuthRoute(discordService)],
-        ['/ranks', new RanksRoute(teamspeakService, enjinService)],
-        ['/roles', new RolesRoute(teamspeakService, enjinService)],
-        ['/badges', new BadgesRoute(teamspeakService, enjinService)],
+        ['/ranks', new RanksRoute(teamspeakService)],
+        ['/roles', new RolesRoute(teamspeakService)],
+        ['/badges', new BadgesRoute(teamspeakService)],
         ['/op(eration)?', new OperationRoute()],
         ['/op(eration)?s', new OperationsRoute()],
-        ['/users', new UsersRoute(teamspeakService, enjinService, discordService)],
+        ['/users', new UsersRoute(teamspeakService, discordService)],
         ['*', new NotFoundRoute()],
     ]);
     await serverController.start();

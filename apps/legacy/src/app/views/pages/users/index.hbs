@@ -19,10 +19,6 @@
                         Name
                     </th>
                     <th scope="col">
-                        <i class="fa-solid fa-globe"></i>
-                        Name
-                    </th>
-                    <th scope="col">
                         <i class="fa-brands fa-teamspeak"></i>
                         Name
                     </th>
@@ -39,11 +35,6 @@
                 {{#if this.discordUser}}
                 <tr>
                     <td class="align-middle user-name font-weight-bold">{{this.name}}</td>
-                    <td class="align-middle font-weight-bold">
-                        {{#with (lookup ../enjinUsers this.enjinUser)}}
-                        {{this.username}}
-                        {{/with}}
-                    </td>
                     <td class="align-middle font-weight-bold">{{this.ts3User.nickname}}</td>
                     <td class="align-middle">
                         {{this.rank.name}}
@@ -61,7 +52,7 @@
                     {{#hasPermission ../user 'EDIT_USER_RANK'}}
                     <td class="text-right align-middle">
                         <a href="/users/sync/{{../this.id}}" class="btn btn-info"
-                            title="Fetch ranks, roles and badges from Enjin and sync to other platforms if possible">
+                            title="Sync user rank, roles and badges to Discord and TS3">
                             <i class="fa-solid fa-sync fa-fw"></i>
                         </a>
                         <a href="/users/edit/{{../this.id}}" class="btn btn-warning">

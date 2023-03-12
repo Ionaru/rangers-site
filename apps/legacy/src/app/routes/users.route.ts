@@ -1,4 +1,4 @@
-import { objectToObjectsArray, sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { Request, Response } from '@ionaru/micro-web-service';
 import {
     BadgeModel,
@@ -11,22 +11,18 @@ import {
     UserModel,
 } from '@rangers-site/entities';
 import { ValidateFunction } from 'ajv';
-import { In } from 'typeorm';
 
 import { DiscordService } from '../services/discord.service';
-import { EnjinService } from '../services/enjin.service';
 import { TeamspeakService } from '../services/teamspeak.service';
 
 import { BaseRoute } from './base.route';
 
 interface IUserInput {
-    enjinUser: string;
     ts3User: string;
 }
 
 interface ILinkInput {
     discordUser: string;
-    enjinUser: string;
     ts3User: string;
 }
 
@@ -37,7 +33,6 @@ export class UsersRoute extends BaseRoute {
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
-        private readonly enjin: EnjinService,
         private readonly discord: DiscordService,
     ) {
         super();
@@ -56,16 +51,12 @@ export class UsersRoute extends BaseRoute {
 
         this.userValidator = this.createValidateFunction({
             properties: {
-                enjinUser: {
-                    nullable: true,
-                    type: 'string',
-                },
                 ts3User: {
-                    nullable: true,
+                    default: undefined,
                     type: 'string',
                 },
             },
-            required: ['enjinUser', 'ts3User'],
+            required: ['ts3User'],
             type: 'object',
         });
 
@@ -75,16 +66,12 @@ export class UsersRoute extends BaseRoute {
                     minLength: 1,
                     type: 'string',
                 },
-                enjinUser: {
-                    minLength: 1,
-                    type: 'string',
-                },
                 ts3User: {
                     minLength: 1,
                     type: 'string',
                 },
             },
-            required: ['discordUser', 'enjinUser', 'ts3User'],
+            required: ['discordUser', 'ts3User'],
             type: 'object',
         });
     }
@@ -107,8 +94,6 @@ export class UsersRoute extends BaseRoute {
         if (!user) {
             return UsersRoute.sendNotFound(response, request.originalUrl);
         }
-
-        // NOTE: Ranks, roles and badges are synced with Enjin currently.
 
         /*
         // let rank: RankModel | undefined | null = null;
@@ -145,17 +130,6 @@ export class UsersRoute extends BaseRoute {
         // user.badges = badges;
         */
 
-        let enjinUser: typeof user.enjinUser = null;
-        if (request.body.enjinUser) {
-            const existingEnjinUser = await UserModel.findOne({ enjinUser: request.body.enjinUser });
-            if (existingEnjinUser && existingEnjinUser.id !== user.id) {
-                response.locals.error = `Enjin user already assigned to another user: ${existingEnjinUser.name}`;
-                return this.editUserPage(request, response);
-            }
-            enjinUser = request.body.enjinUser;
-        }
-        user.enjinUser = enjinUser;
-
         let ts3User: typeof user.ts3User = null;
         if (request.body.ts3User) {
             ts3User = await TeamspeakUserModel.findOne(request.body.ts3User);
@@ -190,13 +164,9 @@ export class UsersRoute extends BaseRoute {
         const roles = await RoleModel.find();
         const badges = await BadgeModel.find();
         const ts3Users = await TeamspeakUserModel.find({ order: { nickname: 'ASC' } });
-        const rankEnjinTags = await RankModel.getEnjinTags();
-        const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
-        const enjinUsers = objectToObjectsArray(enjinResponse);
-        sortArrayByObjectProperty(enjinUsers, (x) => x.username);
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        return response.render('pages/users/edit.hbs', { badges, enjinUsers, ranks, roles, ts3Users, user_: user });
+        return response.render('pages/users/edit.hbs', { badges, ranks, roles, ts3Users, user_: user });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
@@ -208,13 +178,6 @@ export class UsersRoute extends BaseRoute {
 
         if (request.user?.discordUser === request.body.discordUser && !UsersRoute.isAdmin(request)) {
             response.locals.error = 'You cannot edit yourself!';
-            return this.linkUserPage(request, response);
-        }
-
-        // Check if link is not already in use.
-        const existingLinkedEnjinUser = await UserModel.findOne({ enjinUser: request.body.enjinUser });
-        if (existingLinkedEnjinUser && existingLinkedEnjinUser.discordUser !== request.body.discordUser) {
-            response.locals.error = `Enjin user already linked to: ${existingLinkedEnjinUser}.`;
             return this.linkUserPage(request, response);
         }
 
@@ -236,11 +199,7 @@ export class UsersRoute extends BaseRoute {
         }
 
         // Link user to TS3 user.
-        const ts3User = await TeamspeakUserModel.findOneOrFail(request.body.ts3User);
-        user.ts3User = ts3User;
-
-        // Link user to Enjin user.
-        user.enjinUser = request.body.enjinUser;
+        user.ts3User = await TeamspeakUserModel.findOneOrFail(request.body.ts3User);
 
         await user.save();
 
@@ -267,17 +226,7 @@ export class UsersRoute extends BaseRoute {
             ),
         );
 
-        const rankEnjinTags = await RankModel.getEnjinTags();
-        const enjinResponse = await this.enjin.getUsersWithTags(...rankEnjinTags);
-        const allEnjinUsers = objectToObjectsArray(enjinResponse);
-        const enjinUsers = allEnjinUsers.filter(
-            (enjinUser) => !allUsers.find(
-                (user) => user.enjinUser === enjinUser.key,
-            ),
-        );
-        sortArrayByObjectProperty(enjinUsers, (enjinUser) => enjinUser.username);
-
-        return response.render('pages/users/link.hbs', { discordUsers, enjinUsers, ts3Users });
+        return response.render('pages/users/link.hbs', { discordUsers, ts3Users });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkLogin)
@@ -291,10 +240,7 @@ export class UsersRoute extends BaseRoute {
             .addOrderBy(`${UserModel.alias}.name`, 'ASC')
             .getMany();
 
-        const rankEnjinTags = await RankModel.getEnjinTags();
-        const enjinUsers = await this.enjin.getUsersWithTags(...rankEnjinTags);
-
-        return response.render('pages/users/index.hbs', { enjinUsers, users });
+        return response.render('pages/users/index.hbs', { users });
     }
 
     @UsersRoute.requestDecorator(UsersRoute.checkPermission, Permission.EDIT_USER_RANK)
@@ -355,40 +301,6 @@ export class UsersRoute extends BaseRoute {
 
         if (!user) {
             return UsersRoute.sendNotFound(response, request.originalUrl);
-        }
-
-        if (!user.enjinUser) {
-            user.rank = null;
-            user.roles = [];
-            user.badges = [];
-            await user.save();
-            return this.usersPage(request, response);
-        }
-
-        const userTags = await this.enjin.getUserTags(user.enjinUser);
-
-        const rank = await RankModel.findOne({
-            relations: ['enjinTag', 'teamspeakRank'],
-            where: { enjinTag: { id: In([...userTags.map((t) => t.tag_id)]) } },
-        }) || null;
-
-        const roles = await RoleModel.find({
-            relations: ['enjinTag', 'teamspeakRank'],
-            where: { enjinTag: { id: In([...userTags.map((t) => t.tag_id)]) } },
-        });
-
-        const badges = await BadgeModel.find({
-            relations: ['enjinTag', 'teamspeakRank'],
-            where: { enjinTag: { id: In([...userTags.map((t) => t.tag_id)]) } },
-        });
-
-        user.rank = rank;
-        user.roles = roles;
-        user.badges = badges;
-        await user.save();
-
-        if (user.ts3User) {
-            await this.teamspeak.syncUser(user);
         }
 
         return response.redirect('/users');

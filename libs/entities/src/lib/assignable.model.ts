@@ -1,5 +1,4 @@
 import { BaseModel } from './base.model';
-import { EnjinTagModel } from './enjin-tag.model';
 import { TeamspeakRankModel } from './teamspeak-rank.model';
 import { UserModel } from './user.model';
 
@@ -10,5 +9,4 @@ export interface IAssignableModel extends BaseModel {
     name: string;
     users: UserModel[];
     teamspeakRank?: TeamspeakRankModel | null;
-    enjinTag?: EnjinTagModel | null;
 }

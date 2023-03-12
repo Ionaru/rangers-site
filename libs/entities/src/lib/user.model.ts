@@ -73,13 +73,6 @@ export class UserModel extends BaseModel {
     })
     public steamUser?: string | null;
 
-    @Column({
-        nullable: true,
-        type: String,
-        unique: true,
-    })
-    public enjinUser?: string | null;
-
     @OneToOne(() => TeamspeakUserModel, (ts3User) => ts3User.user, {
         eager: true,
         nullable: true,

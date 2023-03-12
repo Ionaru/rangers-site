@@ -92,7 +92,6 @@ module.exports = [
             'session.model',
             'user.model',
             'permission.model',
-            'enjin-tag.model',
         ],
     }),
 ];

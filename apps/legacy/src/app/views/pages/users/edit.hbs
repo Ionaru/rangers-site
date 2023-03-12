@@ -2,17 +2,17 @@
     <h1>Edit user: {{user_.name}}</h1>
 
     <form method="post">
-        <div class="form-group mb-3">
-            <label class="form-label" for="enjinUser-input"><i class="fa-solid fa-globe"></i> Enjin user</label>
-            <select class="form-control" id="enjinUser-input" name="enjinUser">
-                <option value="">None</option>
-                {{#each enjinUsers}}
-                    <option {{#ifCond ../user_.enjinUser '===' this.key}}selected{{/ifCond}} value="{{this.key}}">
-                        {{this.username}} ({{this.key}})
-                    </option>
-                {{/each}}
-            </select>
-        </div>
+<!--        <div class="form-group mb-3">-->
+<!--            <label class="form-label" for="discordUser-input"><i class="fa-brands fa-discord"></i> Discord user</label>-->
+<!--            <select class="form-control" id="discordUser-input" name="discordUser">-->
+<!--                <option value="">None</option>-->
+<!--                {{#each discordUsers}}-->
+<!--                    <option {{#ifCond ../user_.discordUser '===' this.key}}selected{{/ifCond}} value="{{this.key}}">-->
+<!--                        {{this.username}} ({{this.key}})-->
+<!--                    </option>-->
+<!--                {{/each}}-->
+<!--            </select>-->
+<!--        </div>-->
         <div class="form-group mb-3">
             <label class="form-label" for="ts3User-input"><i class="fa-brands fa-teamspeak"></i> Teamspeak user</label>
             <select class="form-control" id="ts3User-input" name="ts3User">
@@ -25,7 +25,7 @@
             </select>
         </div>
         <div class="form-group mb-3">
-            <label class="form-label" for="rank-input">Rank (synced using Enjin)</label>
+            <label class="form-label" for="rank-input">Rank</label>
             <select class="form-control" id="rank-input" name="rank" disabled>
                 <option value="">None</option>
                 {{#each ranks}}
@@ -36,7 +36,7 @@
             </select>
         </div>
         <div class="form-group mb-3">
-            <label class="form-label" for="roles-select">Roles (synced using Enjin)</label>
+            <label class="form-label" for="roles-select">Roles</label>
             <div class="input-group flex-nowrap w-100">
                 <select name="roles" data-width="100%" id="roles-select" class="selectpicker" multiple
                         data-live-search="true" disabled>
@@ -47,7 +47,7 @@
             </div>
         </div>
         <div class="form-group mb-3">
-            <label class="form-label" for="badges-select">Badges (synced using Enjin)</label>
+            <label class="form-label" for="badges-select">Badges</label>
             <div class="input-group flex-nowrap w-100">
                 <select name="badges" data-width="100%" id="badges-select" class="selectpicker" multiple
                         data-live-search="true" disabled>

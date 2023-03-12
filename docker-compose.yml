@@ -19,8 +19,6 @@ services:
             - RANGERS_DISCORD_CLIENT_SECRET
             - RANGERS_DISCORD_RETURN_URL
             - RANGERS_DISCORD_TOKEN
-            - RANGERS_ENJIN_DOMAIN
-            - RANGERS_ENJIN_KEY
             - RANGERS_PORT
             - RANGERS_TS_HOST
             - RANGERS_TS_NICKNAME
@@ -29,10 +27,6 @@ services:
             - RANGERS_TS_QUERY_PORT
             - RANGERS_TS_USERNAME
             - RANGERS_TS_OPERATIONS_CHANNEL
-            - RANGERS_TASK_SYNC_RANKS
-            - RANGERS_TASK_SYNC_ROLES
-            - RANGERS_TASK_SYNC_BADGES
-            - RANGERS_TASK_SYNC_ENJIN_TAGS
         restart: unless-stopped
         ports:
             - "${RANGERS_PORT:-2000}:${RANGERS_PORT:-2000}"

@@ -11,13 +11,14 @@ import {
     ServiceController,
 } from '@ionaru/micro-web-service';
 import { IController } from '@rangers-site/interfaces';
-import { TypeormStore } from 'connect-typeorm';
+import { ISession, TypeormStore } from 'connect-typeorm';
 import * as fileUpload from 'express-fileupload';
 import * as es from 'express-session';
 import * as Handlebars from 'hbs';
 import helmet, { contentSecurityPolicy } from 'helmet';
 import { StatusCodes } from 'http-status-codes';
 import * as passport from 'passport';
+import { Repository } from 'typeorm';
 
 import { debug } from '../../debug';
 import { DatabaseService } from '../services/database.service';
@@ -40,7 +41,7 @@ export class ServerController implements IController<void> {
 
         const port = Number(process.env.RANGERS_PORT) || 3000;
 
-        const repository = this.db.getSessionRepository();
+        const repository = this.db.getSessionRepository() as Repository<ISession>;
 
         const cookieName = process.env.RANGERS_COOKIE_NAME;
         const cookieSecret = process.env.RANGERS_COOKIE_SECRET;

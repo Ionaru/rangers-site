@@ -14,26 +14,6 @@
             <input type="text" class="form-control" id="role-input" value="{{assignable.name}}" name="name">
         </div>
 
-        {{#if enjinTags}}
-            <div class="form-group mb-3">
-                <label class="form-label" for="enjin-group-input">Enjin tag</label>
-                <div class="input-group flex-nowrap">
-                    <span class="input-group-text" id="addon-wrapping">
-                        <i class="fa-solid fa-globe fa-fw"></i>
-                    </span>
-                    <select class="form-control selectpicker" id="enjin-group-input" name="enjinTag">
-                        <option value="">None</option>
-                        {{#each enjinTags}}
-                            <option {{#ifCond ../assignable.enjinTag.id '===' this.tag_id}}selected{{/ifCond}}
-                                    value="{{this.tag_id}}">
-                                {{this.tagname}} ({{this.tag_id}})
-                            </option>
-                        {{/each}}
-                    </select>
-                </div>
-            </div>
-        {{/if}}
-
         {{#if tsRanks}}
             <div class="form-group mb-3">
                 <label class="form-label" for="ts-group-input">Teamspeak group</label>

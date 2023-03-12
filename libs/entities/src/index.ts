@@ -2,7 +2,6 @@ export * from './lib/application.model';
 export * from './lib/assignable.model';
 export * from './lib/attendance.model';
 export * from './lib/badge.model';
-export * from './lib/enjin-tag.model';
 export * from './lib/imageable.model';
 export * from './lib/incident.model';
 export * from './lib/loa.model';
