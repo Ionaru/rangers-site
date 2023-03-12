@@ -1,14 +1,16 @@
+/* eslint-disable */
 export default {
     coverageDirectory: '../../coverage/libs/interfaces',
     displayName: 'interfaces',
-    globals: {
-        'ts-jest': {
-            tsconfig: '<rootDir>/tsconfig.spec.json',
-        },
-    },
+    globals: {},
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
     preset: '../../jest.preset.js',
     transform: {
-        '^.+\\.[tj]sx?$': 'ts-jest',
+        '^.+\\.[tj]sx?$': [
+            'ts-jest',
+            {
+                tsconfig: '<rootDir>/tsconfig.spec.json',
+            },
+        ],
     },
 };

@@ -19,6 +19,9 @@
                 "*.ts",
                 "*.tsx"
             ],
+            "parserOptions": {
+                "project": ["apps/legacy/tsconfig.*?.json"]
+            },
             "rules": {}
         },
         {

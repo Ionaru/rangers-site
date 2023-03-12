@@ -9,6 +9,9 @@
         },
         {
             "files": ["*.ts", "*.tsx"],
+            "parserOptions": {
+                "project": ["libs/entities/tsconfig.*?.json"]
+            },
             "rules": {}
         },
         {

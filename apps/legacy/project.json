@@ -1,0 +1,85 @@
+{
+    "name": "legacy",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/legacy/src",
+    "projectType": "application",
+    "prefix": "legacy",
+    "targets": {
+        "build-image": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    {
+                        "command": "npx tsc -p apps/legacy/tsconfig.app.json",
+                        "forwardAllArgs": false
+                    },
+                    {
+                        "command": "nx prepare legacy",
+                        "forwardAllArgs": false
+                    },
+                    {
+                        "command": "nx build legacy --production",
+                        "forwardAllArgs": false
+                    },
+                    {
+                        "command": "docker build -f ./apps/legacy/Dockerfile -t legacy:{args.tag} ."
+                    }
+                ],
+                "parallel": false
+            }
+        },
+        "prepare": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "npx sass -I . --verbose --source-map --style compressed apps/legacy/src/app/styles/main.scss apps/legacy/src/assets/stylesheets/main.css"
+            }
+        },
+        "build": {
+            "executor": "@nrwl/webpack:webpack",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "generatePackageJson": true,
+                "showCircularDependencies": false,
+                "outputPath": "dist/apps/legacy",
+                "main": "apps/legacy/src/main.ts",
+                "tsConfig": "apps/legacy/tsconfig.app.json",
+                "assets": [
+                    "apps/legacy/src/assets",
+                    "apps/legacy/src/app/views"
+                ],
+                "target": "node",
+                "compiler": "tsc"
+            },
+            "configurations": {
+                "production": {
+                    "optimization": true,
+                    "extractLicenses": true,
+                    "inspect": false
+                }
+            }
+        },
+        "serve": {
+            "executor": "@nrwl/node:node",
+            "options": {
+                "buildTarget": "legacy:build",
+                "inspect": true
+            }
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["apps/legacy/**/*.ts"]
+            },
+            "outputs": ["{options.outputFile}"]
+        },
+        "test": {
+            "executor": "@nrwl/jest:jest",
+            "outputs": ["{workspaceRoot}/coverage/apps/legacy"],
+            "options": {
+                "jestConfig": "apps/legacy/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    },
+    "tags": []
+}

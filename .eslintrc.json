@@ -42,7 +42,7 @@
                 "@ionaru"
             ],
             "rules": {
-                "no-null/no-null": "off",
+                "unicorn/no-null": "off",
                 "import/extensions": "off",
                 "import/no-unresolved": [
                     2,
