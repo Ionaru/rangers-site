@@ -1,3 +1,4 @@
+import { UserModel } from '@rangers-site/entities';
 import { IService } from '@rangers-site/interfaces';
 import { Client, GuildMember, Role, User, WebSocketManager } from 'discord.js';
 import * as guessDate from 'guessdate-en';
@@ -97,5 +98,22 @@ export class DiscordService implements IService {
     public async getRoleFromId(id: string): Promise<Role | null> {
         const guild = await this.client.guilds.fetch(DiscordService.RangersGuild);
         return guild.roles.fetch(id);
+    }
+
+    public async syncUser(user: UserModel) {
+
+        const userId = user.discordUser;
+
+        if (!userId) {
+            throw new Error(`User (${user.id}, ${userId}) has no Discord ID!`);
+        }
+
+        const guild = await this.client.guilds.fetch(DiscordService.RangersGuild);
+        const member = await guild.members.fetch(userId);
+
+        const roles = user.roles.map((role) => role.discordRole).filter((role): role is string => !!role);
+        const discordRoles = await this.getRolesInServer();
+        const rolesToGive = discordRoles.filter((role) => roles.includes(role.id));
+        await member.roles.add(rolesToGive);
     }
 }

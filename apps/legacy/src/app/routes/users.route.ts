@@ -167,6 +167,10 @@ export class UsersRoute extends BaseRoute {
             await this.teamspeak.syncUser(user);
         }
 
+        if (user.discordUser) {
+            await this.discord.syncUser(user);
+        }
+
         return response.redirect('/users');
     }
 
