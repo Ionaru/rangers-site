@@ -15,6 +15,7 @@ import { TeamSpeakBotController } from './app/controllers/teamspeak-bot.controll
 import { AuthRoute } from './app/routes/auth.route';
 import { BadgesRoute } from './app/routes/badges.route';
 import { GlobalRoute } from './app/routes/global.route';
+import { HandbookRoute } from './app/routes/handbook.route';
 import { NotFoundRoute } from './app/routes/not-found.route';
 import { OperationRoute } from './app/routes/operation.route';
 import { OperationsRoute } from './app/routes/operations.route';
@@ -73,6 +74,7 @@ const start = async () => {
         ['/badges', new BadgesRoute(teamspeakService, discordService)],
         ['/op(eration)?', new OperationRoute()],
         ['/op(eration)?s', new OperationsRoute()],
+        ['/handbook', new HandbookRoute()],
         ['/users', new UsersRoute(teamspeakService, discordService)],
         ['*', new NotFoundRoute()],
     ]);

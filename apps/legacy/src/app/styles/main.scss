@@ -54,6 +54,10 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 html {
     body {
 
+        figcaption {
+            display: none;
+        }
+
         .banner {
             background-image: url("/images/background.webp");
             min-height: 100px;

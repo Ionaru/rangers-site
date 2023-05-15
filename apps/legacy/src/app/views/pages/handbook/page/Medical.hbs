@@ -1,0 +1,307 @@
+<div class="container pt-3">
+    <h2 id="controls">Controls</h2>
+    <p>We are using a customized ACE 3 Medical System for an optimal balance between simulation and fun gameplay.</p>
+    <p>You have two different options available at all time. To treat somebody you can use ACE Interact and interact with the injured body parts directly. Alternatively you can use ACE Interact and open the Medical Menu (you find it under interactions). Certain actions might only be conductible on certain body parts. On Self Treatment use ACE Self Interact.</p>
+    <table class="table">
+        <tbody>
+        <tr class="odd">
+            <td><p><strong>Interaction Menu</strong></p></td>
+            <td><p><strong>Medical Menu</strong></p></td>
+        </tr>
+        <tr class="even">
+            <td><figure>
+                <img width="400" src="/wiki/images/MedicalInteract.png" title="Interaction Medical|left" alt="Interaction Medical|left" /><figcaption aria-hidden="true">Interaction Medical|left</figcaption>
+            </figure></td>
+            <td><figure>
+                <img width="400" src="/wiki/images/MedicalMenu.png" title="Medical Menu|left" alt="Medical Menu|left" /><figcaption aria-hidden="true">Medical Menu|left</figcaption>
+            </figure></td>
+        </tr>
+        <tr class="odd">
+            <td><p>Better for treating fewer smaller injuries and quick medication.</p></td>
+            <td><p>Better for treating heavily wounded.</p></td>
+        </tr>
+        </tbody>
+    </table>
+    <p>Following Settings are recommended. You can set them in your ACE3 Settings under the category "Interaction" and "Medical". Display Interactions as Lists and allow Medical Menu.</p>
+    <h2 id="vitals">Vitals</h2>
+    <ul>
+        <li><span style='color:#087b08'> <strong>Heart Rate</strong> </span> - Heart rate is depending on the blood level of a patient. The basic heart rate is 80. If a patient loses blood the heart rate will go up until the heart collapses and the patient will go into cardiac arrest. Once a patient is in cardiac arrest he has to be revived within 5 minutes before he is not recoverable and has to be pronounced dead.</li>
+        <li><span style='color:#087b08'> <strong>Pain</strong> </span> - Pain is caused by wounds and impairs the effectiveness of a patient.</li>
+    </ul>
+    <p>There are few basic vitals which highly impact the condition of a patient:</p>
+    <ul>
+        <li><span style='color:#087b08'> <strong>Blood Level</strong> </span> - Each individual has a default blood level of 6 liters. Blood loss is defined by the hemorrhage levels. Once the blood drops below a minimum level a patient will die.</li>
+    </ul>
+    <p>Blood Loss is defined by the hemorrhage class as outlined in the following table:</p>
+    <table class="table">
+        <tbody>
+        <tr class="odd">
+            <td><p><strong>Definition</strong></p></td>
+            <td><p><strong>Volume</strong></p></td>
+        </tr>
+        <tr class="even">
+            <td><p>Default Blood Volume</p></td>
+            <td><p>6 liters</p></td>
+        </tr>
+        <tr class="odd">
+            <td><p>Hemorrhage 1</p></td>
+            <td><p>&lt; 6 liters</p></td>
+        </tr>
+        <tr class="even">
+            <td><p>Hemorrhage 2</p></td>
+            <td><p>&lt; 5 liters</p></td>
+        </tr>
+        <tr class="odd">
+            <td><p>Hemorrhage 3</p></td>
+            <td><p>&lt; 4.2 liters</p></td>
+        </tr>
+        <tr class="even">
+            <td><p>Hemorrhage 4</p></td>
+            <td><p>&lt; 3.6 liters</p></td>
+        </tr>
+        <tr class="odd">
+            <td><p>Fatal Blood Volume</p></td>
+            <td><p>&lt; 3 liters</p></td>
+        </tr>
+        </tbody>
+    </table>
+    <h2 id="medical_states">Medical States</h2>
+    <p>The following graph summarizes the medical states:</p>
+    <figure>
+        <img src="/wiki/images/7R_States.png" title="7R_States.png" width="400" alt="7R_States.png" /><figcaption aria-hidden="true">7R_States.png</figcaption>
+    </figure>
+    <p><span style='color:#087b08'> <strong>Injured State:</strong><br />
+</span> The patient is wounded and has lost some blood (Hemorrhage 1 to 3) and most likely is in pain. Unless the patient suffers continuous blood loss his situation remains manageable. He may not need a medic and can effectively treat himself.</p>
+    <p><span style='color:#087b08'> <strong>Critical State:</strong><br />
+</span> A patient is in critical state if he is unconscious. Unconsciousness may be result of significant blood loss as well as critical damage or vitals of the patient. Critical vitals may be the result of high wound related blood loss. A critical injury is caused by significant trauma. Furthermore an overdose from medication may put the patient into critical condition. A patient in critical condition may need medication (epinephrine) to wake up, but he may also wake up by himself if his vitals are stable. Vitals are stable if the patient is suffered acceptable blood loss (above hemorrhage class 2).</p>
+    <p><span style='color:#087b08'> <strong>Cardiac Arrest State:</strong><br />
+</span> A patient is in cardiac arrest if his heart stopped beating. Cardiac arrest requires immediate actions to save the patients life. A patient enters cardiac arrest after suffering heavy blood loss (hemorrhage class 4). In addition to heavy blood loss cardiac arrest may also result from damage to vital organs and large sums of trauma suffered by the patient. In general a patient can remain 5 minutes in cardiac arrest before he is unrecoverable. Provide continuous CPR until the heart rate is successfully restored.</p>
+    <p><span style='color:#087b08'> <strong>Fatal State:</strong><br />
+</span> Fatalities occur if a patient is not successfully revived while in cardiac arrest e.g. a heart rate is restored or once a patient lost a fatal volume of blood.</p>
+    <h2 id="treatments">Treatments</h2>
+    <p>The following sections outlines treatment options for medics and regular operators.</p>
+    <h3 id="diagnosis">Diagnosis</h3>
+    <p>Both medics and regular operators have various diagnosis options available which will give them insight into the patients health condition.</p>
+    <p><span style='color:#087b08'> <strong>Check Pulse:</strong><br />
+</span></p>
+    <ul>
+        <li>Non-Medics: Returns whether the heart rate of a patient is normal, low or high. If you do not find a pulse the patient is in cardiac arrest.</li>
+        <li>Medics: Returns the heart rate of a patient. The normal heart rate is 80. If you do not find a pulse the patient is in cardiac arrest.</li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Check Blood Pressure:</strong><br />
+</span></p>
+    <ul>
+        <li>Non-Medic: Returns whether a patient has lost blood. If the patient suffers from hemorrhage 2 or higher, it will return that the patient lost a lot of blood.</li>
+        <li>Medic: Returns the hemorrhage class of the patient.</li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Check Pain:</strong><br />
+</span></p>
+    <ul>
+        <li>Both: Returns whether a patient is in pain. If a patient is in cardiac arrest, it is not possible to diagnose pain since he is not responsive.</li>
+    </ul>
+    <h3 id="bandages_tourniquets">Bandages &amp; Tourniquets</h3>
+    <p>There are various types of different wounds. Wound could also be small, medium or large. Each type of bandage has a different effectiveness for different types of wounds.</p>
+    <figure>
+        <img src="/wiki/images/Wounds_Graph.png" title="Wounds_Graph.png" width="1000" alt="Wounds_Graph.png" /><figcaption aria-hidden="true">Wounds_Graph.png</figcaption>
+    </figure>
+    <ul>
+        <li><span style='color:#087b08'> <strong>Field Dressing</strong> </span> - Bandage with medium effectiveness while being prone to open.</li>
+        <li><span style='color:#087b08'> <strong>Packing Bandage</strong></span> - Bandage with low effectiveness with moderate likeliness to reopen.</li>
+        <li><span style='color:#087b08'> <strong>Elastic Bandage</strong></span> - Highly effective bandage which is highly likely to reopen.</li>
+        <li><span style='color:#087b08'> <strong>Quick Clot</strong></span> - Low effectiveness to close the wound while maintaining a decent ability to keep the wound closed.</li>
+        <li><span style='color:#087b08'> <strong>Tourniquet</strong></span> - Tourniquets allow to immediately stop the blood loss at any limps of a patient. They are a temporary measure to effectively stop any bleeding. Tourniquets cause pain and do not address the wound itself. Therefore they are only a temporary tool to stop blood loss to gain time to address the injuries with bandages.</li>
+    </ul>
+    <h3 id="medication">Medication</h3>
+    <p>Medications can be utilized to treat patients and help improving their medical state. Although medications come with a risk of causing an overdose which results in more damage to the patient than the negative effects they are designed to treat. Some medication should only be administered by medics.</p>
+    <table class="table">
+        <tbody>
+        <tr class="odd">
+            <td><p><strong>Medication</strong></p></td>
+            <td><p><strong>Effect</strong></p></td>
+            <td><p><strong>Max Dose</strong></p></td>
+        </tr>
+        <tr class="even">
+            <td><p>Morphine</p></td>
+            <td><p>Suppresses pain</p></td>
+            <td><p>5</p></td>
+        </tr>
+        <tr class="odd">
+            <td><p>Epinephrine</p></td>
+            <td><p>Wakes up unconscious patient</p></td>
+            <td><p>8</p></td>
+        </tr>
+        </tbody>
+    </table>
+    <h3 id="transfusions">Transfusions</h3>
+    <p>Transfusions allow medics to increase the blood level of a patient. Transfusions do not only need time to be set up, they furthermore require time to run through. They can only be administered by medics. Especially patients with a high level of blood loss may need transfusions to stabilize.</p>
+    <h3 id="splints">Splints</h3>
+    <p>Some wounds may cause lasting damage such as fractures which require additional treatment. Splints allow medics to heal fractures on limps of patients to restore full mobility.</p>
+    <h3 id="cpr">CPR</h3>
+    <p>Once a patient is in cardiac arrest, it is essential to restore a heart rate. In those cases it is essential to administer CPR. A medic should monitor whether the overall condition of a patient allows for a successful CPR.</p>
+    <h2 id="first_aid_procedure">First Aid Procedure</h2>
+    <p>In the following paragraph you learn the procedures of dealing with wounded. Always follow this procedure to ensure an appropriate handling of the situation and proper treatment for the patient. This assumes that the wounded is unconscious, otherwise he should treat himself.</p>
+    <p><span style='color:#087b08'> <strong>General Rule:</strong><br />
+</span></p>
+    <ul>
+        <li>Only one person treating one wounded, everyone around provide security</li>
+        <li>Self-Protection has absolute priority at all time
+            <ul>
+                <li>Wounded are a liability, do not become one yourself</li>
+            </ul></li>
+        <li>Multiple wounded
+            <ul>
+                <li>Ensure everyone gets stabilized to prevent fatalities</li>
+                <li>Treatment Priority: Medic &gt; Leader &gt; Soldier</li>
+                <li>Individual Treatment is finished when Patient is in Combat Ready State. Upon which he will be sent away to fight or protect the Triage Station proximity.</li>
+            </ul></li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Step 1: Alert:</strong><br />
+</span></p>
+    <ul>
+        <li>Call "man down" on the Squad Net Radio</li>
+        <li>Squad Leader additionally report "man down" on Platoon Net Radio</li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Step 2: Recover:</strong><br />
+</span></p>
+    <ul>
+        <li>Do not treat at the Point of Injury</li>
+        <li>Bring Patient to cover</li>
+        <li>Use or Call for Smoke and/or Suppressive Fire</li>
+        <li>Use appropriate method of moving patient</li>
+        <li>Ensure that you are being covered by other Friendlies around you</li>
+    </ul>
+    <p>There are two methods of moving an unconscious patient:</p>
+    <table class="table">
+        <tbody>
+        <tr class="odd">
+            <td><p><strong>Dragging</strong></p></td>
+            <td><p><strong>Carrying</strong></p></td>
+        </tr>
+        <tr class="even">
+            <td><figure>
+                <img src="/wiki/images/Dragging.png" title="Dragging" alt="Dragging" /><figcaption aria-hidden="true">Dragging</figcaption>
+            </figure></td>
+            <td><figure>
+                <img src="/wiki/images/Carrying.png" title="Carrying" alt="Carrying" /><figcaption aria-hidden="true">Carrying</figcaption>
+            </figure></td>
+        </tr>
+        <tr class="odd">
+            <td><p><strong>Pros:</strong><br />
+                - Quick to begin<br />
+                - Low-Profile</p></td>
+            <td><p><strong>Pros:</strong><br />
+                - Movement Speed while Carrying<br />
+                - Looking in Direction of Movement</p></td>
+        </tr>
+        <tr class="even">
+            <td><p><strong>Cons:</strong><br />
+                - Slow Movement speed<br />
+                - Walking Backwards<br />
+                - No Weapon Usage</p></td>
+            <td><p><strong>Cons:</strong><br />
+                - Slow to begin<br />
+                - High-Profile<br />
+                - No Weapon Usage</p></td>
+        </tr>
+        </tbody>
+    </table>
+    <p><span style='color:#087b08'> <strong>Step 3: Stop the Bleeding:</strong><br />
+</span></p>
+    <ul>
+        <li>Apply Tourniquet and Bandages to all wounds</li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Step 4: Diagnose:</strong><br />
+</span></p>
+    <ul>
+        <li>Diagnose for further Treatment (Check Pulse and Blood Pressure)</li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Step 5: Provide Treatment:</strong><br />
+</span></p>
+    <ul>
+        <li>Provide CPR</li>
+        <li>Provide secondary treatments (Bandage all wounds)</li>
+    </ul>
+    <p><span style='color:#087b08'> <strong>Step 6: Handover:</strong><br />
+</span></p>
+    <ul>
+        <li>Handover patient to Medic</li>
+        <li>Provide details on the patient and your conducted treatments</li>
+    </ul>
+    <h2 id="medical_procedure">Medical Procedure</h2>
+    <figure>
+        <img src="/wiki/images/7R_ProcedureFullFix.png" title="7R_ProcedureFullFix.png" width="1280" alt="7R_ProcedureFullFix.png" />
+    </figure>
+    <h2 id="triage_station">Triage Station</h2>
+    <p>A centralized location where wounded are being gathered for treatment. Usually setup in mass casualty situations. It can be improvised out of the situation or predefined. Once available all wounded are being brought to the Triage Station for treatment while it is operational.</p>
+    <ul>
+        <li><span style='color:#087b08'> <strong>Command</strong></span> - The Platoon Medic is in charge. If he is not present the first Combat Medic at the Station is in charge until the arrival of the Platoon Medic. The Medic in charge will monitor and asses treatment priorities and queue.</li>
+        <li><span style='color:#087b08'> <strong>Medical Personnel</strong></span> - Focuses on all medical exclusive treatments, e.g. diagnose and medicate.</li>
+        <li><span style='color:#087b08'> <strong>Assistant Personnel</strong></span> - Stop the bleeding of incoming Patients and maintains stabilized state of present Patients who are waiting for Medical Personnel. Lines up patients for easier access. Assists Medical Personnel in anyway possible to allow them to focus on their tasks.</li>
+        <li><span style='color:#087b08'> <strong>Capacity</strong></span> - One Medic and one Assistant can deal with 2-4 stabilized patients and/or 1-2 critical patients at any point.</li>
+    </ul>
+    <h2 id="what_happens_if_you_die">What happens if you die</h2>
+    <ul>
+        <li><span style='color:#087b08'> <strong>Spectator</strong> </span> - You will join a Spectator mode in which you can spectate your fellow players.</li>
+        <li><span style='color:#087b08'> <strong>Wave Respawn</strong> </span> - Once a certain number of players died it might trigger a reinforcement wave.</li>
+        <li><span style='color:#087b08'> <strong>Reinforcements</strong> </span> - Form a new unit and reinsert. Report to the Acting Platoon Leader and request orders upon arrival.</li>
+    </ul>
+    <h2 id="medical_resupplies">Medical Resupplies</h2>
+    <p>We have a custom system to ensure quick resupplies in the field. There are resupply packages which unfold into usable medical gear when taken by a player. Some packages only unfold in the inventory of a medic.</p>
+    <table class="table">
+        <tbody>
+        <tr class="odd">
+            <td><p><strong>Icon</strong></p></td>
+            <td><p><strong>Name</strong></p></td>
+            <td><p><strong>Content</strong></p></td>
+            <td><p><strong>Requirement</strong></p></td>
+        </tr>
+        <tr class="even">
+            <td><figure>
+                <img src="/wiki/images/gear_FirstAidKit_CA.png" title="gear_FirstAidKit_CA.png" width="50" alt="gear_FirstAidKit_CA.png" />
+            </figure></td>
+            <td><p>Personal Aid Kit (PAK)</p></td>
+            <td><p>6x Field Dressing<br />
+                4x Quick Clot<br />
+                2x Morphine</p></td>
+            <td><p>None</p></td>
+        </tr>
+        <tr class="odd">
+            <td><figure>
+                <img src="/wiki/images/band.png" title="band.png" width="50" alt="band.png" />
+            </figure></td>
+            <td><p>Bandage Pack</p></td>
+            <td><p>3x Field Dressing<br />
+                3x Quick Clot<br />
+                3x Elastic Bandage<br />
+                3x Packing Bandage</p></td>
+            <td><p>Medic</p></td>
+        </tr>
+        <tr class="even">
+            <td><figure>
+                <img src="/wiki/images/meds.png" title="meds.png" width="50" alt="meds.png" />
+            </figure></td>
+            <td><p>Medicine Pack</p></td>
+            <td><p>5x Morphine<br />
+                5x Epinephrine</p></td>
+            <td><p>Medic</p></td>
+        </tr>
+        <tr class="odd">
+            <td><figure>
+                <img src="/wiki/images/utility.png" title="utility.png" width="50" alt="utility.png" />
+            </figure></td>
+            <td><p>Utility Pack</p></td>
+            <td><p>7x Splint<br />
+                3x Tourniquet</p></td>
+            <td><p>Medic</p></td>
+        </tr>
+        <tr class="even">
+            <td><figure>
+                <img src="/wiki/images/blood.png" title="blood.png" width="50" alt="blood.png" />
+            </figure></td>
+            <td><p>BloodIV Pack</p></td>
+            <td><p>2L BloodIV</p></td>
+            <td><p>Medic</p></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
