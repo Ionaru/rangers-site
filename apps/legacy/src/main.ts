@@ -74,7 +74,7 @@ const start = async () => {
         ['/badges', new BadgesRoute(teamspeakService, discordService)],
         ['/op(eration)?', new OperationRoute()],
         ['/op(eration)?s', new OperationsRoute()],
-        ['/handbook', new HandbookRoute()],
+        ['/handbook|/armaguide', new HandbookRoute()],
         ['/users', new UsersRoute(teamspeakService, discordService)],
         ['*', new NotFoundRoute()],
     ]);
