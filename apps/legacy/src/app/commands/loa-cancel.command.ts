@@ -41,7 +41,7 @@ export class LOACancelCommand extends SlashCommand {
         const date = loaMoment.toDate();
         const loaText = loaMoment.format(DiscordService.LoAFormat);
 
-        if (loaMoment.weekday() !== 3 && loaMoment.weekday() !== 6) {
+        if (loaMoment.weekday() !== 6) {
             context.send(`Invalid date, no operation: ${loaText}.`).then();
             return;
         }

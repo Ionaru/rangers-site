@@ -7,19 +7,19 @@ import { TeamspeakService } from '../services/teamspeak.service';
 
 export class RecordOperationAttendeesTask {
     private static readonly debug = debug.extend('RecordOperationAttendeesTask');
-    private readonly wednesdayJob: CronJob;
+    // private readonly wednesdayJob: CronJob;
     private readonly saturdayJob: CronJob;
 
     public constructor(
         private readonly teamspeak: TeamspeakService,
         private readonly db: DatabaseService,
     ) {
-        this.wednesdayJob = new CronJob({
-            // Wednesday 19:00
-            cronTime: '0 0 19 * * 3',
-            onTick: () => this.tick(),
-            timeZone: 'Europe/Berlin',
-        });
+        // this.wednesdayJob = new CronJob({
+        //     // Wednesday 19:00
+        //     cronTime: '0 0 19 * * 3',
+        //     onTick: () => this.tick(),
+        //     timeZone: 'Europe/Berlin',
+        // });
         this.saturdayJob = new CronJob({
             // Saturday 20:00
             cronTime: '0 0 20 * * 6',
@@ -30,7 +30,7 @@ export class RecordOperationAttendeesTask {
 
     public start(): void {
         RecordOperationAttendeesTask.debug('Start');
-        this.wednesdayJob.start();
+        // this.wednesdayJob.start();
         this.saturdayJob.start();
     }
 
