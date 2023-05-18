@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light shadow-sm">
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm bg-body-secondary">
     <div class="container">
         <a class="navbar-brand p-0" href="/">
             <img src="images/logo.webp" height="40" alt="logo">
@@ -14,34 +14,34 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/">Home</a>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/handbook">Handbook</a>
+                    <a class="nav-link" href="/handbook">Handbook</a>
                 </li>
                 {{#hasPermission user 'READ_OPERATIONS_ACTIVITY'}}
                     <li class="nav-item">
-                        <a class="nav-link active" href="/operations">Operations</a>
+                        <a class="nav-link" href="/operations">Operations</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_RANKS'}}
                     <li class="nav-item">
-                        <a class="nav-link active" href="/ranks">Ranks</a>
+                        <a class="nav-link" href="/ranks">Ranks</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_ROLES'}}
                     <li class="nav-item">
-                        <a class="nav-link active" href="/roles">Roles</a>
+                        <a class="nav-link" href="/roles">Roles</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_BADGES'}}
                     <li class="nav-item">
-                        <a class="nav-link active" href="/badges">Badges</a>
+                        <a class="nav-link" href="/badges">Badges</a>
                     </li>
                 {{/hasPermission}}
                 {{#hasPermission user 'EDIT_USER_RANK'}}
                     <li class="nav-item">
-                        <a class="nav-link active" href="/users">Users</a>
+                        <a class="nav-link" href="/users">Users</a>
                     </li>
                 {{/hasPermission}}
             </ul>
@@ -58,15 +58,25 @@
                         <span class="d-lg-none">Teamspeak</span>
                     </a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="brightnessDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i id="lightModeIcon" class="fa-solid fa-sun fa-lg fa-fw"></i>
+                        <i id="darkModeIcon" class="fa-solid fa-moon fa-lg fa-fw"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="brightnessDropdown">
+                        <span class="dropdown-item" data-bs-theme-value="light"><i class="fa-solid fa-fw fa-sun"></i> Light</span>
+                        <span class="dropdown-item" data-bs-theme-value="dark"><i class="fa-solid fa-fw fa-moon"></i> Dark</span>
+                        <span class="dropdown-item" data-bs-theme-value="auto"><i class="fa-solid fa-fw fa-circle-half-stroke"></i> Automatic</span>
+                    </div>
+                </li>
                 {{#if user}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             My account
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <!--                            <a class="dropdown-item" href="/user">My profile</a>-->
-                            <!--                            <div class="dropdown-divider"></div>-->
                             <a class="dropdown-item" href="/auth/logout">Logout</a>
                         </div>
                     </li>

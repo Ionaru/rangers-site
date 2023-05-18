@@ -13,3 +13,50 @@
 <script async src="/js/solid.min.js"></script>
 <script async src="/js/brands.min.js"></script>
 <script async src="/js/fontawesome.min.js"></script>
+
+<script>
+    const storedTheme = localStorage.getItem('theme');
+
+    const getPreferredTheme = () => {
+        if (storedTheme) {
+            return storedTheme;
+        }
+
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    const setTheme = function (theme) {
+        if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        }
+    };
+
+    setTheme(getPreferredTheme())
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (storedTheme !== 'light' && storedTheme !== 'dark') {
+            setTheme(getPreferredTheme());
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const toggles = document.querySelectorAll('[data-bs-theme-value]');
+
+        toggles.forEach(toggle => {
+            toggle.style.cursor = 'pointer';
+            const theme = toggle.getAttribute('data-bs-theme-value');
+            if (theme === getPreferredTheme()) {
+                toggle.classList.add('active');
+            }
+
+            toggle.addEventListener('click', () => {
+                toggles.forEach(toggle => toggle.classList.remove('active'));
+                toggle.classList.add('active');
+                localStorage.setItem('theme', theme);
+                setTheme(theme);
+            });
+        });
+    });
+</script>

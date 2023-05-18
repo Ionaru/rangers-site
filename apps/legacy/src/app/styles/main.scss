@@ -1,10 +1,9 @@
+@import "node_modules/bootstrap/scss/functions";
+
 $primary: #087b08;
 
-@import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
-@import "node_modules/bootstrap/scss/maps";
-@import "node_modules/bootstrap/scss/mixins";
-@import "node_modules/bootstrap/scss/utilities";
+@import "node_modules/bootstrap/scss/variables-dark";
 
 $custom-colors: (
     "teamspeak": #2980C3,
@@ -13,6 +12,8 @@ $custom-colors: (
 );
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
+@import "node_modules/bootstrap/scss/maps";
+@import "node_modules/bootstrap/scss/mixins";
 @import "node_modules/bootstrap/scss/root";
 @import "node_modules/bootstrap/scss/reboot";
 @import "node_modules/bootstrap/scss/type";
@@ -44,6 +45,7 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 @import "node_modules/bootstrap/scss/spinners";
 @import "node_modules/bootstrap/scss/offcanvas";
 @import "node_modules/bootstrap/scss/placeholders";
+@import "node_modules/bootstrap/scss/utilities";
 
 // Helpers
 @import "node_modules/bootstrap/scss/helpers";
@@ -51,8 +53,36 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 // Utilities
 @import "node_modules/bootstrap/scss/utilities/api";
 
+#darkModeIcon {
+    display: none;
+}
+
+@include color-mode(dark) {
+    #darkModeIcon {
+        display: inline;
+    }
+
+    #lightModeIcon {
+        display: none;
+    }
+}
+
 html {
     body {
+
+        .image-transparent-fix {
+            padding: 1rem;
+            background-color: $body-bg-dark;
+            border-radius: 1rem;
+            margin: 0.5rem;
+        }
+
+        .element-icon {
+            padding: 0.5rem;
+            background-color: $primary;
+            border-radius: 50%;
+            margin: 0.5rem;
+        }
 
         figcaption {
             display: none;
@@ -152,6 +182,18 @@ $loas-color: #f05b4f;
 
 .ct-series-b .ct-point, .ct-series-b .ct-line {
     stroke: $loas-color;
+}
+
+.ct-labels {
+    .ct-label {
+        color: var(--bs-body-color);
+    }
+}
+
+.ct-grids {
+    .ct-grid {
+        stroke: var(--bs-body-color);
+    }
 }
 
 .ct-legend {

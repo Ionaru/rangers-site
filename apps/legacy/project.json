@@ -35,7 +35,7 @@
             }
         },
         "build": {
-            "executor": "@nrwl/webpack:webpack",
+            "executor": "@nx/webpack:webpack",
             "outputs": ["{options.outputPath}"],
             "options": {
                 "generatePackageJson": true,
