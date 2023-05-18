@@ -258,7 +258,13 @@ export class TeamspeakService implements IService {
 
         TeamspeakService.debug('Connecting to TS3...');
 
-        await this.client.connect();
+        try {
+            await this.client.connect();
+        } catch (err: any) {
+            if (err.message !== 'already connected') {
+                throw err;
+            }
+        }
         TeamspeakService.debug('Asking the real questions... (whoami)');
         const me = await this.client.whoami();
 
