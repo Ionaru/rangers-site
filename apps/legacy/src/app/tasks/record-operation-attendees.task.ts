@@ -24,7 +24,6 @@ export class RecordOperationAttendeesTask {
             // Saturday 20:00
             cronTime: '0 0 20 * * 6',
             onTick: () => this.tick(),
-            runOnInit: true,
             timeZone: 'Europe/Berlin',
         });
     }
