@@ -40,9 +40,7 @@ export class TeamSpeakBotController implements IController<TeamspeakService> {
             username,
         });
 
-        if (process.env.NODE_ENV !== 'production') {
-            this.client.on('debug', TeamSpeakBotController.debug);
-        }
+        this.client.on('debug', TeamSpeakBotController.debug);
 
         TeamSpeakBotController.debug('TS3 bot created.');
     }
