@@ -59,7 +59,7 @@
             }
         },
         "serve": {
-            "executor": "@nx/node:node",
+            "executor": "@nx/js:node",
             "options": {
                 "buildTarget": "legacy:build",
                 "inspect": true
