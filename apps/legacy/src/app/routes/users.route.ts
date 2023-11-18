@@ -14,12 +14,13 @@ import { ValidateFunction } from 'ajv';
 
 import { DiscordService } from '../services/discord.service';
 import { TeamspeakService } from '../services/teamspeak.service';
+import { objectType, stringArrayType, stringType } from '../utils/ajv-types';
 
 import { BaseRoute } from './base.route';
 
 interface IUserInput {
-    badges: string[];
-    roles: string[];
+    badges: string | string[];
+    roles: string | string[];
     rank: string;
     ts3User: string;
 }
@@ -55,30 +56,30 @@ export class UsersRoute extends BaseRoute {
         this.userValidator = this.createValidateFunction({
             properties: {
                 badges: {
-                    default: undefined,
-                    items: {
-                        type: 'string',
-                    },
-                    type: 'array',
+                    default: [],
+                    oneOf: [
+                        stringType,
+                        stringArrayType,
+                    ],
                 },
                 rank: {
                     default: undefined,
-                    type: 'string',
+                    ...stringType,
                 },
                 roles: {
-                    default: undefined,
-                    items: {
-                        type: 'string',
-                    },
-                    type: 'array',
+                    default: [],
+                    oneOf: [
+                        stringType,
+                        stringArrayType,
+                    ],
                 },
                 ts3User: {
                     default: undefined,
-                    type: 'string',
+                    ...stringType,
                 },
             },
             required: ['ts3User'],
-            type: 'object',
+            ...objectType,
         });
 
         this.linkValidator = this.createValidateFunction({
@@ -129,8 +130,9 @@ export class UsersRoute extends BaseRoute {
         user.rank = rank;
 
         let roles: RoleModel[] | undefined | null = [];
-        if (request.body.roles) {
-            roles = await RoleModel.findByIds(request.body.roles);
+        if (request.body.roles.length) {
+            const roleIds = Array.isArray(request.body.roles) ? request.body.roles : [request.body.roles];
+            roles = await RoleModel.findByIds(roleIds);
             if (!roles.length) {
                 response.locals.error = 'Roles not found.';
                 return this.editUserPage(request, response);
@@ -140,8 +142,9 @@ export class UsersRoute extends BaseRoute {
         user.roles = roles;
 
         let badges: BadgeModel[] | undefined | null = [];
-        if (request.body.badges) {
-            badges = await BadgeModel.findByIds(request.body.badges);
+        if (request.body.badges.length) {
+            const badgeIds = Array.isArray(request.body.badges) ? request.body.badges : [request.body.badges];
+            badges = await BadgeModel.findByIds(badgeIds);
             if (!badges.length) {
                 response.locals.error = 'Badges not found.';
                 return this.editUserPage(request, response);
