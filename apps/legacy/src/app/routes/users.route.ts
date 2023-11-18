@@ -19,8 +19,8 @@ import { objectType, stringArrayType, stringType } from '../utils/ajv-types';
 import { BaseRoute } from './base.route';
 
 interface IUserInput {
-    badges?: string | string[];
-    roles?: string | string[];
+    badges: string | string[];
+    roles: string | string[];
     rank: string;
     ts3User: string;
 }
@@ -56,7 +56,6 @@ export class UsersRoute extends BaseRoute {
         this.userValidator = this.createValidateFunction({
             properties: {
                 badges: {
-                    nullable: true as const,
                     oneOf: [
                         stringType,
                         stringArrayType,
@@ -67,7 +66,6 @@ export class UsersRoute extends BaseRoute {
                     ...stringType,
                 },
                 roles: {
-                    nullable: true as const,
                     oneOf: [
                         stringType,
                         stringArrayType,
