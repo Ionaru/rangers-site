@@ -19,8 +19,8 @@ import { objectType, stringArrayType, stringType } from '../utils/ajv-types';
 import { BaseRoute } from './base.route';
 
 interface IUserInput {
-    badges: string | string[];
-    roles: string | string[];
+    badges?: string | string[];
+    roles?: string | string[];
     rank: string;
     ts3User: string;
 }
@@ -56,7 +56,7 @@ export class UsersRoute extends BaseRoute {
         this.userValidator = this.createValidateFunction({
             properties: {
                 badges: {
-                    default: [],
+                    nullable: true as const,
                     oneOf: [
                         stringType,
                         stringArrayType,
@@ -67,7 +67,7 @@ export class UsersRoute extends BaseRoute {
                     ...stringType,
                 },
                 roles: {
-                    default: [],
+                    nullable: true as const,
                     oneOf: [
                         stringType,
                         stringArrayType,
@@ -130,7 +130,7 @@ export class UsersRoute extends BaseRoute {
         user.rank = rank;
 
         let roles: RoleModel[] | undefined | null = [];
-        if (request.body.roles.length) {
+        if (request.body.roles?.length) {
             const roleIds = Array.isArray(request.body.roles) ? request.body.roles : [request.body.roles];
             roles = await RoleModel.findByIds(roleIds);
             if (!roles.length) {
@@ -142,7 +142,7 @@ export class UsersRoute extends BaseRoute {
         user.roles = roles;
 
         let badges: BadgeModel[] | undefined | null = [];
-        if (request.body.badges.length) {
+        if (request.body.badges?.length) {
             const badgeIds = Array.isArray(request.body.badges) ? request.body.badges : [request.body.badges];
             badges = await BadgeModel.findByIds(badgeIds);
             if (!badges.length) {
