@@ -33,6 +33,8 @@ export class TeamSpeakBotController implements IController<TeamspeakService> {
         this.client = new TeamSpeak({
             autoConnect: false,
             host,
+            keepAlive: true,
+            keepAliveTimeout: 25,
             nickname,
             password,
             queryport: queryPort,
